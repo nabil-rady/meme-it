@@ -1,7 +1,7 @@
 export default class Meme {
   readonly canvas: HTMLCanvasElement;
   readonly url: string;
-  readonly captionPositions: number[][];
+  readonly captionPositions: [number, number][];
   readonly captionRotations: number[];
   readonly captionWidths: number[];
   private _captions: string[];
@@ -9,7 +9,7 @@ export default class Meme {
   constructor(
     canvas: HTMLCanvasElement | string,
     url: string,
-    captionPositions: number[][],
+    captionPositions: [number, number][],
     captionRotations: number[],
     captionWidths: number[]
   ) {
