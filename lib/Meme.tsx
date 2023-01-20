@@ -1,3 +1,17 @@
+function fillTextAndRotate(
+  ctx: CanvasRenderingContext2D,
+  text: string,
+  x: number,
+  y: number,
+  maxWidth: number,
+  angle: number
+): void {
+  ctx.save();
+  ctx.rotate((angle * Math.PI) / 180);
+  ctx.fillText(text, x, y, maxWidth);
+  ctx.restore();
+}
+
 export default class Meme {
   readonly canvas: HTMLCanvasElement;
   readonly url: string;
@@ -45,7 +59,6 @@ export default class Meme {
     if (ctx) {
       ctx.drawImage(imageBitMap, 0, 0, 500, 500);
       for (let i = 0; i < this.captions.length; i++) {
-        ctx.save();
         ctx.font = `${fontSize}px serif`;
         ctx.textAlign = "center";
         let width = ctx.measureText(this.captions[i]).width;
@@ -54,14 +67,14 @@ export default class Meme {
           ctx.font = `${fontSize}px serif`;
           width = ctx.measureText(this.captions[i]).width;
         }
-        ctx.rotate((this.captionRotations[i] * Math.PI) / 180);
-        ctx.fillText(
+        fillTextAndRotate(
+          ctx,
           this.captions[i],
           this.captionPositions[i][0],
           this.captionPositions[i][1],
-          this.captionWidths[i]
+          this.captionWidths[i],
+          this.captionRotations[i]
         );
-        ctx.restore();
       }
     }
   }
