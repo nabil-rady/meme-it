@@ -1,11 +1,13 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Meme from "../lib/Meme";
 
 export default function Home() {
   const [captions, setCaptions] = useState<string[]>(["", ""]);
 
+  const meme = useRef<Meme>();
+
   useEffect(() => {
-    const meme: Meme = new Meme(
+    meme.current = new Meme(
       "canvas",
       "/drake.jpg",
       [
@@ -17,8 +19,12 @@ export default function Home() {
       [30, 30],
       [6, 6]
     );
-    meme.captions = captions;
-    meme.render();
+  }, []);
+
+  useEffect(() => {
+    if (!meme.current) return;
+    meme.current.captions = captions;
+    meme.current.render();
   }, [captions]);
 
   return (

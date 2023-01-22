@@ -12,6 +12,17 @@ function fillTextAndRotate(
   ctx.restore();
 }
 
+function drawImage(
+  ctx: CanvasRenderingContext2D,
+  imageData: ImageBitmap | ImageData
+): void {
+  if (imageData instanceof ImageBitmap) {
+    ctx.drawImage(imageData, 0, 0, 500, 500);
+  } else {
+    ctx.putImageData(imageData, 0, 0);
+  }
+}
+
 export default class Meme {
   readonly canvas: HTMLCanvasElement;
   readonly url: string;
@@ -20,6 +31,7 @@ export default class Meme {
   readonly captionWidths: number[];
   readonly initialFontSizes: number[];
   readonly maxNumberOfLines: number[];
+  private _imageData: ImageBitmap | ImageData | null;
   private _captions: string[];
 
   constructor(
@@ -42,6 +54,7 @@ export default class Meme {
     this.captionWidths = captionWidths;
     this.initialFontSizes = initialFontSizes;
     this.maxNumberOfLines = maxNumberOfLines;
+    this._imageData = null;
     this._captions = [];
   }
 
@@ -53,22 +66,33 @@ export default class Meme {
     return this._captions;
   }
 
-  async render(): Promise<void> {
-    const image = await fetch(this.url);
-    const imageBlob = await image.blob();
+  async fetchImage(): Promise<boolean> {
+    try {
+      const response = await fetch(this.url);
+      const imageBlob = await response.blob();
+      this._imageData = await createImageBitmap(imageBlob);
+      return true;
+    } catch (err) {
+      // TODO: Handle network errors in a better way.
+      return false;
+    }
+  }
 
-    const imageBitMap = await createImageBitmap(imageBlob);
+  async render(): Promise<void> {
+    if (this._imageData === null) {
+      const success = await this.fetchImage();
+      if (!success) return;
+    }
     const ctx = this.canvas.getContext("2d");
 
-    let currentImageBitMap = imageBitMap;
+    // If fetching succeeds, then image data cannot be null.
+    let currentImageData = this._imageData as ImageBitmap | ImageData;
 
     if (ctx) {
-      ctx.drawImage(currentImageBitMap, 0, 0, 500, 500);
+      drawImage(ctx, currentImageData);
 
       for (let i = 0; i < this.captions.length; i++) {
-        currentImageBitMap = await createImageBitmap(
-          ctx.getImageData(0, 0, 500, 500)
-        );
+        currentImageData = ctx.getImageData(0, 0, 500, 500);
         let fontSize = this.initialFontSizes[i];
         ctx.font = `${fontSize}px serif`;
         ctx.textAlign = "center";
@@ -89,7 +113,7 @@ export default class Meme {
             if (lines.length + 1 === this.maxNumberOfLines[i]) {
               fontSize /= 1.2;
               ctx.font = `${fontSize}px serif`;
-              ctx.drawImage(currentImageBitMap, 0, 0, 500, 500);
+              drawImage(ctx, currentImageData);
               if (fontSize >= 15) {
                 y = this.captionPositions[i][1];
                 line = "";
