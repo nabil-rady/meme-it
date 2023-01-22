@@ -7,13 +7,15 @@ export default function Home() {
   useEffect(() => {
     const meme: Meme = new Meme(
       "canvas",
-      "/sponge.jpg",
+      "/drake.jpg",
       [
-        [500 / 2, 50],
-        [310, 260],
+        [380, 36],
+        [380, 285],
       ],
-      [0, 18],
-      [500, 200]
+      [0, 0],
+      [250, 250],
+      [30, 30],
+      [6, 6]
     );
     meme.captions = captions;
     meme.render();
