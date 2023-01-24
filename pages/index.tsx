@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import Meme from "../lib/Meme";
+import { CaptionDetails, Meme } from "../lib/Meme";
 
 export default function Home() {
   const [captions, setCaptions] = useState<string[]>(["", ""]);
@@ -7,18 +7,11 @@ export default function Home() {
   const meme = useRef<Meme>();
 
   useEffect(() => {
-    meme.current = new Meme(
-      "canvas",
-      "/drake.jpg",
-      [
-        [380, 36],
-        [380, 285],
-      ],
-      [0, 0],
-      [250, 250],
-      [30, 30],
-      [6, 6]
-    );
+    const captionDetails = [
+      new CaptionDetails(380, 36, 0, 250, 30, 6),
+      new CaptionDetails(380, 285, 0, 250, 30, 6),
+    ];
+    meme.current = new Meme("canvas", "/drake.jpg", captionDetails);
   }, []);
 
   useEffect(() => {
