@@ -1,17 +1,19 @@
 import { useEffect, useRef, useState } from "react";
-import { CaptionDetails, Meme } from "../lib/Meme";
+import { Meme } from "../lib/Meme";
 
 export default function Home() {
-  const [captions, setCaptions] = useState<string[]>(["", ""]);
+  const [captions, setCaptions] = useState<string[]>([]);
 
   const meme = useRef<Meme>();
 
   useEffect(() => {
-    const captionDetails = [
-      new CaptionDetails(380, 36, 0, 250, 30, 6),
-      new CaptionDetails(380, 285, 0, 250, 30, 6),
-    ];
-    meme.current = new Meme("canvas", "/drake.jpg", captionDetails);
+    fetch("/api/get-random-meme")
+      .then((res: Response) => res.json())
+      .then((data: DMemeWithCaptionDetails) => {
+        setCaptions(Array<string>(data.captionsDetails.length).fill(""));
+        meme.current = new Meme("canvas", { ...data });
+        meme.current.render();
+      });
   }, []);
 
   useEffect(() => {

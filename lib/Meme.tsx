@@ -31,14 +31,14 @@ export class CaptionDetails {
   readonly initialFontSize: number;
   readonly maxNumberOfLines: number;
 
-  constructor(
-    positionX: number,
-    positionY: number,
-    rotation: number,
-    width: number,
-    initialFontSize: number,
-    maxNumberOfLines: number
-  ) {
+  constructor({
+    positionX,
+    positionY,
+    rotation,
+    width,
+    initialFontSize,
+    maxNumberOfLines,
+  }: DCaptionsDetails) {
     this.positionX = positionX;
     this.positionY = positionY;
     this.rotation = rotation;
@@ -57,8 +57,7 @@ export class Meme {
 
   constructor(
     canvas: HTMLCanvasElement | string,
-    url: string,
-    captionDetails: CaptionDetails[]
+    { url, captionsDetails }: DMemeWithCaptionDetails
   ) {
     if (typeof canvas === "string") {
       const canvasQuery = document.getElementById(canvas);
@@ -66,7 +65,9 @@ export class Meme {
       this.canvas = document.getElementById(canvas) as HTMLCanvasElement;
     } else this.canvas = canvas;
     this.url = url;
-    this.captionsDetails = captionDetails;
+    this.captionsDetails = captionsDetails.map(
+      (captionDetails) => new CaptionDetails(captionDetails)
+    );
     this._imageData = null;
     this._captions = [];
   }
