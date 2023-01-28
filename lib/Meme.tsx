@@ -122,6 +122,8 @@ export class Meme {
         let x = captionDetails.positionX;
         let y = captionDetails.positionY;
 
+        let isThereAnIncompleteLine = true;
+
         for (let j = 0; j < words.length; j++) {
           const currentLine = line + words[j] + " ";
           const currentWidth = ctx.measureText(currentLine).width;
@@ -130,7 +132,9 @@ export class Meme {
             if (lines.length + 1 === captionDetails.maxNumberOfLines) {
               fontSize /= 1.2;
               ctx.font = `${fontSize}px serif`;
+
               drawImage(ctx, currentImageData);
+
               if (fontSize >= 15) {
                 y = captionDetails.positionY;
                 line = "";
@@ -138,12 +142,15 @@ export class Meme {
                 j = -1;
                 continue;
               }
+              fontSize = 15;
+              ctx.font = `${fontSize}px serif`;
+
               for (let k = 0; k < lines.length; k++) {
                 fillTextAndRotate(
                   ctx,
                   lines[k],
                   x,
-                  captionDetails.positionY + (k * fontSize) / 1.5,
+                  captionDetails.positionY + k * fontSize * 1.1,
                   captionDetails.width,
                   captionDetails.rotation
                 );
@@ -153,11 +160,12 @@ export class Meme {
                 ctx,
                 rest,
                 x,
-                y,
+                captionDetails.positionY + lines.length * fontSize * 1.1,
                 captionDetails.width,
                 captionDetails.rotation
               );
-              continue;
+              isThereAnIncompleteLine = false;
+              break;
             }
             fillTextAndRotate(
               ctx,
@@ -174,14 +182,16 @@ export class Meme {
             line = currentLine;
           }
         }
-        fillTextAndRotate(
-          ctx,
-          line,
-          x,
-          y,
-          captionDetails.width,
-          captionDetails.rotation
-        );
+        if (isThereAnIncompleteLine) {
+          fillTextAndRotate(
+            ctx,
+            line,
+            x,
+            y,
+            captionDetails.width,
+            captionDetails.rotation
+          );
+        }
       }
     }
   }
