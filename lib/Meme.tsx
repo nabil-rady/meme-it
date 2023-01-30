@@ -1,3 +1,6 @@
+const CANVAS_WIDTH = 500;
+const CANVAS_HEIGHT = 500;
+
 function fillTextAndRotate(
   ctx: CanvasRenderingContext2D,
   text: string,
@@ -17,7 +20,7 @@ function drawImage(
   imageData: ImageBitmap | ImageData
 ): void {
   if (imageData instanceof ImageBitmap) {
-    ctx.drawImage(imageData, 0, 0, 500, 500);
+    ctx.drawImage(imageData, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
   } else {
     ctx.putImageData(imageData, 0, 0);
   }
@@ -106,7 +109,7 @@ export class Meme {
       drawImage(ctx, currentImageData);
 
       for (let i = 0; i < this.captions.length; i++) {
-        currentImageData = ctx.getImageData(0, 0, 500, 500);
+        currentImageData = ctx.getImageData(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
         const captionDetails = this.captionsDetails[i];
 
