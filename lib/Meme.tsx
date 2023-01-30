@@ -1,3 +1,6 @@
+const CANVAS_WIDTH = 500;
+const CANVAS_HEIGHT = 500;
+
 function fillTextAndRotate(
   ctx: CanvasRenderingContext2D,
   text: string,
@@ -17,31 +20,47 @@ function drawImage(
   imageData: ImageBitmap | ImageData
 ): void {
   if (imageData instanceof ImageBitmap) {
-    ctx.drawImage(imageData, 0, 0, 500, 500);
+    ctx.drawImage(imageData, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
   } else {
     ctx.putImageData(imageData, 0, 0);
   }
 }
 
-export default class Meme {
+export class CaptionDetails {
+  readonly positionX: number;
+  readonly positionY: number;
+  readonly rotation: number;
+  readonly width: number;
+  readonly initialFontSize: number;
+  readonly maxNumberOfLines: number;
+
+  constructor({
+    positionX,
+    positionY,
+    rotation,
+    width,
+    initialFontSize,
+    maxNumberOfLines,
+  }: DCaptionsDetails) {
+    this.positionX = positionX;
+    this.positionY = positionY;
+    this.rotation = rotation;
+    this.width = width;
+    this.initialFontSize = initialFontSize;
+    this.maxNumberOfLines = maxNumberOfLines;
+  }
+}
+
+export class Meme {
   readonly canvas: HTMLCanvasElement;
   readonly url: string;
-  readonly captionPositions: [number, number][];
-  readonly captionRotations: number[];
-  readonly captionWidths: number[];
-  readonly initialFontSizes: number[];
-  readonly maxNumberOfLines: number[];
+  private captionsDetails: CaptionDetails[];
   private _imageData: ImageBitmap | ImageData | null;
   private _captions: string[];
 
   constructor(
     canvas: HTMLCanvasElement | string,
-    url: string,
-    captionPositions: [number, number][],
-    captionRotations: number[],
-    captionWidths: number[],
-    initialFontSizes: number[],
-    maxNumberOfLines: number[]
+    { url, captionsDetails }: DMemeWithCaptionDetails
   ) {
     if (typeof canvas === "string") {
       const canvasQuery = document.getElementById(canvas);
@@ -49,11 +68,9 @@ export default class Meme {
       this.canvas = document.getElementById(canvas) as HTMLCanvasElement;
     } else this.canvas = canvas;
     this.url = url;
-    this.captionPositions = captionPositions;
-    this.captionRotations = captionRotations;
-    this.captionWidths = captionWidths;
-    this.initialFontSizes = initialFontSizes;
-    this.maxNumberOfLines = maxNumberOfLines;
+    this.captionsDetails = captionsDetails.map(
+      (captionDetails) => new CaptionDetails(captionDetails)
+    );
     this._imageData = null;
     this._captions = [];
   }
@@ -92,8 +109,11 @@ export default class Meme {
       drawImage(ctx, currentImageData);
 
       for (let i = 0; i < this.captions.length; i++) {
-        currentImageData = ctx.getImageData(0, 0, 500, 500);
-        let fontSize = this.initialFontSizes[i];
+        currentImageData = ctx.getImageData(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+
+        const captionDetails = this.captionsDetails[i];
+
+        let fontSize = captionDetails.initialFontSize;
         ctx.font = `${fontSize}px serif`;
         ctx.textAlign = "center";
 
@@ -102,33 +122,40 @@ export default class Meme {
 
         const words = this.captions[i].split(" ");
 
-        let x = this.captionPositions[i][0];
-        let y = this.captionPositions[i][1];
+        let x = captionDetails.positionX;
+        let y = captionDetails.positionY;
+
+        let isThereAnIncompleteLine = true;
 
         for (let j = 0; j < words.length; j++) {
           const currentLine = line + words[j] + " ";
           const currentWidth = ctx.measureText(currentLine).width;
 
-          if (currentWidth > this.captionWidths[i] && j > 0) {
-            if (lines.length + 1 === this.maxNumberOfLines[i]) {
+          if (currentWidth > captionDetails.width && j > 0) {
+            if (lines.length + 1 === captionDetails.maxNumberOfLines) {
               fontSize /= 1.2;
               ctx.font = `${fontSize}px serif`;
+
               drawImage(ctx, currentImageData);
+
               if (fontSize >= 15) {
-                y = this.captionPositions[i][1];
+                y = captionDetails.positionY;
                 line = "";
                 lines.splice(0, lines.length);
                 j = -1;
                 continue;
               }
+              fontSize = 15;
+              ctx.font = `${fontSize}px serif`;
+
               for (let k = 0; k < lines.length; k++) {
                 fillTextAndRotate(
                   ctx,
                   lines[k],
                   x,
-                  this.captionPositions[i][1] + (k * fontSize) / 1.5,
-                  this.captionWidths[i],
-                  this.captionRotations[i]
+                  captionDetails.positionY + k * fontSize * 1.1,
+                  captionDetails.width,
+                  captionDetails.rotation
                 );
               }
               const rest = line + words.slice(j).join(" ");
@@ -136,19 +163,20 @@ export default class Meme {
                 ctx,
                 rest,
                 x,
-                y,
-                this.captionWidths[i],
-                this.captionRotations[i]
+                captionDetails.positionY + lines.length * fontSize * 1.1,
+                captionDetails.width,
+                captionDetails.rotation
               );
-              continue;
+              isThereAnIncompleteLine = false;
+              break;
             }
             fillTextAndRotate(
               ctx,
               line,
               x,
               y,
-              this.captionWidths[i],
-              this.captionRotations[i]
+              captionDetails.width,
+              captionDetails.rotation
             );
             lines.push(line);
             line = words[j] + " ";
@@ -157,14 +185,16 @@ export default class Meme {
             line = currentLine;
           }
         }
-        fillTextAndRotate(
-          ctx,
-          line,
-          x,
-          y,
-          this.captionWidths[i],
-          this.captionRotations[i]
-        );
+        if (isThereAnIncompleteLine) {
+          fillTextAndRotate(
+            ctx,
+            line,
+            x,
+            y,
+            captionDetails.width,
+            captionDetails.rotation
+          );
+        }
       }
     }
   }

@@ -1,0 +1,30 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Memes {
+  id Int @id @default(autoincrement())
+  url String 
+  captionsDetails CaptionDetails[]
+}
+
+model CaptionDetails {
+  id Int @id @default(autoincrement())
+  memeId Int
+  meme Memes @relation(fields: [memeId], references: [id])
+  positionX Int @db.SmallInt
+  positionY Int @db.SmallInt
+  rotation Int @db.SmallInt
+  width Int @db.SmallInt
+  initialFontSize Int @db.SmallInt
+  maxNumberOfLines Int @db.SmallInt 
+}
+
