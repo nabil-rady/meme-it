@@ -153,8 +153,8 @@ export class GameStore {
     this.games.set(game.id, game);
   }
 
-  getGame(playerId: string): Game | undefined {
-    return this.games.get(playerId);
+  getGame(gameId: string): Game | undefined {
+    return this.games.get(gameId);
   }
 
   removeGame(game: Game): void {
