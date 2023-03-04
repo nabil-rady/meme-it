@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState } from "react";
+import handleResponse from "../../lib/handleRequest";
 import { PlayerInfo, GameResponse, CreateRequest } from "../../server/types";
 
 export default function CreateGamePage() {
   const ws = useRef<WebSocket>();
 
-  const [gameActive, setGameActive] = useState<boolean>(false);
   const [players, setPlayers] = useState<PlayerInfo[]>([]);
+
+  const gameActive = players.length !== 0;
 
   const createGame = (nickname: string, avatar: string) => {
     const hostname = window.location.hostname;
@@ -13,24 +15,7 @@ export default function CreateGamePage() {
     ws.current.addEventListener("message", (e) => {
       try {
         const response = JSON.parse(e.data) as GameResponse;
-        if ("error" in response) {
-          window.location.href = "/game";
-        }
-        if (response.method === "create") {
-          window.history.pushState({}, "", `/game/${response.gameId}`);
-          setGameActive(true);
-          setPlayers([
-            { id: response.adminId, nickname, avatar, isAdmin: true },
-          ]);
-        } else if (response.method === "join") {
-          setPlayers(response.players);
-        } else if (response.method === "leave") {
-          setPlayers((prevPlayers) =>
-            prevPlayers.filter((player) => player.id !== response.player.id)
-          );
-        } else if (response.method === "terminate") {
-          window.location.href = "/game";
-        }
+        handleResponse(response, setPlayers, nickname, avatar);
       } catch (err) {
         console.error(err);
       }
@@ -61,7 +46,7 @@ export default function CreateGamePage() {
       {players.map((player) => (
         <div key={player.id}>
           <img src={player.avatar} />
-          {player.nickname}
+          <p>{player.nickname}</p>
         </div>
       ))}
     </div>

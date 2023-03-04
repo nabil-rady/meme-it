@@ -6,6 +6,7 @@ import {
   JoinRequest,
   PlayerInfo,
 } from "../../server/types";
+import handleResponse from "../../lib/handleRequest";
 
 export default function Game() {
   const { query } = useRouter();
@@ -20,19 +21,8 @@ export default function Game() {
     ws.current = new WebSocket(`ws://${hostname}:9090`);
     ws.current.addEventListener("message", (e) => {
       try {
-        const response = JSON.parse(e.data) as GameResponse | ErrorResponse;
-        if ("error" in response) {
-          window.location.href = "/game";
-        } else if (response.method === "join") {
-          setPlayers(response.players);
-          setGameFound(true);
-        } else if (response.method === "leave") {
-          setPlayers((prevPlayers) =>
-            prevPlayers.filter((player) => player.id !== response.player.id)
-          );
-        } else if (response.method === "terminate") {
-          window.location.href = "/game";
-        }
+        const response = JSON.parse(e.data);
+        handleResponse(response, setPlayers);
       } catch (err) {
         console.error(err);
       }
