@@ -8,9 +8,11 @@ import {
 import {
   CreateRequest,
   JoinRequest,
+  UpdatePlayerRequest,
   GameRequest,
   CreateResponse,
   JoinResponse,
+  UpdatePlayerResponse,
   LeaveResponse,
   GameConnection,
 } from "./types";
@@ -83,6 +85,28 @@ function joinGame(
   game.broadcast(response);
 }
 
+function updatePlayer(
+  request: UpdatePlayerRequest,
+  playerToBeUpdated: Player,
+  playerStore: PlayerStore
+): void {
+  const updatedPlayerInfo = request.updatedPlayer;
+  playerToBeUpdated.setPlayerInfo({
+    ...playerToBeUpdated.getPlayerInfo(),
+    ...updatedPlayerInfo,
+  });
+  playerStore.addPlayer(playerToBeUpdated);
+
+  const gameOfUpdatePlayer = gameStore.getGamePlayedByPlayer(playerToBeUpdated);
+  if (gameOfUpdatePlayer) {
+    const updatePlayerResponse: UpdatePlayerResponse = {
+      method: "updatePlayer",
+      updatedPlayer: updatedPlayerInfo,
+    };
+    gameOfUpdatePlayer.broadcast(updatePlayerResponse);
+  }
+}
+
 function handleClosingConnection(
   connection: GameConnection,
   playerStore: PlayerStore,
@@ -141,9 +165,7 @@ function main(
           if (request.method === "create") {
             createGame(request, connection, playerStore, gameStore);
           } else if (request.method === "join") {
-            const desiredGame: Game | undefined = gameStore.getGame(
-              request.gameId
-            );
+            const desiredGame = gameStore.getGame(request.gameId);
 
             if (!desiredGame) {
               connection.send(JSON.stringify({ error: "game not found" }));
@@ -151,6 +173,15 @@ function main(
               return;
             }
             joinGame(request, connection, desiredGame, playerStore);
+          } else if (request.method === "updatePlayer") {
+            const playerToBeUpdated = playerStore.getPlayer(
+              request.updatedPlayer.id
+            );
+            if (!playerToBeUpdated) {
+              connection.send(JSON.stringify({ error: "player not found" }));
+              return;
+            }
+            updatePlayer(request, playerToBeUpdated, playerStore);
           }
         } catch (err) {
           if (err instanceof SyntaxError) {

@@ -9,8 +9,8 @@ import {
 
 export class Player {
   readonly id: string;
-  readonly nickname: string;
-  readonly avatar: string;
+  nickname: string;
+  avatar: string;
   readonly isAdmin: boolean;
   private readonly connection: GameConnection;
 
@@ -34,6 +34,15 @@ export class Player {
       avatar: this.avatar,
       isAdmin: this.isAdmin,
     };
+  }
+
+  getPlayerGameId(): string | undefined {
+    return this.connection.gameId;
+  }
+
+  setPlayerInfo(playerInfo: PlayerInfo): void {
+    this.nickname = playerInfo.nickname;
+    this.avatar = playerInfo.avatar;
   }
 
   send(message: GameResponse): void {
@@ -154,6 +163,12 @@ export class GameStore {
   }
 
   getGame(gameId: string): Game | undefined {
+    return this.games.get(gameId);
+  }
+
+  getGamePlayedByPlayer(player: Player): Game | undefined {
+    const gameId = player.getPlayerGameId();
+    if (gameId === undefined) return undefined;
     return this.games.get(gameId);
   }
 

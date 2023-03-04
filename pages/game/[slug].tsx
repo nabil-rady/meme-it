@@ -1,9 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
 import {
-  GameResponse,
-  ErrorResponse,
   JoinRequest,
+  UpdatePlayerRequest,
   PlayerInfo,
 } from "../../server/types";
 import handleResponse from "../../lib/handleRequest";
@@ -13,7 +12,7 @@ export default function Game() {
   const ws = useRef<WebSocket>();
 
   const [players, setPlayers] = useState<PlayerInfo[]>([]);
-  const [gameFound, setGameFound] = useState<boolean>(false);
+  const [currentPlayer, setCurrentPlayer] = useState<PlayerInfo>();
 
   useEffect(() => {
     if (!query.slug) return;
@@ -22,7 +21,7 @@ export default function Game() {
     ws.current.addEventListener("message", (e) => {
       try {
         const response = JSON.parse(e.data);
-        handleResponse(response, setPlayers);
+        handleResponse(response, setCurrentPlayer, setPlayers);
       } catch (err) {
         console.error(err);
       }
@@ -52,6 +51,24 @@ export default function Game() {
             <p>{player.nickname}</p>
           </div>
         ))}
+        {currentPlayer && (
+          <form
+            onSubmit={(e: any) => {
+              e.preventDefault();
+              const updatePlayerRequest: UpdatePlayerRequest = {
+                method: "updatePlayer",
+                updatedPlayer: {
+                  ...currentPlayer,
+                  nickname: e.target.elements[0].value,
+                },
+              };
+              ws.current?.send(JSON.stringify(updatePlayerRequest));
+            }}
+          >
+            <input type="text" />
+            <button type="submit">Change nickname</button>
+          </form>
+        )}
       </div>
     </main>
   );

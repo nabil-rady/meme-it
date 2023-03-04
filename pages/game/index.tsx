@@ -1,11 +1,17 @@
 import { useEffect, useRef, useState } from "react";
 import handleResponse from "../../lib/handleRequest";
-import { PlayerInfo, GameResponse, CreateRequest } from "../../server/types";
+import {
+  PlayerInfo,
+  GameResponse,
+  CreateRequest,
+  UpdatePlayerRequest,
+} from "../../server/types";
 
 export default function CreateGamePage() {
   const ws = useRef<WebSocket>();
 
   const [players, setPlayers] = useState<PlayerInfo[]>([]);
+  const [currentPlayer, setCurrentPlayer] = useState<PlayerInfo>();
 
   const gameActive = players.length !== 0;
 
@@ -15,7 +21,13 @@ export default function CreateGamePage() {
     ws.current.addEventListener("message", (e) => {
       try {
         const response = JSON.parse(e.data) as GameResponse;
-        handleResponse(response, setPlayers, nickname, avatar);
+        handleResponse(
+          response,
+          setCurrentPlayer,
+          setPlayers,
+          nickname,
+          avatar
+        );
       } catch (err) {
         console.error(err);
       }
@@ -49,6 +61,24 @@ export default function CreateGamePage() {
           <p>{player.nickname}</p>
         </div>
       ))}
+      {currentPlayer && (
+        <form
+          onSubmit={(e: any) => {
+            e.preventDefault();
+            const updatePlayerRequest: UpdatePlayerRequest = {
+              method: "updatePlayer",
+              updatedPlayer: {
+                ...currentPlayer,
+                nickname: e.target.elements[0].value,
+              },
+            };
+            ws.current?.send(JSON.stringify(updatePlayerRequest));
+          }}
+        >
+          <input type="text" />
+          <button type="submit">Change nickname</button>
+        </form>
+      )}
     </div>
   ) : (
     <main>
