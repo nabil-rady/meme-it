@@ -27,6 +27,7 @@
     "websocket": "^1.0.34"
   },
   "devDependencies": {
+    "prettier": "^2.8.4",
     "prisma": "^4.9.0"
   }
 }
