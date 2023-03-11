@@ -1,0 +1,200 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap");
+
+@mixin font-face($family, $file, $format) {
+  @font-face {
+    font-family: $family;
+    src: url("./fonts/" + $file) format($format);
+  }
+}
+
+@include font-face("Potato Sans", "potato-sans.OTF", "opentype");
+
+/* Variables */
+$text-clr: rgb(245, 242, 242);
+
+$button-bg: $text-clr;
+$button-clr: rgb(19, 62, 169);
+$button-hover-bg: $button-clr;
+$button-hover-clr: rgb(213, 213, 213);
+
+$transition-time: 0.25s;
+
+/* General */
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  min-height: 100vh;
+  margin: 0;
+}
+
+body {
+  font-family: "Poppins", sans-serif;
+
+  background: {
+    image: url(/orange-bg.jpg);
+    size: cover;
+    repeat: no-repeat;
+  }
+  backdrop-filter: invert(1) brightness(70%);
+  color: $text-clr;
+
+  padding: 5rem;
+}
+
+#__next,
+.app {
+  height: 100%;
+}
+
+/* Home */
+.home {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+
+  height: 100%;
+
+  > h1 {
+    font: {
+      family: "Potato Sans", sans-serif;
+      size: 6.5em;
+    }
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+
+    margin-block: 0.7rem;
+  }
+
+  > .avatar-container {
+    position: relative;
+
+    margin-bottom: 0.5em;
+
+    > .avatar {
+      width: 8.3em;
+      height: 8.3em;
+
+      border-radius: 100%;
+      margin-bottom: 1em;
+    }
+
+    > .change-avatar {
+      position: absolute;
+      bottom: 3%;
+      left: 50%;
+
+      display: flex;
+
+      background-color: $button-bg;
+
+      padding: 5px;
+      border: none;
+      border-radius: 100%;
+
+      transform: translateX(-50%);
+      cursor: pointer;
+      transition: $transition-time;
+
+      > .icon {
+        font-size: 2.2em;
+
+        color: $button-clr;
+
+        transition: transform $transition-time;
+      }
+
+      &:hover {
+        > .icon {
+          transform: rotate(180deg);
+        }
+      }
+    }
+  }
+
+  > .nickname-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3em;
+
+    > .nickname-input {
+      display: block;
+
+      font-family: inherit;
+
+      background-color: rgba(0, 0, 0, 0.25);
+      color: inherit;
+
+      width: 25em;
+
+      padding: 1em;
+      border: none;
+      border-radius: 6px;
+      outline: 1px solid transparent;
+
+      transition: $transition-time;
+
+      &::placeholder {
+        color: $text-clr;
+        opacity: 0.7;
+      }
+
+      &:hover,
+      &:focus {
+        outline: 1px solid $text-clr;
+      }
+    }
+  }
+
+  > .buttons {
+    display: flex;
+    gap: 0.4em;
+
+    margin-top: 0.7em;
+
+    > .button {
+      font-family: inherit;
+      font-size: 0.78em;
+      font-weight: 800;
+      text-transform: uppercase;
+
+      background-color: $button-bg;
+      color: $button-clr;
+
+      padding: 0.8em 1.3em;
+      border: none;
+      border-radius: 8px;
+
+      cursor: pointer;
+      transition: $transition-time;
+
+      &:hover {
+        background-color: $button-hover-bg;
+        color: $button-hover-clr;
+      }
+    }
+  }
+}
+
+/* Game */
+.caption-input {
+  display: block;
+}
+
+/* Media Queries */
+@media (max-width: 700px) {
+  body {
+    font-size: 12px;
+
+    .change-avatar {
+      font-size: 10px;
+    }
+
+    .nickname-input {
+      font-size: 11px;
+    }
+  }
+}

@@ -1,48 +1,33 @@
-import { useEffect, useRef, useState } from "react";
-import { Meme } from "../lib/Meme";
+import Head from "next/head";
+import Image from "next/image";
+import Avatar from "../public/avatar/bugs.jpg";
+import { BiRefresh } from "react-icons/bi";
 
 export default function Home() {
-  const [captions, setCaptions] = useState<string[]>([]);
-
-  const meme = useRef<Meme>();
-
-  useEffect(() => {
-    fetch("/api/get-random-meme")
-      .then((res: Response) => res.json())
-      .then((data: DMemeWithCaptionDetails) => {
-        setCaptions(Array<string>(data.captionsDetails.length).fill(""));
-        meme.current = new Meme("canvas", { ...data });
-        meme.current.render();
-      });
-  }, []);
-
-  useEffect(() => {
-    if (!meme.current) return;
-    meme.current.captions = captions;
-    meme.current.render();
-  }, [captions]);
-
   return (
-    <main>
-      {captions.map((caption, index) => (
-        <input
-          key={index}
-          type="text"
-          value={caption}
-          style={{
-            display: "block",
-            margin: "0.8rem 0",
-          }}
-          onChange={(e) =>
-            setCaptions((prevCaptions) => {
-              const clone = prevCaptions.slice();
-              clone.splice(index, 1, e.target.value);
-              return clone;
-            })
-          }
-        />
-      ))}
-      <canvas id="canvas" width="500" height="500"></canvas>
-    </main>
+    <div className="app">
+      <Head>
+        <title>Meme It</title>
+      </Head>
+      <main className="home">
+        <h1>Meme It</h1>
+
+        <div className="avatar-container">
+          <Image src={Avatar} alt="avatar" className="avatar" priority />
+          <button className="change-avatar">
+            <BiRefresh className="icon" />
+          </button>
+        </div>
+
+        <div className="nickname-container">
+          <input className="nickname-input" placeholder="Nickname" />
+        </div>
+
+        <div className="buttons">
+          <button className="button">Join Lobby</button>
+          <button className="button">Create New Lobby</button>
+        </div>
+      </main>
+    </div>
   );
 }

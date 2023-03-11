@@ -10,8 +10,10 @@ package-lock.json
 build
 
 # misc
+.vscode
 .DS_Store
 *.pem
+*.css*
 
 # debug
 npm-debug.log*
