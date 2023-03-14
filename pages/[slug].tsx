@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import Player from "../components/Player";
 import Invite from "../components/Invite";
 
-import handleResponse from "../lib/handleRequest";
+import handleResponse from "../lib/handleResponse";
 
 import { GameInfo, JoinRequest, PlayerInfo } from "../server/types";
 
