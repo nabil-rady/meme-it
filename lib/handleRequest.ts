@@ -6,39 +6,29 @@ import {
   UpdatePlayerResponse,
   LeaveResponse,
   PlayerInfo,
+  GameInfo,
 } from "../server/types";
 
 function handleCreateResponse(
   response: CreateResponse,
-  creatorNickname: string,
-  creatorAvatar: string,
-  setCurrentPlayer: Dispatch<SetStateAction<PlayerInfo | undefined>>,
+  setGame: Dispatch<SetStateAction<GameInfo | undefined>>,
+  setThisPlayer: Dispatch<SetStateAction<PlayerInfo | undefined>>,
   setPlayers: Dispatch<SetStateAction<PlayerInfo[]>>
 ): void {
-  window.history.pushState({}, "", `/game/${response.gameId}`);
-  setCurrentPlayer({
-    id: response.adminId,
-    nickname: creatorNickname,
-    avatar: creatorAvatar,
-    isAdmin: true,
-  });
-  setPlayers([
-    {
-      id: response.adminId,
-      nickname: creatorNickname,
-      avatar: creatorAvatar,
-      isAdmin: true,
-    },
-  ]);
+  setGame(response.game);
+  setThisPlayer(response.admin);
+  setPlayers([response.admin]);
 }
 
 function handleJoinResponse(
   response: JoinResponse,
-  setCurrentPlayer: Dispatch<SetStateAction<PlayerInfo | undefined>>,
+  setGame: Dispatch<SetStateAction<GameInfo | undefined>>,
+  setThisPlayer: Dispatch<SetStateAction<PlayerInfo | undefined>>,
   setPlayers: Dispatch<SetStateAction<PlayerInfo[]>>
 ): void {
-  setCurrentPlayer((currentPlayer) =>
-    currentPlayer ? currentPlayer : response.players.at(-1)
+  setGame(response.game);
+  setThisPlayer((thisPlayer) =>
+    thisPlayer ? thisPlayer : response.players.at(-1)
   );
   setPlayers(response.players);
 }
@@ -72,30 +62,25 @@ function handleLeaveReponse(
 
 export default function handleResponse(
   response: GameResponse,
-  setCurrentPlayer: Dispatch<SetStateAction<PlayerInfo | undefined>>,
-  setPlayers: Dispatch<SetStateAction<PlayerInfo[]>>,
-  creatorNickname?: string,
-  creatorAvatar?: string
+  setGame: Dispatch<SetStateAction<GameInfo | undefined>>,
+  setThisPlayer: Dispatch<SetStateAction<PlayerInfo | undefined>>,
+  setPlayers: Dispatch<SetStateAction<PlayerInfo[]>>
 ): void {
   if ("error" in response) {
     console.error(response.error);
-    window.location.href = "/game";
+    window.location.href = "/";
+    // TODO: Error handling here
   }
-  if (creatorNickname && creatorAvatar && response.method === "create") {
-    handleCreateResponse(
-      response,
-      creatorNickname,
-      creatorAvatar,
-      setCurrentPlayer,
-      setPlayers
-    );
+  if (response.method === "create") {
+    handleCreateResponse(response, setGame, setThisPlayer, setPlayers);
   } else if (response.method === "join") {
-    handleJoinResponse(response, setCurrentPlayer, setPlayers);
+    handleJoinResponse(response, setGame, setThisPlayer, setPlayers);
   } else if (response.method === "updatePlayer") {
     handleUpdatePlayer(response, setPlayers);
   } else if (response.method === "leave") {
     handleLeaveReponse(response, setPlayers);
   } else if (response.method === "terminate") {
-    window.location.href = "/game";
+    // TODO: Termination handling here
+    window.location.reload();
   }
 }

@@ -154,34 +154,76 @@ body {
     gap: 0.4em;
 
     margin-top: 0.7em;
+  }
 
-    > .button {
-      font-family: inherit;
-      font-size: 0.78em;
-      font-weight: 800;
-      text-transform: uppercase;
+  .button {
+    font-family: inherit;
+    font-size: 0.78em;
+    font-weight: 800;
+    text-transform: uppercase;
 
-      background-color: $button-bg;
-      color: $button-clr;
+    background-color: $button-bg;
+    color: $button-clr;
 
-      padding: 0.8em 1.3em;
-      border: none;
-      border-radius: 8px;
+    padding: 0.8em 1.3em;
+    border: none;
+    border-radius: 8px;
 
-      cursor: pointer;
-      transition: $transition-time;
+    cursor: pointer;
+    transition: $transition-time;
 
-      &:hover {
-        background-color: $button-hover-bg;
-        color: $button-hover-clr;
-      }
+    &:hover {
+      background-color: $button-hover-bg;
+      color: $button-hover-clr;
     }
+  }
+}
+
+/* Player */
+.players {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.player {
+  position: relative;
+  text-align: center;
+  &-admin {
+    position: absolute;
+    left: -25px;
+    width: 100px;
+  }
+  &-image img {
+    border-radius: 50%;
+    width: 125px;
   }
 }
 
 /* Game */
 .caption-input {
   display: block;
+}
+
+.invite {
+  position: fixed;
+  bottom: 5vw;
+  width: 70%;
+  margin: 0 auto;
+  display: flex;
+  background-color: $text-clr;
+  color: $button-clr;
+
+  &-content {
+    flex-grow: 1;
+    padding: 1em;
+    font-size: 1rem;
+    font-weight: 700;
+  }
+
+  & > .button {
+    border-radius: 0;
+  }
 }
 
 /* Media Queries */

@@ -46,8 +46,8 @@ function createGame(
 
   const response: CreateResponse = {
     method: "create",
-    gameId: game.id,
-    adminId: admin.id,
+    game: game.getGameInfo(),
+    admin: admin.getPlayerInfo(),
   };
 
   admin.send(response);

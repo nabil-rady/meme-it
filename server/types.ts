@@ -50,8 +50,8 @@ export type GameRequest = CreateRequest | JoinRequest | UpdatePlayerRequest;
 
 export interface CreateResponse {
   method: "create";
-  gameId: string;
-  adminId: string;
+  game: GameInfo;
+  admin: PlayerInfo;
 }
 
 export interface JoinResponse {
