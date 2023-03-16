@@ -9,6 +9,28 @@
 
 @include font-face("Potato Sans", "potato-sans.OTF", "opentype");
 
+@mixin button {
+  font-family: inherit;
+  font-size: 0.78em;
+  font-weight: 800;
+  text-transform: uppercase;
+
+  background-color: $button-bg;
+  color: $button-clr;
+
+  padding: 0.8em 1.3em;
+  border: none;
+  border-radius: 8px;
+
+  cursor: pointer;
+  transition: $transition-time;
+
+  &:hover {
+    background-color: $button-hover-bg;
+    color: $button-hover-clr;
+  }
+}
+
 /* Variables */
 $text-clr: rgb(245, 242, 242);
 
@@ -17,6 +39,8 @@ $button-clr: rgb(19, 62, 169);
 $button-hover-bg: $button-clr;
 $button-hover-clr: rgb(213, 213, 213);
 
+$body-padding: 5rem;
+
 $transition-time: 0.25s;
 
 /* General */
@@ -24,8 +48,7 @@ $transition-time: 0.25s;
   box-sizing: border-box;
 }
 
-html,
-body {
+html {
   min-height: 100vh;
   margin: 0;
 }
@@ -34,19 +57,36 @@ body {
   font-family: "Poppins", sans-serif;
 
   background: {
-    image: url(/orange-bg.jpg);
+    image: url(/background.jpg);
     size: cover;
     repeat: no-repeat;
   }
-  backdrop-filter: invert(1) brightness(70%);
   color: $text-clr;
 
-  padding: 5rem;
+  min-height: calc(100vh - $body-padding);
+
+  padding-top: $body-padding;
+  margin: 0;
 }
 
 #__next,
 .app {
-  height: 100%;
+  min-height: calc(100vh - $body-padding);
+}
+
+.pop-up-container {
+  display: flex;
+  justify-content: center;
+}
+
+#pop-up {
+  font-family: inherit;
+  font-size: 0.9em;
+
+  min-height: 0;
+
+  padding: 0.5em 1em;
+  border-radius: 0.5em;
 }
 
 /* Home */
@@ -56,7 +96,7 @@ body {
   justify-content: flex-start;
   align-items: center;
 
-  height: 100%;
+  min-height: calc(100vh - $body-padding);
 
   > h1 {
     font: {
@@ -153,28 +193,10 @@ body {
     display: flex;
     gap: 0.4em;
 
-    margin-top: 0.7em;
-  }
+    margin-top: 0.9em;
 
-  .button {
-    font-family: inherit;
-    font-size: 0.78em;
-    font-weight: 800;
-    text-transform: uppercase;
-
-    background-color: $button-bg;
-    color: $button-clr;
-
-    padding: 0.8em 1.3em;
-    border: none;
-    border-radius: 8px;
-
-    cursor: pointer;
-    transition: $transition-time;
-
-    &:hover {
-      background-color: $button-hover-bg;
-      color: $button-hover-clr;
+    > .button {
+      @include button;
     }
   }
 }
@@ -188,15 +210,20 @@ body {
 
 .player {
   position: relative;
+
   text-align: center;
+
   &-admin {
     position: absolute;
     left: -25px;
+
     width: 100px;
   }
   &-image img {
+    width: 8.3em;
+    height: 8.3em;
+
     border-radius: 50%;
-    width: 125px;
   }
 }
 
@@ -207,22 +234,27 @@ body {
 
 .invite {
   position: fixed;
-  bottom: 5vw;
-  width: 70%;
-  margin: 0 auto;
+  bottom: 50px;
+
   display: flex;
+
   background-color: $text-clr;
   color: $button-clr;
+
+  width: 60%;
+
+  margin-top: 10rem;
+  border-radius: 0.5em;
 
   &-content {
     flex-grow: 1;
     padding: 1em;
-    font-size: 1rem;
     font-weight: 700;
   }
 
-  & > .button {
-    border-radius: 0;
+  > .button {
+    @include button;
+    border-radius: 0 0.5em 0.5em 0;
   }
 }
 
