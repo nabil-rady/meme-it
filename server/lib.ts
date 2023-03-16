@@ -52,9 +52,9 @@ export class Player {
 
 export class Game {
   readonly id: string;
-  readonly rounds: number;
-  readonly maxPlayers: number;
-  readonly admin: Player;
+  rounds: number;
+  maxPlayers: number;
+  admin: Player;
   private players: Player[];
 
   constructor(rounds: number, maxPlayers: number, admin: Player) {
@@ -84,6 +84,11 @@ export class Game {
 
   getPlayers(): Player[] {
     return this.players;
+  }
+
+  setGameInfo(game: GameInfo): void {
+    this.maxPlayers = game.maxPlayers;
+    this.rounds = game.rounds;
   }
 
   addPlayer(player: Player): void {

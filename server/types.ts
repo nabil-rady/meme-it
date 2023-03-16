@@ -46,7 +46,16 @@ export interface UpdatePlayerRequest {
   updatedPlayer: PlayerInfo;
 }
 
-export type GameRequest = CreateRequest | JoinRequest | UpdatePlayerRequest;
+export interface UpdateGameRequest {
+  method: "updateGame";
+  updatedGame: GameInfo;
+}
+
+export type GameRequest =
+  | CreateRequest
+  | JoinRequest
+  | UpdatePlayerRequest
+  | UpdateGameRequest;
 
 export interface CreateResponse {
   method: "create";
@@ -63,6 +72,11 @@ export interface JoinResponse {
 export interface UpdatePlayerResponse {
   method: "updatePlayer";
   updatedPlayer: PlayerInfo;
+}
+
+export interface UpdateGameResponse {
+  method: "updateGame";
+  updatedGame: GameInfo;
 }
 
 export interface LeaveResponse {
@@ -82,5 +96,6 @@ export type GameResponse =
   | CreateResponse
   | JoinResponse
   | UpdatePlayerResponse
+  | UpdateGameResponse
   | LeaveResponse
   | TerminateResponse;

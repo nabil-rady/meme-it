@@ -9,10 +9,12 @@ import {
   CreateRequest,
   JoinRequest,
   UpdatePlayerRequest,
+  UpdateGameRequest,
   GameRequest,
   CreateResponse,
   JoinResponse,
   UpdatePlayerResponse,
+  UpdateGameResponse,
   LeaveResponse,
   GameConnection,
 } from "./types";
@@ -107,6 +109,25 @@ function updatePlayer(
   }
 }
 
+function updateGame(
+  request: UpdateGameRequest,
+  gameToBeUpdated: Game,
+  gameStore: GameStore
+): void {
+  const updatedGameInfo = request.updatedGame;
+  gameToBeUpdated.setGameInfo({
+    ...gameToBeUpdated.getGameInfo(),
+    ...updatedGameInfo,
+  });
+  gameStore.addGame(gameToBeUpdated);
+
+  const updateGameResponse: UpdateGameResponse = {
+    method: "updateGame",
+    updatedGame: updatedGameInfo,
+  };
+  gameToBeUpdated.broadcast(updateGameResponse);
+}
+
 function handleClosingConnection(
   connection: GameConnection,
   playerStore: PlayerStore,
@@ -182,6 +203,13 @@ function main(
               return;
             }
             updatePlayer(request, playerToBeUpdated, playerStore);
+          } else if (request.method === "updateGame") {
+            const gameToBeUpdated = gameStore.getGame(request.updatedGame.id);
+            if (!gameToBeUpdated) {
+              connection.send(JSON.stringify({ error: "game not found" }));
+              return;
+            }
+            updateGame(request, gameToBeUpdated, gameStore);
           }
         } catch (err) {
           if (err instanceof SyntaxError) {

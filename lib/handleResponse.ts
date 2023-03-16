@@ -4,6 +4,7 @@ import {
   GameResponse,
   JoinResponse,
   UpdatePlayerResponse,
+  UpdateGameResponse,
   LeaveResponse,
   PlayerInfo,
   GameInfo,
@@ -51,6 +52,13 @@ function handleUpdatePlayerResponse(
   });
 }
 
+function handleUpdateGameResponse(
+  response: UpdateGameResponse,
+  setGame: Dispatch<SetStateAction<GameInfo | undefined>>
+) {
+  setGame(response.updatedGame);
+}
+
 function handleLeaveResponse(
   response: LeaveResponse,
   setPlayers: Dispatch<SetStateAction<PlayerInfo[]>>
@@ -77,6 +85,8 @@ export default function handleResponse(
     handleJoinResponse(response, setGame, setThisPlayer, setPlayers);
   } else if (response.method === "updatePlayer") {
     handleUpdatePlayerResponse(response, setPlayers);
+  } else if (response.method === "updateGame") {
+    handleUpdateGameResponse(response, setGame);
   } else if (response.method === "leave") {
     handleLeaveResponse(response, setPlayers);
   } else if (response.method === "terminate") {
