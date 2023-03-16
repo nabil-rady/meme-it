@@ -33,7 +33,7 @@ function handleJoinResponse(
   setPlayers(response.players);
 }
 
-function handleUpdatePlayer(
+function handleUpdatePlayerResponse(
   response: UpdatePlayerResponse,
   setPlayers: Dispatch<SetStateAction<PlayerInfo[]>>
 ) {
@@ -51,7 +51,7 @@ function handleUpdatePlayer(
   });
 }
 
-function handleLeaveReponse(
+function handleLeaveResponse(
   response: LeaveResponse,
   setPlayers: Dispatch<SetStateAction<PlayerInfo[]>>
 ): void {
@@ -76,9 +76,9 @@ export default function handleResponse(
   } else if (response.method === "join") {
     handleJoinResponse(response, setGame, setThisPlayer, setPlayers);
   } else if (response.method === "updatePlayer") {
-    handleUpdatePlayer(response, setPlayers);
+    handleUpdatePlayerResponse(response, setPlayers);
   } else if (response.method === "leave") {
-    handleLeaveReponse(response, setPlayers);
+    handleLeaveResponse(response, setPlayers);
   } else if (response.method === "terminate") {
     // TODO: Termination handling here
     window.location.reload();
