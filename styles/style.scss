@@ -9,6 +9,13 @@
 
 @include font-face("Potato Sans", "potato-sans.OTF", "opentype");
 
+@mixin avatar($size) {
+  width: $size;
+  height: $size;
+
+  border-radius: 100%;
+}
+
 @mixin button {
   font-family: inherit;
   font-size: 0.78em;
@@ -74,6 +81,88 @@ body {
   min-height: calc(100vh - $body-padding);
 }
 
+.avatar-select-overlay {
+  position: fixed;
+  inset: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background-color: rgba(0, 0, 0, 0.5);
+
+  > .avatar-select-body {
+    position: relative;
+
+    background-color: $text-clr;
+    color: $button-clr;
+
+    border-radius: 1em;
+
+    > h2 {
+      text-align: center;
+
+      text-transform: capitalize;
+
+      margin-bottom: 0;
+    }
+
+    > .avatars {
+      $green: rgb(3, 176, 3);
+
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5em;
+
+      padding: 2em 3em 3em 3em;
+
+      > .avatar {
+        @include avatar(6em);
+
+        position: relative;
+
+        cursor: pointer;
+        transition: scale $transition-time;
+
+        &.selected {
+          outline: 5px solid $green;
+        }
+
+        &:hover {
+          scale: 1.15;
+        }
+      }
+    }
+
+    > button {
+      position: absolute;
+      top: 18px;
+      right: 12px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      background-color: inherit;
+      color: inherit;
+
+      height: 40px;
+      width: 40px;
+
+      border: none;
+
+      border-radius: 50%;
+
+      cursor: pointer;
+      transition: 0.35s;
+
+      &:hover {
+        background-color: rgba(128, 128, 128, 0.2);
+      }
+    }
+  }
+}
+
 .pop-up-container {
   display: flex;
   justify-content: center;
@@ -115,11 +204,11 @@ body {
     margin-bottom: 0.5em;
 
     > .avatar {
-      width: 8.3em;
-      height: 8.3em;
+      @include avatar(8.3em);
 
-      border-radius: 100%;
       margin-bottom: 1em;
+
+      cursor: pointer;
     }
 
     > .change-avatar {
@@ -223,7 +312,7 @@ body {
     width: 8.3em;
     height: 8.3em;
 
-    border-radius: 50%;
+    border-radius: 100%;
   }
 }
 
