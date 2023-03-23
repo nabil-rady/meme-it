@@ -141,24 +141,34 @@ function handleClosingConnection(
       return;
     }
 
-    if (player.isAdmin()) {
+    leftGame.removePlayer(player);
+
+    let newAdmin: Player | undefined;
+    if (leftGame.getPlayersInfos().length === 0) {
+      console.log("Game terminated.");
       leftGame.terminate();
       playerStore.removeGamePlayers(leftGame);
       gameStore.removeGame(leftGame);
       return;
     }
 
-    const playerInfo = player.getPlayerInfo();
+    if (player.isAdmin()) {
+      newAdmin = leftGame.getEarliestPlayer();
+      if (newAdmin) {
+        newAdmin.makeAdmin();
+        playerStore.addPlayer(newAdmin);
+      }
+    }
 
+    const playerInfo = player.getPlayerInfo();
     const response: LeaveResponse = {
       method: "leave",
       player: playerInfo,
+      newAdmin: newAdmin ? newAdmin.getPlayerInfo() : null,
     };
 
-    leftGame.broadcast(response);
-
-    leftGame.removePlayer(player);
     playerStore.removePlayer(player);
+    leftGame.broadcast(response);
   }
 }
 

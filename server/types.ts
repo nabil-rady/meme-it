@@ -83,6 +83,7 @@ export interface UpdateGameResponse {
 export interface LeaveResponse {
   method: "leave";
   player: PlayerInfo;
+  newAdmin: PlayerInfo | null;
 }
 
 export interface TerminateResponse {

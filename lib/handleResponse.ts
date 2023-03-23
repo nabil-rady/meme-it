@@ -63,9 +63,22 @@ function handleLeaveResponse(
   response: LeaveResponse,
   setPlayers: Dispatch<SetStateAction<PlayerInfo[]>>
 ): void {
-  setPlayers((prevPlayers) =>
-    prevPlayers.filter((player) => player.id !== response.player.id)
-  );
+  setPlayers((prevPlayers: PlayerInfo[]) => {
+    if (response.newAdmin) {
+      const newAdminIndex: number = prevPlayers.findIndex(
+        (player: PlayerInfo) => player.id === response.newAdmin!.id
+      );
+      if (newAdminIndex !== -1) {
+        prevPlayers[newAdminIndex].admin = true;
+        return prevPlayers.filter(
+          (player: PlayerInfo) => player.id !== response.player.id
+        );
+      }
+    }
+    return prevPlayers.filter(
+      (player: PlayerInfo) => player.id !== response.player.id
+    );
+  });
 }
 
 export default function handleResponse(
