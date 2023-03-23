@@ -18,9 +18,10 @@ export interface Games {
 
 export interface PlayerInfo {
   id: string;
-  isAdmin: boolean;
+  admin: boolean;
   nickname: string;
   avatar: string;
+  joinedAt: number;
 }
 
 export interface GameInfo {
@@ -31,13 +32,13 @@ export interface GameInfo {
 
 export interface CreateRequest {
   method: "create";
-  admin: Omit<PlayerInfo, "id">;
+  admin: Omit<PlayerInfo, "id" | "joinedAt">;
   game: Omit<GameInfo, "id">;
 }
 
 export interface JoinRequest {
   method: "join";
-  player: Omit<PlayerInfo, "id">;
+  player: Omit<PlayerInfo, "id" | "joinedAt">;
   gameId: string;
 }
 

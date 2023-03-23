@@ -35,7 +35,7 @@ export default function Home() {
         method: "join",
         gameId: router.query.slug as string,
         player: {
-          isAdmin: false,
+          admin: false,
           nickname: "guest",
           avatar: `/avatars/${Math.floor(Math.random() * 11) + 1}.jpg`,
         },

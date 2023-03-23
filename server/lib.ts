@@ -8,23 +8,29 @@ import {
 } from "./types";
 
 export class Player {
-  readonly id: string;
-  nickname: string;
-  avatar: string;
-  readonly isAdmin: boolean;
+  private readonly id: string;
+  private nickname: string;
+  private avatar: string;
+  private admin: boolean;
+  private readonly joinedAt: number;
   private readonly connection: GameConnection;
 
   constructor(
     nickname: string,
     avatar: string,
-    isAdmin: boolean,
+    admin: boolean,
     connection: GameConnection
   ) {
     this.id = uuid();
     this.nickname = nickname;
     this.avatar = avatar;
-    this.isAdmin = isAdmin;
+    this.admin = admin;
+    this.joinedAt = Date.now().valueOf();
     this.connection = connection;
+  }
+
+  getPlayerId(): string {
+    return this.id;
   }
 
   getPlayerInfo(): PlayerInfo {
@@ -32,7 +38,8 @@ export class Player {
       id: this.id,
       nickname: this.nickname,
       avatar: this.avatar,
-      isAdmin: this.isAdmin,
+      admin: this.admin,
+      joinedAt: this.joinedAt,
     };
   }
 
@@ -45,24 +52,34 @@ export class Player {
     this.avatar = playerInfo.avatar;
   }
 
+  isAdmin(): boolean {
+    return this.admin;
+  }
+
+  makeAdmin(): void {
+    this.admin = true;
+  }
+
   send(message: GameResponse): void {
     this.connection.send(JSON.stringify(message));
   }
 }
 
 export class Game {
-  readonly id: string;
-  rounds: number;
-  maxPlayers: number;
-  admin: Player;
+  private readonly id: string;
+  private rounds: number;
+  private maxPlayers: number;
   private players: Player[];
 
   constructor(rounds: number, maxPlayers: number, admin: Player) {
     this.id = uuid();
     this.rounds = rounds;
     this.maxPlayers = maxPlayers;
-    this.admin = admin;
     this.players = [admin];
+  }
+
+  getGameId(): string {
+    return this.id;
   }
 
   getGameInfo(): GameInfo {
@@ -74,16 +91,28 @@ export class Game {
   }
 
   getPlayersInfos(): PlayerInfo[] {
-    return this.players.map((player) => ({
-      id: player.id,
-      nickname: player.nickname,
-      avatar: player.avatar,
-      isAdmin: player.isAdmin,
+    return this.players.map((player: Player) => ({
+      ...player.getPlayerInfo(),
     }));
+  }
+
+  getAdmin(): Player | undefined {
+    return this.players.find((player: Player) => player.isAdmin());
   }
 
   getPlayers(): Player[] {
     return this.players;
+  }
+
+  getEarliestPlayer(): Player | undefined {
+    if (this.players.length === 0) return undefined;
+    return this.players.reduce(
+      (earliestPlayer: Player, currentPlayer: Player) =>
+        earliestPlayer.getPlayerInfo().joinedAt <
+        currentPlayer.getPlayerInfo().joinedAt
+          ? earliestPlayer
+          : currentPlayer
+    );
   }
 
   setGameInfo(game: GameInfo): void {
@@ -97,7 +126,7 @@ export class Game {
 
   removePlayer(playerToBeRemoved: Player): void {
     this.players = this.players.filter(
-      (player) => player.id !== playerToBeRemoved.id
+      (player) => player.getPlayerId() !== playerToBeRemoved.getPlayerId()
     );
   }
 
@@ -132,7 +161,7 @@ export class PlayerStore {
   private players = new Map<string, Player>();
 
   addPlayer(player: Player): void {
-    this.players.set(player.id, player);
+    this.players.set(player.getPlayerId(), player);
   }
 
   getPlayer(playerId: string): Player | undefined {
@@ -140,7 +169,7 @@ export class PlayerStore {
   }
 
   removePlayer(player: Player): void {
-    this.players.delete(player.id);
+    this.players.delete(player.getPlayerId());
   }
 
   removeGamePlayers(game: Game): void {
@@ -164,7 +193,7 @@ export class GameStore {
   private games = new Map<string, Game>();
 
   addGame(game: Game): void {
-    this.games.set(game.id, game);
+    this.games.set(game.getGameId(), game);
   }
 
   getGame(gameId: string): Game | undefined {
@@ -178,6 +207,6 @@ export class GameStore {
   }
 
   removeGame(game: Game): void {
-    this.games.delete(game.id);
+    this.games.delete(game.getGameId());
   }
 }

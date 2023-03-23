@@ -51,7 +51,7 @@ export default function Home() {
         admin: {
           nickname,
           avatar,
-          isAdmin: true,
+          admin: true,
         },
         game: {
           rounds: 2,

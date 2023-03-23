@@ -35,7 +35,7 @@ function createGame(
   const admin = new Player(
     request.admin.nickname,
     request.admin.avatar,
-    request.admin.isAdmin,
+    request.admin.admin,
     connection
   );
   playerStore.addPlayer(admin);
@@ -43,8 +43,8 @@ function createGame(
   const game = new Game(request.game.rounds, request.game.maxPlayers, admin);
   gameStore.addGame(game);
 
-  connection.gameId = game.id;
-  connection.playerId = admin.id;
+  connection.gameId = game.getGameId();
+  connection.playerId = admin.getPlayerId();
 
   const response: CreateResponse = {
     method: "create",
@@ -64,15 +64,15 @@ function joinGame(
   const player = new Player(
     request.player.nickname,
     request.player.avatar,
-    request.player.isAdmin,
+    request.player.admin,
     connection
   );
   playerStore.addPlayer(player);
 
   game.addPlayer(player);
 
-  connection.gameId = game.id;
-  connection.playerId = player.id;
+  connection.gameId = game.getGameId();
+  connection.playerId = player.getPlayerId();
 
   const playersInfos = game.getPlayersInfos();
 
@@ -141,7 +141,7 @@ function handleClosingConnection(
       return;
     }
 
-    if (player.isAdmin) {
+    if (player.isAdmin()) {
       leftGame.terminate();
       playerStore.removeGamePlayers(leftGame);
       gameStore.removeGame(leftGame);

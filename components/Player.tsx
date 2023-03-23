@@ -9,7 +9,7 @@ interface PlayerProps {
 export default function Player(props: PlayerProps) {
   return (
     <div className="player">
-      {props.player.isAdmin ? <FaCrown className="player-admin" /> : null}
+      {props.player.admin ? <FaCrown className="player-admin" /> : null}
       <div className="player-image">
         <img
           alt={`${props.player.nickname} avatar`}
