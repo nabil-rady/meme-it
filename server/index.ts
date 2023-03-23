@@ -179,7 +179,7 @@ function main(
 ): void {
   const httpServer = http.createServer();
   httpServer.listen(port, () => {
-    console.log(`Websocket server listening on port 9090.`);
+    console.log(`Websocket server listening on port ${port}.`);
   });
 
   const websocketServer = new WebSocketServer({ httpServer });
