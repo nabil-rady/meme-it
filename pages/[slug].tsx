@@ -37,7 +37,7 @@ export default function Home() {
         player: {
           isAdmin: false,
           nickname: "guest",
-          avatar: "/avatar/bugs.jpg",
+          avatar: `/avatars/${Math.floor(Math.random() * 11) + 1}.jpg`,
         },
       };
       ws.current?.send(JSON.stringify(request));
