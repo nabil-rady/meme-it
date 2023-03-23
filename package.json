@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "server-dev": "nodemon server/index.ts",
     "server": "tsc -p server && node server/build",
     "build": "next build",
     "start": "next start",
@@ -29,8 +30,10 @@
     "websocket": "^1.0.34"
   },
   "devDependencies": {
+    "nodemon": "^2.0.22",
     "prettier": "^2.8.4",
     "prisma": "^4.9.0",
-    "sass": "^1.59.2"
+    "sass": "^1.59.2",
+    "ts-node": "^10.9.1"
   }
 }
