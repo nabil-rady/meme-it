@@ -3,9 +3,10 @@ import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { BiRefresh } from "react-icons/bi";
 
-import Player from "../components/Player";
-import Invite from "../components/Invite";
 import AvatarSelect from "../components/AvatarSelect";
+import Dropdown from "../components/Dropdown";
+import Invite from "../components/Invite";
+import Player from "../components/Player";
 
 import handleResponse from "../lib/handleResponse";
 
@@ -68,60 +69,93 @@ export default function Home() {
 
   const renderHome = () => (
     <>
-      <div className="avatar-container">
-        <Image
-          src={avatar}
-          alt="avatar"
-          className="avatar"
-          width={585}
-          height={585}
-          onClick={openAvatarSelct}
-          priority
-        />
-        <button className="change-avatar" onClick={openAvatarSelct}>
-          <BiRefresh className="icon" />
-        </button>
-      </div>
+      <main className="home">
+        <h1>Meme It</h1>
+        <div className="avatar-container">
+          <Image
+            src={avatar}
+            alt="avatar"
+            className="avatar"
+            width={585}
+            height={585}
+            onClick={openAvatarSelct}
+            priority
+          />
+          <button className="change-avatar" onClick={openAvatarSelct}>
+            <BiRefresh className="icon" />
+          </button>
+        </div>
 
-      <div className="nickname-container">
-        <input
-          value={nickname}
-          onChange={(e) => setNickname(e.target.value)}
-          className="nickname-input"
-          placeholder="Nickname"
-        />
-      </div>
+        <div className="nickname-container">
+          <input
+            value={nickname}
+            onChange={(e) => setNickname(e.target.value)}
+            className="nickname-input"
+            placeholder="Nickname"
+          />
+        </div>
 
-      {showAvatarSelect && (
-        <AvatarSelect
-          avatar={avatar}
-          closeAvatarSelect={closeAvatarSelect}
-          changeAvatar={changeAvatar}
-        />
-      )}
+        {showAvatarSelect && (
+          <AvatarSelect
+            avatar={avatar}
+            closeAvatarSelect={closeAvatarSelect}
+            changeAvatar={changeAvatar}
+          />
+        )}
 
-      <div className="buttons">
-        <button className="button">Join Lobby</button>
-        <button className="button" onClick={() => createGame(nickname, avatar)}>
-          Create New Lobby
-        </button>
-      </div>
+        <div className="buttons">
+          <button className="button">Join Lobby</button>
+          <button
+            className="button"
+            onClick={() => createGame(nickname, avatar)}
+          >
+            Create New Lobby
+          </button>
+        </div>
+      </main>
     </>
   );
 
-  const renderGame = (
+  const renderGameLobby = (
     game: GameInfo,
-    currentPlayer: PlayerInfo,
+    thisPlayer: PlayerInfo,
     players: PlayerInfo[]
   ) => {
     return (
       <>
-        <div className="players">
-          {players.map((player: PlayerInfo) => (
-            <Player key={player.id} player={player} />
-          ))}
-        </div>
-        <Invite id={(game as GameInfo).id} />
+        <main className="home lobby">
+          <h1>Meme It</h1>
+          <div className="game-container">
+            <div className="game">
+              <div className="players-container">
+                <h2>Players ({players.length})</h2>
+                <div className="players">
+                  {players.map((player: PlayerInfo) => (
+                    <Player
+                      key={player.id}
+                      player={player}
+                      thisPlayer={player.id === thisPlayer.id}
+                    />
+                  ))}
+                </div>
+              </div>
+              <div className="game-info">
+                <Dropdown
+                  label="Number of rounds"
+                  name="number-of-rounds"
+                  options={["1", "2", "3"]}
+                />
+                <Dropdown
+                  label="Number of players"
+                  name="number-of-players"
+                  options={["6", "8", "10"]}
+                />
+              </div>
+            </div>
+            <Invite id={(game as GameInfo).id} />
+            <button className="button start-button">Start game</button>
+          </div>
+        </main>
       </>
     );
   };
@@ -132,7 +166,7 @@ export default function Home() {
     players: PlayerInfo[]
   ) =>
     game && thisPlayer && players.length !== 0
-      ? renderGame(game, thisPlayer, players)
+      ? renderGameLobby(game, thisPlayer, players)
       : renderHome();
 
   return (
@@ -140,11 +174,7 @@ export default function Home() {
       <Head>
         <title>Meme It</title>
       </Head>
-      <main className="home">
-        <h1>Meme It</h1>
-
-        {renderGameUI(game, thisPlayer, players)}
-      </main>
+      {renderGameUI(game, thisPlayer, players)}
     </div>
   );
 }

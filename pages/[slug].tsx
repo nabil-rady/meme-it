@@ -2,8 +2,9 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
 
-import Player from "../components/Player";
+import Dropdown from "../components/Dropdown";
 import Invite from "../components/Invite";
+import Player from "../components/Player";
 
 import handleResponse from "../lib/handleResponse";
 
@@ -53,16 +54,41 @@ export default function Home() {
   ) => {
     return (
       <>
-        {game && thisPlayer && players.length !== 0 ? (
-          <>
-            <div className="players">
-              {players.map((player: PlayerInfo) => (
-                <Player key={player.id} player={player} />
-              ))}
+        <main className="home lobby">
+          <h1>Meme It</h1>
+          {game && thisPlayer && players.length !== 0 ? (
+            <div className="game-container">
+              <div className="game">
+                <div className="players-container">
+                  <h2>Players ({players.length})</h2>
+                  <div className="players">
+                    {players.map((player: PlayerInfo) => (
+                      <Player
+                        key={player.id}
+                        player={player}
+                        thisPlayer={player.id === thisPlayer.id}
+                      />
+                    ))}
+                  </div>
+                </div>
+                <div className="game-info">
+                  <Dropdown
+                    label="Number of rounds"
+                    name="number-of-rounds"
+                    options={["1", "2", "3"]}
+                  />
+                  <Dropdown
+                    label="Number of players"
+                    name="number-of-players"
+                    options={["6", "8", "10"]}
+                  />
+                </div>
+              </div>
+              <Invite id={game.id} />
+              <button className="button start-button">Start game</button>
             </div>
-            <Invite id={game.id} />
-          </>
-        ) : null}
+          ) : null}
+        </main>
       </>
     );
   };
@@ -72,10 +98,7 @@ export default function Home() {
       <Head>
         <title>Meme It</title>
       </Head>
-      <main className="home">
-        <h1>Meme It</h1>
-        {renderGameUI(game, thisPlayer, players)}
-      </main>
+      {renderGameUI(game, thisPlayer, players)}
     </div>
   );
 }
