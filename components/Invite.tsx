@@ -24,10 +24,9 @@ export default function Invite(props: InviteProps) {
     });
   };
   return (
-    <div className="invite">
-      <div className="invite-content">Invite your friends</div>
+    <div>
       <button className="button" onClick={copyLink}>
-        Copy
+        Invite
       </button>
       <ToastContainer className="pop-up-container" pauseOnFocusLoss={false} />
     </div>

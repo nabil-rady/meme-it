@@ -125,21 +125,21 @@ export default function Home() {
       <>
         <main className="home lobby">
           <h1>Meme It</h1>
-          <div className="game-container">
-            <div className="game">
-              <div className="players-container">
-                <h2>Players ({players.length})</h2>
-                <div className="players">
-                  {players.map((player: PlayerInfo) => (
-                    <Player
-                      key={player.id}
-                      player={player}
-                      thisPlayer={player.id === thisPlayer.id}
-                    />
-                  ))}
-                </div>
+          <div className="lobby-container">
+            <div className="players-container">
+              <h2>Players ({players.length})</h2>
+              <div className="players">
+                {players.map((player: PlayerInfo) => (
+                  <Player
+                    key={player.id}
+                    player={player}
+                    thisPlayer={player.id === thisPlayer.id}
+                  />
+                ))}
               </div>
-              <div className="game-info">
+            </div>
+            <div className="options">
+              <div className="game-options">
                 <Dropdown
                   label="Number of rounds"
                   name="number-of-rounds"
@@ -151,9 +151,11 @@ export default function Home() {
                   options={["6", "8", "10"]}
                 />
               </div>
+              <div className="buttons">
+                <Invite id={(game as GameInfo).id} />
+                <button className="button start-button">Start game</button>
+              </div>
             </div>
-            <Invite id={(game as GameInfo).id} />
-            <button className="button start-button">Start game</button>
           </div>
         </main>
       </>
