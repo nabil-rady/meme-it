@@ -8,7 +8,7 @@ function fillTextAndRotate(
   y: number,
   maxWidth: number,
   angle: number
-): void {
+) {
   ctx.save();
   ctx.rotate((angle * Math.PI) / 180);
   ctx.fillText(text, x, y, maxWidth);
@@ -18,7 +18,7 @@ function fillTextAndRotate(
 function drawImage(
   ctx: CanvasRenderingContext2D,
   imageData: ImageBitmap | ImageData
-): void {
+) {
   if (imageData instanceof ImageBitmap) {
     ctx.drawImage(imageData, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
   } else {
@@ -95,7 +95,7 @@ export class Meme {
     }
   }
 
-  async render(): Promise<void> {
+  async render() {
     if (this._imageData === null) {
       const success = await this.fetchImage();
       if (!success) return;
@@ -118,7 +118,7 @@ export class Meme {
         ctx.textAlign = "center";
 
         let line = "";
-        const lines = [];
+        const lines: string[] = [];
 
         const words = this.captions[i].split(" ");
 

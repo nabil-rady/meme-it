@@ -8,7 +8,12 @@ import Player from "../components/Player";
 
 import handleResponse from "../lib/handleResponse";
 
-import { GameInfo, JoinRequest, PlayerInfo } from "../server/types";
+import {
+  GameInfo,
+  GameResponse,
+  JoinRequest,
+  PlayerInfo,
+} from "../server/types";
 
 export default function Home() {
   const router = useRouter();
@@ -23,9 +28,9 @@ export default function Home() {
     if (!router.query.slug) return;
     const hostname = window.location.hostname;
     ws.current = new WebSocket(`ws://${hostname}:9090`);
-    ws.current.addEventListener("message", (e) => {
+    ws.current.addEventListener("message", (e: MessageEvent<string>) => {
       try {
-        const response = JSON.parse(e.data);
+        const response = JSON.parse(e.data) as GameResponse;
         handleResponse(response, setGame, setThisPlayer, setPlayers);
       } catch (err) {
         console.error(err);
@@ -61,7 +66,7 @@ export default function Home() {
               <div className="players-container">
                 <h2>Players ({players.length})</h2>
                 <div className="players">
-                  {players.map((player: PlayerInfo) => (
+                  {players.map((player) => (
                     <Player
                       key={player.id}
                       player={player}

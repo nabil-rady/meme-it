@@ -47,7 +47,7 @@ export class Player {
     return this.connection.gameId;
   }
 
-  setPlayerInfo(playerInfo: PlayerInfo): void {
+  setPlayerInfo(playerInfo: PlayerInfo) {
     this.nickname = playerInfo.nickname;
     this.avatar = playerInfo.avatar;
   }
@@ -56,11 +56,11 @@ export class Player {
     return this.admin;
   }
 
-  makeAdmin(): void {
+  makeAdmin() {
     this.admin = true;
   }
 
-  send(message: GameResponse): void {
+  send(message: GameResponse) {
     this.connection.send(JSON.stringify(message));
   }
 }
@@ -91,13 +91,13 @@ export class Game {
   }
 
   getPlayersInfos(): PlayerInfo[] {
-    return this.players.map((player: Player) => ({
+    return this.players.map((player) => ({
       ...player.getPlayerInfo(),
     }));
   }
 
   getAdmin(): Player | undefined {
-    return this.players.find((player: Player) => player.isAdmin());
+    return this.players.find((player) => player.isAdmin());
   }
 
   getPlayers(): Player[] {
@@ -115,28 +115,28 @@ export class Game {
     );
   }
 
-  setGameInfo(game: GameInfo): void {
+  setGameInfo(game: GameInfo) {
     this.maxPlayers = game.maxPlayers;
     this.rounds = game.rounds;
   }
 
-  addPlayer(player: Player): void {
+  addPlayer(player: Player) {
     this.players.push(player);
   }
 
-  removePlayer(playerToBeRemoved: Player): void {
+  removePlayer(playerToBeRemoved: Player) {
     this.players = this.players.filter(
       (player) => player.getPlayerId() !== playerToBeRemoved.getPlayerId()
     );
   }
 
-  broadcast(response: GameResponse): void {
+  broadcast(response: GameResponse) {
     for (const player of this.players) {
       player.send(response);
     }
   }
 
-  terminate(): void {
+  terminate() {
     const terminateResponse: TerminateResponse = {
       method: "terminate",
     };
@@ -160,7 +160,7 @@ export class PlayerStore {
 
   private players = new Map<string, Player>();
 
-  addPlayer(player: Player): void {
+  addPlayer(player: Player) {
     this.players.set(player.getPlayerId(), player);
   }
 
@@ -168,11 +168,11 @@ export class PlayerStore {
     return this.players.get(playerId);
   }
 
-  removePlayer(player: Player): void {
+  removePlayer(player: Player) {
     this.players.delete(player.getPlayerId());
   }
 
-  removeGamePlayers(game: Game): void {
+  removeGamePlayers(game: Game) {
     for (const player of game.getPlayers()) {
       this.removePlayer(player);
     }
@@ -192,7 +192,7 @@ export class GameStore {
 
   private games = new Map<string, Game>();
 
-  addGame(game: Game): void {
+  addGame(game: Game) {
     this.games.set(game.getGameId(), game);
   }
 
@@ -206,7 +206,7 @@ export class GameStore {
     return this.games.get(gameId);
   }
 
-  removeGame(game: Game): void {
+  removeGame(game: Game) {
     this.games.delete(game.getGameId());
   }
 }

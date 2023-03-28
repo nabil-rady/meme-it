@@ -25,31 +25,31 @@ export default function Home() {
   const [avatar, setAvatar] = useState<string>("/avatars/1.jpg");
   const [nickname, setNickname] = useState<string>("");
   const [game, setGame] = useState<GameInfo>();
-  const [showAvatarSelect, setShowAvatarSelect] = useState<Boolean>(false);
-  const [nicknameError, setNicknameError] = useState<Boolean>(false);
+  const [showAvatarSelect, setShowAvatarSelect] = useState<boolean>(false);
+  const [nicknameError, setNicknameError] = useState<boolean>(false);
 
   const nicknameNotEmpty = /^(?!\s*$).+/.test(nickname);
 
-  const openAvatarSelect = (): void => {
+  const openAvatarSelect = () => {
     setShowAvatarSelect(true);
   };
 
-  const closeAvatarSelect = (): void => {
+  const closeAvatarSelect = () => {
     setShowAvatarSelect(false);
   };
 
-  const changeAvatar = (src: string): void => {
+  const changeAvatar = (src: string) => {
     setAvatar(src);
   };
 
-  const showNicknameError = (): void => {
+  const showNicknameError = () => {
     setNicknameError(true);
   };
 
   const createGame = (nickname: string, avatar: string) => {
     const hostname = window.location.hostname;
     ws.current = new WebSocket(`ws://${hostname}:9090`);
-    ws.current.addEventListener("message", (e) => {
+    ws.current.addEventListener("message", (e: MessageEvent<string>) => {
       const response = JSON.parse(e.data) as GameResponse;
       handleResponse(response, setGame, setThisPlayer, setPlayers);
     });
@@ -144,7 +144,7 @@ export default function Home() {
             <div className="players-container">
               <h2>Players ({players.length})</h2>
               <div className="players">
-                {players.map((player: PlayerInfo) => (
+                {players.map((player) => (
                   <Player
                     key={player.id}
                     player={player}

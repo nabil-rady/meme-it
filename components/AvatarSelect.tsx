@@ -12,7 +12,7 @@ export default function AvatarSelect({
   closeAvatarSelect,
   changeAvatar,
 }: AvatarProps) {
-  const Avatars = Array.from(Array(12).keys()).map((n: number) => {
+  const avatars = Array.from(Array(12).keys()).map((n) => {
     const link = `/avatars/${n + 1}.jpg`;
     const size = "96";
 
@@ -32,7 +32,7 @@ export default function AvatarSelect({
     <div className="avatar-select-overlay" onClick={closeAvatarSelect}>
       <div className="avatar-select-body" onClick={(e) => e.stopPropagation()}>
         <h2>pick an avatar</h2>
-        <div className="avatars">{Avatars}</div>
+        <div className="avatars">{avatars}</div>
         <button onClick={closeAvatarSelect}>
           <IoMdClose size={26} />
         </button>

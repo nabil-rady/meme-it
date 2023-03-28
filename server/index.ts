@@ -31,7 +31,7 @@ function createGame(
   connection: GameConnection,
   playerStore: PlayerStore,
   gameStore: GameStore
-): void {
+) {
   const admin = new Player(
     request.admin.nickname,
     request.admin.avatar,
@@ -60,7 +60,7 @@ function joinGame(
   connection: GameConnection,
   game: Game,
   playerStore: PlayerStore
-): void {
+) {
   const player = new Player(
     request.player.nickname,
     request.player.avatar,
@@ -91,7 +91,7 @@ function updatePlayer(
   request: UpdatePlayerRequest,
   playerToBeUpdated: Player,
   playerStore: PlayerStore
-): void {
+) {
   const updatedPlayerInfo = request.updatedPlayer;
   playerToBeUpdated.setPlayerInfo({
     ...playerToBeUpdated.getPlayerInfo(),
@@ -113,7 +113,7 @@ function updateGame(
   request: UpdateGameRequest,
   gameToBeUpdated: Game,
   gameStore: GameStore
-): void {
+) {
   const updatedGameInfo = request.updatedGame;
   gameToBeUpdated.setGameInfo({
     ...gameToBeUpdated.getGameInfo(),
@@ -132,7 +132,7 @@ function handleClosingConnection(
   connection: GameConnection,
   playerStore: PlayerStore,
   gameStore: GameStore
-): void {
+) {
   if (connection.playerId && connection.gameId) {
     const player = playerStore.getPlayer(connection.playerId);
     const leftGame = gameStore.getGame(connection.gameId);
@@ -172,11 +172,7 @@ function handleClosingConnection(
   }
 }
 
-function main(
-  port: number,
-  playerStore: PlayerStore,
-  gameStore: GameStore
-): void {
+function main(port: number, playerStore: PlayerStore, gameStore: GameStore) {
   const httpServer = http.createServer();
   httpServer.listen(port, () => {
     console.log(`Websocket server listening on port ${port}.`);

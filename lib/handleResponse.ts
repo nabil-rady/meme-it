@@ -15,7 +15,7 @@ function handleCreateResponse(
   setGame: Dispatch<SetStateAction<GameInfo | undefined>>,
   setThisPlayer: Dispatch<SetStateAction<PlayerInfo | undefined>>,
   setPlayers: Dispatch<SetStateAction<PlayerInfo[]>>
-): void {
+) {
   setGame(response.game);
   setThisPlayer(response.admin);
   setPlayers([response.admin]);
@@ -26,7 +26,7 @@ function handleJoinResponse(
   setGame: Dispatch<SetStateAction<GameInfo | undefined>>,
   setThisPlayer: Dispatch<SetStateAction<PlayerInfo | undefined>>,
   setPlayers: Dispatch<SetStateAction<PlayerInfo[]>>
-): void {
+) {
   setGame(response.game);
   setThisPlayer((thisPlayer) =>
     thisPlayer ? thisPlayer : response.players.at(-1)
@@ -41,7 +41,7 @@ function handleUpdatePlayerResponse(
   setPlayers((prevPlayers: PlayerInfo[]) => {
     const newPlayers = [...prevPlayers];
     const playerToUpdateIndex = newPlayers.findIndex(
-      (playerInfo: PlayerInfo) => playerInfo.id === response.updatedPlayer.id
+      (playerInfo) => playerInfo.id === response.updatedPlayer.id
     );
     if (playerToUpdateIndex !== -1)
       newPlayers[playerToUpdateIndex] = {
@@ -62,11 +62,11 @@ function handleUpdateGameResponse(
 function handleLeaveResponse(
   response: LeaveResponse,
   setPlayers: Dispatch<SetStateAction<PlayerInfo[]>>
-): void {
+) {
   setPlayers((prevPlayers: PlayerInfo[]) => {
     if (response.newAdmin) {
-      const newAdminIndex: number = prevPlayers.findIndex(
-        (player: PlayerInfo) => player.id === response.newAdmin!.id
+      const newAdminIndex = prevPlayers.findIndex(
+        (player) => player.id === response.newAdmin!.id
       );
       if (newAdminIndex !== -1) {
         prevPlayers[newAdminIndex].admin = true;
@@ -86,7 +86,7 @@ export default function handleResponse(
   setGame: Dispatch<SetStateAction<GameInfo | undefined>>,
   setThisPlayer: Dispatch<SetStateAction<PlayerInfo | undefined>>,
   setPlayers: Dispatch<SetStateAction<PlayerInfo[]>>
-): void {
+) {
   if ("error" in response) {
     console.error(response.error);
     window.location.href = "/";
