@@ -26,8 +26,11 @@ export default function Home() {
   const [nickname, setNickname] = useState<string>("");
   const [game, setGame] = useState<GameInfo>();
   const [showAvatarSelect, setShowAvatarSelect] = useState<Boolean>(false);
+  const [nicknameError, setNicknameError] = useState<Boolean>(false);
 
-  const openAvatarSelct = (): void => {
+  const nicknameNotEmpty = /^(?!\s*$).+/.test(nickname);
+
+  const openAvatarSelect = (): void => {
     setShowAvatarSelect(true);
   };
 
@@ -37,6 +40,10 @@ export default function Home() {
 
   const changeAvatar = (src: string): void => {
     setAvatar(src);
+  };
+
+  const showNicknameError = (): void => {
+    setNicknameError(true);
   };
 
   const createGame = (nickname: string, avatar: string) => {
@@ -68,52 +75,60 @@ export default function Home() {
   }, []);
 
   const renderHome = () => (
-    <>
-      <main className="home">
-        <h1>Meme It</h1>
-        <div className="avatar-container">
-          <Image
-            src={avatar}
-            alt="avatar"
-            className="avatar"
-            width={585}
-            height={585}
-            onClick={openAvatarSelct}
-            priority
-          />
-          <button className="change-avatar" onClick={openAvatarSelct}>
-            <BiRefresh className="icon" />
-          </button>
-        </div>
+    <main className="home">
+      <h1>Meme It</h1>
+      <div className="avatar-container">
+        <Image
+          src={avatar}
+          alt="avatar"
+          className="avatar"
+          width={585}
+          height={585}
+          onClick={openAvatarSelect}
+          priority
+        />
+        <button className="change-avatar" onClick={openAvatarSelect}>
+          <BiRefresh className="icon" />
+        </button>
+      </div>
 
-        <div className="nickname-container">
-          <input
-            value={nickname}
-            onChange={(e) => setNickname(e.target.value)}
-            className="nickname-input"
-            placeholder="Nickname"
-          />
-        </div>
-
-        {showAvatarSelect && (
-          <AvatarSelect
-            avatar={avatar}
-            closeAvatarSelect={closeAvatarSelect}
-            changeAvatar={changeAvatar}
-          />
+      <div className="nickname-container">
+        {nicknameError && (
+          <span className="error-message">Please Enter A Nickname</span>
         )}
+        <input
+          value={nickname}
+          onChange={(e) => {
+            setNickname(e.target.value);
+            setNicknameError(false);
+          }}
+          className={`nickname-input ${nicknameError ? "error" : ""}`}
+          placeholder="Nickname"
+        />
+      </div>
 
-        <div className="buttons">
-          <button className="button">Join Lobby</button>
-          <button
-            className="button"
-            onClick={() => createGame(nickname, avatar)}
-          >
-            Create New Lobby
-          </button>
-        </div>
-      </main>
-    </>
+      {showAvatarSelect && (
+        <AvatarSelect
+          avatar={avatar}
+          closeAvatarSelect={closeAvatarSelect}
+          changeAvatar={changeAvatar}
+        />
+      )}
+
+      <div className="buttons">
+        <button className="button">Join Lobby</button>
+        <button
+          className="button"
+          onClick={
+            nicknameNotEmpty
+              ? () => createGame(nickname, avatar)
+              : showNicknameError
+          }
+        >
+          Create New Lobby
+        </button>
+      </div>
+    </main>
   );
 
   const renderGameLobby = (

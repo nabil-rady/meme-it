@@ -193,6 +193,9 @@ body {
 
 /* Home */
 .home {
+  display: flex;
+  flex-direction: column;
+
   padding-top: 5rem;
 
   > h1 {
@@ -212,7 +215,7 @@ body {
     position: relative;
 
     margin: 0 auto;
-    margin-bottom: 0.5em;
+    margin-bottom: 1.2em;
 
     > .avatar {
       @include avatar(8.3em);
@@ -256,7 +259,9 @@ body {
   }
 
   > .nickname-container {
-    width: fit-content;
+    $error-red: red;
+
+    position: relative;
 
     display: flex;
     flex-direction: column;
@@ -289,6 +294,22 @@ body {
       &:focus {
         outline: 1px solid $text-clr;
       }
+
+      &.error {
+        outline: 3px solid $error-red;
+        transition: none;
+      }
+    }
+
+    > .error-message {
+      position: absolute;
+      top: -20px;
+
+      font-size: 0.85em;
+      font-weight: 600;
+      font-style: italic;
+
+      color: $error-red;
     }
   }
 
