@@ -229,46 +229,48 @@ function main(port: number, playerStore: PlayerStore, gameStore: GameStore) {
       handleClosingConnection(connection, playerStore, gameStore);
     });
     connection.on("message", async (message: Message) => {
-      if (message.type === "utf8") {
-        try {
-          const request = JSON.parse(message.utf8Data) as GameRequest;
-          if (request.method === "create") {
-            createGame(request, connection, playerStore, gameStore);
-          } else if (request.method === "join") {
-            const desiredGame = gameStore.getGame(request.gameId);
+      if (message.type !== "utf8") {
+        logger.debug("Request ignored because it's in binary.");
+        return;
+      }
+      try {
+        const request = JSON.parse(message.utf8Data) as GameRequest;
+        if (request.method === "create") {
+          createGame(request, connection, playerStore, gameStore);
+        } else if (request.method === "join") {
+          const desiredGame = gameStore.getGame(request.gameId);
 
-            if (!desiredGame) {
-              logger.debug("Attempted to join a game that doesn't exist.");
-              connection.send(JSON.stringify({ error: "game not found" }));
-              connection.close();
-              return;
-            }
-            joinGame(request, connection, desiredGame, playerStore);
-          } else if (request.method === "updatePlayer") {
-            const playerToBeUpdated = playerStore.getPlayer(
-              request.updatedPlayer.id
-            );
-            if (!playerToBeUpdated) {
-              logger.debug("Attempted to update a player that doesn't exist.");
-              connection.send(JSON.stringify({ error: "player not found" }));
-              return;
-            }
-            updatePlayer(request, playerToBeUpdated, playerStore);
-          } else if (request.method === "updateGame") {
-            const gameToBeUpdated = gameStore.getGame(request.updatedGame.id);
-            if (!gameToBeUpdated) {
-              logger.debug("Attempted to update a game that doesn't exist.");
-              connection.send(JSON.stringify({ error: "game not found" }));
-              return;
-            }
-            updateGame(request, gameToBeUpdated, gameStore);
+          if (!desiredGame) {
+            logger.debug("Attempted to join a game that doesn't exist.");
+            connection.send(JSON.stringify({ error: "game not found" }));
+            connection.close();
+            return;
           }
-        } catch (err) {
-          if (err instanceof SyntaxError) {
-            logger.info("Request ignored because it's not in JSON format.");
-          } else {
-            logger.error(err);
+          joinGame(request, connection, desiredGame, playerStore);
+        } else if (request.method === "updatePlayer") {
+          const playerToBeUpdated = playerStore.getPlayer(
+            request.updatedPlayer.id
+          );
+          if (!playerToBeUpdated) {
+            logger.debug("Attempted to update a player that doesn't exist.");
+            connection.send(JSON.stringify({ error: "player not found" }));
+            return;
           }
+          updatePlayer(request, playerToBeUpdated, playerStore);
+        } else if (request.method === "updateGame") {
+          const gameToBeUpdated = gameStore.getGame(request.updatedGame.id);
+          if (!gameToBeUpdated) {
+            logger.debug("Attempted to update a game that doesn't exist.");
+            connection.send(JSON.stringify({ error: "game not found" }));
+            return;
+          }
+          updateGame(request, gameToBeUpdated, gameStore);
+        }
+      } catch (err) {
+        if (err instanceof SyntaxError) {
+          logger.debug("Request ignored because it's not in JSON format.");
+        } else {
+          logger.error(err);
         }
       }
     });
