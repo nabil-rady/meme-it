@@ -21,7 +21,10 @@ import {
   GameConnection,
 } from "./types";
 
-import { PlayerStore, GameStore, Player, Game } from "./lib";
+import { Game } from "./lib/Game";
+import { GameStore } from "./lib/GameStore";
+import { Player } from "./lib/Player";
+import { PlayerStore } from "./lib/PlayerStore";
 
 const PORT = 9090;
 
