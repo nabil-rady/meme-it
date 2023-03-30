@@ -6,13 +6,13 @@ import Dropdown from "../components/Dropdown";
 import Invite from "../components/Invite";
 import Player from "../components/Player";
 
-import handleResponse from "../lib/handleResponse";
+import { createResponseHandler } from "../lib/ResponseHandler";
 
 import {
   GameInfo,
-  GameResponse,
-  JoinRequest,
   PlayerInfo,
+  GameResponseBody,
+  JoinRequestBody,
 } from "../server/types";
 
 export default function Home() {
@@ -29,15 +29,18 @@ export default function Home() {
     const hostname = window.location.hostname;
     ws.current = new WebSocket(`ws://${hostname}:9090`);
     ws.current.addEventListener("message", (e: MessageEvent<string>) => {
-      try {
-        const response = JSON.parse(e.data) as GameResponse;
-        handleResponse(response, setGame, setThisPlayer, setPlayers);
-      } catch (err) {
-        console.error(err);
-      }
+      const response = JSON.parse(e.data) as GameResponseBody;
+      const responseHandler = createResponseHandler(
+        response,
+        setGame,
+        setThisPlayer,
+        setPlayers
+      );
+
+      responseHandler.handle();
     });
     ws.current.addEventListener("open", () => {
-      const request: JoinRequest = {
+      const request: JoinRequestBody = {
         method: "join",
         gameId: router.query.slug as string,
         player: {

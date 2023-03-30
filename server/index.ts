@@ -7,29 +7,14 @@ import {
   server as WebSocketServer,
 } from "websocket";
 
-import {
-  CreateRequest,
-  JoinRequest,
-  UpdatePlayerRequest,
-  UpdateGameRequest,
-  GameRequest,
-  CreateResponse,
-  JoinResponse,
-  UpdatePlayerResponse,
-  UpdateGameResponse,
-  LeaveResponse,
-  GameConnection,
-} from "./types";
+import { GameConnection, GameRequestBody, LeaveResponseBody } from "./types";
 
-import { Game } from "./lib/Game";
 import { GameStore } from "./lib/GameStore";
 import { Player } from "./lib/Player";
 import { PlayerStore } from "./lib/PlayerStore";
+import { createRequestHandler } from "./lib/RequestHandler";
 
 const PORT = 9090;
-
-const playerStore = PlayerStore.getInstace();
-const gameStore = GameStore.getInstace();
 
 const { combine, printf, timestamp } = winston.format;
 
@@ -43,134 +28,11 @@ const logger = winston.createLogger({
   transports: [new winston.transports.Console()],
 });
 
-function createGame(
-  request: CreateRequest,
-  connection: GameConnection,
-  playerStore: PlayerStore,
-  gameStore: GameStore
-) {
-  const admin = new Player(
-    request.admin.nickname,
-    request.admin.avatar,
-    request.admin.admin,
-    connection
-  );
-  playerStore.addPlayer(admin);
-
-  const game = new Game(request.game.rounds, request.game.maxPlayers, admin);
-  gameStore.addGame(game);
-
-  connection.gameId = game.getGameId();
-  connection.playerId = admin.getPlayerId();
-
-  const response: CreateResponse = {
-    method: "create",
-    game: game.getGameInfo(),
-    admin: admin.getPlayerInfo(),
-  };
-
-  admin.send(response);
-
-  logger.info(
-    `Game ${game.getGameId()} was created by player ${admin.getPlayerId()}.`
-  );
-}
-
-function joinGame(
-  request: JoinRequest,
-  connection: GameConnection,
-  game: Game,
-  playerStore: PlayerStore
-) {
-  const player = new Player(
-    request.player.nickname,
-    request.player.avatar,
-    request.player.admin,
-    connection
-  );
-  playerStore.addPlayer(player);
-
-  game.addPlayer(player);
-
-  connection.gameId = game.getGameId();
-  connection.playerId = player.getPlayerId();
-
-  const playersInfos = game.getPlayersInfos();
-
-  const desiredGameInfo = game.getGameInfo();
-
-  const response: JoinResponse = {
-    method: "join",
-    players: playersInfos,
-    game: desiredGameInfo,
-  };
-
-  game.broadcast(response);
-
-  logger.info(
-    `Player ${player.getPlayerId()} joined game ${game.getGameId()}.`
-  );
-}
-
-function updatePlayer(
-  request: UpdatePlayerRequest,
-  playerToBeUpdated: Player,
-  playerStore: PlayerStore
-) {
-  const updatedPlayerInfo = request.updatedPlayer;
-  playerToBeUpdated.setPlayerInfo({
-    ...playerToBeUpdated.getPlayerInfo(),
-    ...updatedPlayerInfo,
-  });
-  playerStore.addPlayer(playerToBeUpdated);
-
-  const gameOfUpdatePlayer = gameStore.getGamePlayedByPlayer(playerToBeUpdated);
-  if (gameOfUpdatePlayer) {
-    const updatePlayerResponse: UpdatePlayerResponse = {
-      method: "updatePlayer",
-      updatedPlayer: updatedPlayerInfo,
-    };
-    gameOfUpdatePlayer.broadcast(updatePlayerResponse);
-  }
-
-  logger.info(
-    `Player ${playerToBeUpdated.getPlayerId()} got updated with ${JSON.stringify(
-      updatedPlayerInfo
-    )}.`
-  );
-}
-
-function updateGame(
-  request: UpdateGameRequest,
-  gameToBeUpdated: Game,
-  gameStore: GameStore
-) {
-  const updatedGameInfo = request.updatedGame;
-  gameToBeUpdated.setGameInfo({
-    ...gameToBeUpdated.getGameInfo(),
-    ...updatedGameInfo,
-  });
-  gameStore.addGame(gameToBeUpdated);
-
-  const updateGameResponse: UpdateGameResponse = {
-    method: "updateGame",
-    updatedGame: updatedGameInfo,
-  };
-  gameToBeUpdated.broadcast(updateGameResponse);
-
-  logger.info(
-    `Game ${gameToBeUpdated.getGameId()} got updated with ${JSON.stringify(
-      updatedGameInfo
-    )}.`
-  );
-}
-
-function handleClosingConnection(
-  connection: GameConnection,
-  playerStore: PlayerStore,
-  gameStore: GameStore
-) {
+function handleClosingConnection(connection: GameConnection) {
   if (connection.playerId && connection.gameId) {
+    const playerStore = PlayerStore.getInstace();
+    const gameStore = GameStore.getInstace();
+
     const player = playerStore.getPlayer(connection.playerId);
     const leftGame = gameStore.getGame(connection.gameId);
 
@@ -203,7 +65,7 @@ function handleClosingConnection(
     }
 
     const playerInfo = player.getPlayerInfo();
-    const response: LeaveResponse = {
+    const response: LeaveResponseBody = {
       method: "leave",
       player: playerInfo,
       newAdmin: newAdmin ? newAdmin.getPlayerInfo() : null,
@@ -218,7 +80,7 @@ function handleClosingConnection(
   }
 }
 
-function main(port: number, playerStore: PlayerStore, gameStore: GameStore) {
+function main(port: number) {
   const httpServer = http.createServer();
   httpServer.listen(port, () => {
     logger.info(`Websocket server listening on port ${port}.`);
@@ -229,7 +91,7 @@ function main(port: number, playerStore: PlayerStore, gameStore: GameStore) {
   websocketServer.on("request", (request: Request) => {
     const connection: GameConnection = request.accept(null, request.origin);
     connection.on("close", () => {
-      handleClosingConnection(connection, playerStore, gameStore);
+      handleClosingConnection(connection);
     });
     connection.on("message", async (message: Message) => {
       if (message.type !== "utf8") {
@@ -237,38 +99,17 @@ function main(port: number, playerStore: PlayerStore, gameStore: GameStore) {
         return;
       }
       try {
-        const request = JSON.parse(message.utf8Data) as GameRequest;
-        if (request.method === "create") {
-          createGame(request, connection, playerStore, gameStore);
-        } else if (request.method === "join") {
-          const desiredGame = gameStore.getGame(request.gameId);
+        const requestBody = JSON.parse(message.utf8Data) as GameRequestBody;
 
-          if (!desiredGame) {
-            logger.debug("Attempted to join a game that doesn't exist.");
-            connection.send(JSON.stringify({ error: "game not found" }));
-            connection.close();
-            return;
-          }
-          joinGame(request, connection, desiredGame, playerStore);
-        } else if (request.method === "updatePlayer") {
-          const playerToBeUpdated = playerStore.getPlayer(
-            request.updatedPlayer.id
-          );
-          if (!playerToBeUpdated) {
-            logger.debug("Attempted to update a player that doesn't exist.");
-            connection.send(JSON.stringify({ error: "player not found" }));
-            return;
-          }
-          updatePlayer(request, playerToBeUpdated, playerStore);
-        } else if (request.method === "updateGame") {
-          const gameToBeUpdated = gameStore.getGame(request.updatedGame.id);
-          if (!gameToBeUpdated) {
-            logger.debug("Attempted to update a game that doesn't exist.");
-            connection.send(JSON.stringify({ error: "game not found" }));
-            return;
-          }
-          updateGame(request, gameToBeUpdated, gameStore);
-        }
+        const requestHandler = createRequestHandler(
+          requestBody,
+          connection,
+          logger,
+          GameStore.getInstace(),
+          PlayerStore.getInstace()
+        );
+
+        requestHandler.handle();
       } catch (err) {
         if (err instanceof SyntaxError) {
           logger.debug("Request ignored because it's not in JSON format.");
@@ -280,4 +121,4 @@ function main(port: number, playerStore: PlayerStore, gameStore: GameStore) {
   });
 }
 
-main(PORT, playerStore, gameStore);
+main(PORT);

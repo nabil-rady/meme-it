@@ -8,13 +8,13 @@ import Dropdown from "../components/Dropdown";
 import Invite from "../components/Invite";
 import Player from "../components/Player";
 
-import handleResponse from "../lib/handleResponse";
+import { createResponseHandler } from "../lib/ResponseHandler";
 
 import {
-  CreateRequest,
   GameInfo,
-  GameResponse,
   PlayerInfo,
+  GameResponseBody,
+  CreateRequestBody,
 } from "../server/types";
 
 export default function Home() {
@@ -50,11 +50,18 @@ export default function Home() {
     const hostname = window.location.hostname;
     ws.current = new WebSocket(`ws://${hostname}:9090`);
     ws.current.addEventListener("message", (e: MessageEvent<string>) => {
-      const response = JSON.parse(e.data) as GameResponse;
-      handleResponse(response, setGame, setThisPlayer, setPlayers);
+      const response = JSON.parse(e.data) as GameResponseBody;
+      const responseHandler = createResponseHandler(
+        response,
+        setGame,
+        setThisPlayer,
+        setPlayers
+      );
+
+      responseHandler.handle();
     });
     ws.current.addEventListener("open", () => {
-      const request: CreateRequest = {
+      const request: CreateRequestBody = {
         method: "create",
         admin: {
           nickname,

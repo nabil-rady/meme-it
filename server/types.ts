@@ -1,5 +1,6 @@
 import type { connection as Connection } from "websocket";
-import { Player, Game } from "./lib";
+import { Game } from "./lib/Game";
+import { Player } from "./lib/Player";
 
 export type Phase = "lobby" | "caption" | "review" | "final";
 
@@ -30,74 +31,74 @@ export interface GameInfo {
   maxPlayers: number;
 }
 
-export interface CreateRequest {
+export interface CreateRequestBody {
   method: "create";
   admin: Omit<PlayerInfo, "id" | "joinedAt">;
   game: Omit<GameInfo, "id">;
 }
 
-export interface JoinRequest {
+export interface JoinRequestBody {
   method: "join";
   player: Omit<PlayerInfo, "id" | "joinedAt">;
   gameId: string;
 }
 
-export interface UpdatePlayerRequest {
+export interface UpdatePlayerRequestBody {
   method: "updatePlayer";
   updatedPlayer: PlayerInfo;
 }
 
-export interface UpdateGameRequest {
+export interface UpdateGameRequestBody {
   method: "updateGame";
   updatedGame: GameInfo;
 }
 
-export type GameRequest =
-  | CreateRequest
-  | JoinRequest
-  | UpdatePlayerRequest
-  | UpdateGameRequest;
+export type GameRequestBody =
+  | CreateRequestBody
+  | JoinRequestBody
+  | UpdatePlayerRequestBody
+  | UpdateGameRequestBody;
 
-export interface CreateResponse {
+export interface CreateResponseBody {
   method: "create";
   game: GameInfo;
   admin: PlayerInfo;
 }
 
-export interface JoinResponse {
+export interface JoinResponseBody {
   method: "join";
   game: GameInfo;
   players: PlayerInfo[];
 }
 
-export interface UpdatePlayerResponse {
+export interface UpdatePlayerResponseBody {
   method: "updatePlayer";
   updatedPlayer: PlayerInfo;
 }
 
-export interface UpdateGameResponse {
+export interface UpdateGameResponseBody {
   method: "updateGame";
   updatedGame: GameInfo;
 }
 
-export interface LeaveResponse {
+export interface LeaveResponseBody {
   method: "leave";
   player: PlayerInfo;
   newAdmin: PlayerInfo | null;
 }
 
-export interface TerminateResponse {
+export interface TerminateResponseBody {
   method: "terminate";
 }
 
-export interface ErrorResponse {
+export interface ErrorResponseBody {
   error: string;
 }
 
-export type GameResponse =
-  | CreateResponse
-  | JoinResponse
-  | UpdatePlayerResponse
-  | UpdateGameResponse
-  | LeaveResponse
-  | TerminateResponse;
+export type GameResponseBody =
+  | CreateResponseBody
+  | JoinResponseBody
+  | UpdatePlayerResponseBody
+  | UpdateGameResponseBody
+  | LeaveResponseBody
+  | TerminateResponseBody;

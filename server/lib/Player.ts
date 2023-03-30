@@ -1,5 +1,5 @@
 import { v4 as uuid } from "uuid";
-import { GameConnection, GameResponse, PlayerInfo } from "../types";
+import { GameConnection, PlayerInfo, GameResponseBody } from "../types";
 
 export class Player {
   private readonly id: string;
@@ -54,7 +54,7 @@ export class Player {
     this.admin = true;
   }
 
-  send(message: GameResponse) {
+  send(message: GameResponseBody) {
     this.connection.send(JSON.stringify(message));
   }
 }

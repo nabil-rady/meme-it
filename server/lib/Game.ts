@@ -2,9 +2,9 @@ import { v4 as uuid } from "uuid";
 import { Player } from "./Player";
 import {
   GameInfo,
-  GameResponse,
   PlayerInfo,
-  TerminateResponse,
+  GameResponseBody,
+  TerminateResponseBody,
 } from "../types";
 
 export class Game {
@@ -72,14 +72,14 @@ export class Game {
     );
   }
 
-  broadcast(response: GameResponse) {
+  broadcast(response: GameResponseBody) {
     for (const player of this.players) {
       player.send(response);
     }
   }
 
   terminate() {
-    const terminateResponse: TerminateResponse = {
+    const terminateResponse: TerminateResponseBody = {
       method: "terminate",
     };
 
