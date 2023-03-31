@@ -62,17 +62,7 @@ export default function Home() {
       <Head>
         <title>Meme It</title>
       </Head>
-      {game && thisPlayer
-        ? renderGameUI(
-            game,
-            thisPlayer,
-            players,
-            meme,
-            captions,
-            setCaptions,
-            ws
-          )
-        : null}
+      {renderGameUI(game, thisPlayer, players, meme, captions, setCaptions, ws)}
     </div>
   );
 }
