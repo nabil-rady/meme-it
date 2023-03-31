@@ -215,6 +215,19 @@ class UpdatePlayerRequestHandler extends RequestHandler {
       return;
     }
 
+    if (!this.connection.playerId) {
+      this.logger.debug(
+        "Attempted to update a player from an invalid connection."
+      );
+      return;
+    }
+
+    if (this.connection.playerId !== playerToBeUpdated.getPlayerId()) {
+      this.logger.debug("A player attempted to update another player.");
+      this.connection.send(JSON.stringify({ error: "unauthorized" }));
+      return;
+    }
+
     const updatedPlayerInfo = this.requestBody.updatedPlayer;
     playerToBeUpdated.setPlayerInfo({
       ...playerToBeUpdated.getPlayerInfo(),
