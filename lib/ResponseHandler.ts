@@ -1,4 +1,5 @@
 import { Dispatch, SetStateAction } from "react";
+import { DMemeWithCaptionDetails } from "../dbtypes";
 import {
   GameInfo,
   PlayerInfo,
@@ -9,6 +10,7 @@ import {
   UpdatePlayerResponseBody,
   LeaveResponseBody,
   TerminateResponseBody,
+  StartGameResponseBody,
 } from "../server/types";
 
 abstract class ResponseHandler {
@@ -17,15 +19,23 @@ abstract class ResponseHandler {
     SetStateAction<PlayerInfo | undefined>
   >;
   protected readonly setPlayers: Dispatch<SetStateAction<PlayerInfo[]>>;
+  protected readonly setMeme: Dispatch<
+    SetStateAction<DMemeWithCaptionDetails | undefined>
+  >;
+  protected readonly setCaptions: Dispatch<SetStateAction<string[]>>;
 
   constructor(
     setGame: Dispatch<SetStateAction<GameInfo | undefined>>,
     setThisPlayer: Dispatch<SetStateAction<PlayerInfo | undefined>>,
-    setPlayers: Dispatch<SetStateAction<PlayerInfo[]>>
+    setPlayers: Dispatch<SetStateAction<PlayerInfo[]>>,
+    setMeme: Dispatch<SetStateAction<DMemeWithCaptionDetails | undefined>>,
+    setCaptions: Dispatch<SetStateAction<string[]>>
   ) {
     this.setGame = setGame;
     this.setThisPlayer = setThisPlayer;
     this.setPlayers = setPlayers;
+    this.setMeme = setMeme;
+    this.setCaptions = setCaptions;
   }
 
   abstract handle(): void;
@@ -38,9 +48,11 @@ class CreateResponseHandler extends ResponseHandler {
     responseBody: CreateResponseBody,
     setGame: Dispatch<SetStateAction<GameInfo | undefined>>,
     setThisPlayer: Dispatch<SetStateAction<PlayerInfo | undefined>>,
-    setPlayers: Dispatch<SetStateAction<PlayerInfo[]>>
+    setPlayers: Dispatch<SetStateAction<PlayerInfo[]>>,
+    setMeme: Dispatch<SetStateAction<DMemeWithCaptionDetails | undefined>>,
+    setCaptions: Dispatch<SetStateAction<string[]>>
   ) {
-    super(setGame, setThisPlayer, setPlayers);
+    super(setGame, setThisPlayer, setPlayers, setMeme, setCaptions);
     this.responseBody = responseBody;
   }
 
@@ -58,9 +70,11 @@ class JoinResponseHandler extends ResponseHandler {
     responseBody: JoinResponseBody,
     setGame: Dispatch<SetStateAction<GameInfo | undefined>>,
     setThisPlayer: Dispatch<SetStateAction<PlayerInfo | undefined>>,
-    setPlayers: Dispatch<SetStateAction<PlayerInfo[]>>
+    setPlayers: Dispatch<SetStateAction<PlayerInfo[]>>,
+    setMeme: Dispatch<SetStateAction<DMemeWithCaptionDetails | undefined>>,
+    setCaptions: Dispatch<SetStateAction<string[]>>
   ) {
-    super(setGame, setThisPlayer, setPlayers);
+    super(setGame, setThisPlayer, setPlayers, setMeme, setCaptions);
     this.responseBody = responseBody;
   }
 
@@ -80,9 +94,11 @@ class UpdateGameResponseHandler extends ResponseHandler {
     responseBody: UpdateGameResponseBody,
     setGame: Dispatch<SetStateAction<GameInfo | undefined>>,
     setThisPlayer: Dispatch<SetStateAction<PlayerInfo | undefined>>,
-    setPlayers: Dispatch<SetStateAction<PlayerInfo[]>>
+    setPlayers: Dispatch<SetStateAction<PlayerInfo[]>>,
+    setMeme: Dispatch<SetStateAction<DMemeWithCaptionDetails | undefined>>,
+    setCaptions: Dispatch<SetStateAction<string[]>>
   ) {
-    super(setGame, setThisPlayer, setPlayers);
+    super(setGame, setThisPlayer, setPlayers, setMeme, setCaptions);
     this.responseBody = responseBody;
   }
 
@@ -98,9 +114,11 @@ class UpdatePlayerResponseHandler extends ResponseHandler {
     responseBody: UpdatePlayerResponseBody,
     setGame: Dispatch<SetStateAction<GameInfo | undefined>>,
     setThisPlayer: Dispatch<SetStateAction<PlayerInfo | undefined>>,
-    setPlayers: Dispatch<SetStateAction<PlayerInfo[]>>
+    setPlayers: Dispatch<SetStateAction<PlayerInfo[]>>,
+    setMeme: Dispatch<SetStateAction<DMemeWithCaptionDetails | undefined>>,
+    setCaptions: Dispatch<SetStateAction<string[]>>
   ) {
-    super(setGame, setThisPlayer, setPlayers);
+    super(setGame, setThisPlayer, setPlayers, setMeme, setCaptions);
     this.responseBody = responseBody;
   }
 
@@ -120,6 +138,32 @@ class UpdatePlayerResponseHandler extends ResponseHandler {
   }
 }
 
+class StartGameResponseHandler extends ResponseHandler {
+  private readonly responseBody: StartGameResponseBody;
+
+  constructor(
+    responseBody: StartGameResponseBody,
+    setGame: Dispatch<SetStateAction<GameInfo | undefined>>,
+    setThisPlayer: Dispatch<SetStateAction<PlayerInfo | undefined>>,
+    setPlayers: Dispatch<SetStateAction<PlayerInfo[]>>,
+    setMeme: Dispatch<SetStateAction<DMemeWithCaptionDetails | undefined>>,
+    setCaptions: Dispatch<SetStateAction<string[]>>
+  ) {
+    super(setGame, setThisPlayer, setPlayers, setMeme, setCaptions);
+    this.responseBody = responseBody;
+  }
+
+  handle() {
+    this.setGame((prevGame) =>
+      prevGame ? { ...prevGame, phase: "caption" } : prevGame
+    );
+    this.setMeme(this.responseBody.meme);
+    this.setCaptions(
+      new Array(this.responseBody.meme.captionsDetails.length).fill("")
+    );
+  }
+}
+
 class LeaveResponseHandler extends ResponseHandler {
   private readonly responseBody: LeaveResponseBody;
 
@@ -127,9 +171,11 @@ class LeaveResponseHandler extends ResponseHandler {
     responseBody: LeaveResponseBody,
     setGame: Dispatch<SetStateAction<GameInfo | undefined>>,
     setThisPlayer: Dispatch<SetStateAction<PlayerInfo | undefined>>,
-    setPlayers: Dispatch<SetStateAction<PlayerInfo[]>>
+    setPlayers: Dispatch<SetStateAction<PlayerInfo[]>>,
+    setMeme: Dispatch<SetStateAction<DMemeWithCaptionDetails | undefined>>,
+    setCaptions: Dispatch<SetStateAction<string[]>>
   ) {
-    super(setGame, setThisPlayer, setPlayers);
+    super(setGame, setThisPlayer, setPlayers, setMeme, setCaptions);
     this.responseBody = responseBody;
   }
 
@@ -160,9 +206,11 @@ class TerminateResponseHandler extends ResponseHandler {
     responseBody: TerminateResponseBody,
     setGame: Dispatch<SetStateAction<GameInfo | undefined>>,
     setThisPlayer: Dispatch<SetStateAction<PlayerInfo | undefined>>,
-    setPlayers: Dispatch<SetStateAction<PlayerInfo[]>>
+    setPlayers: Dispatch<SetStateAction<PlayerInfo[]>>,
+    setMeme: Dispatch<SetStateAction<DMemeWithCaptionDetails | undefined>>,
+    setCaptions: Dispatch<SetStateAction<string[]>>
   ) {
-    super(setGame, setThisPlayer, setPlayers);
+    super(setGame, setThisPlayer, setPlayers, setMeme, setCaptions);
     this.responseBody = responseBody;
   }
 
@@ -176,34 +224,72 @@ export function createResponseHandler(
   body: GameResponseBody,
   setGame: Dispatch<SetStateAction<GameInfo | undefined>>,
   setThisPlayer: Dispatch<SetStateAction<PlayerInfo | undefined>>,
-  setPlayers: Dispatch<SetStateAction<PlayerInfo[]>>
+  setPlayers: Dispatch<SetStateAction<PlayerInfo[]>>,
+  setMeme: Dispatch<SetStateAction<DMemeWithCaptionDetails | undefined>>,
+  setCaptions: Dispatch<SetStateAction<string[]>>
 ): ResponseHandler {
   if (body.method === "create") {
-    return new CreateResponseHandler(body, setGame, setThisPlayer, setPlayers);
+    return new CreateResponseHandler(
+      body,
+      setGame,
+      setThisPlayer,
+      setPlayers,
+      setMeme,
+      setCaptions
+    );
   } else if (body.method === "join") {
-    return new JoinResponseHandler(body, setGame, setThisPlayer, setPlayers);
+    return new JoinResponseHandler(
+      body,
+      setGame,
+      setThisPlayer,
+      setPlayers,
+      setMeme,
+      setCaptions
+    );
   } else if (body.method === "updateGame") {
     return new UpdateGameResponseHandler(
       body,
       setGame,
       setThisPlayer,
-      setPlayers
+      setPlayers,
+      setMeme,
+      setCaptions
     );
   } else if (body.method === "updatePlayer") {
     return new UpdatePlayerResponseHandler(
       body,
       setGame,
       setThisPlayer,
-      setPlayers
+      setPlayers,
+      setMeme,
+      setCaptions
+    );
+  } else if (body.method === "startGame") {
+    return new StartGameResponseHandler(
+      body,
+      setGame,
+      setThisPlayer,
+      setPlayers,
+      setMeme,
+      setCaptions
     );
   } else if (body.method === "leave") {
-    return new LeaveResponseHandler(body, setGame, setThisPlayer, setPlayers);
+    return new LeaveResponseHandler(
+      body,
+      setGame,
+      setThisPlayer,
+      setPlayers,
+      setMeme,
+      setCaptions
+    );
   } else if (body.method === "terminate") {
     return new TerminateResponseHandler(
       body,
       setGame,
       setThisPlayer,
-      setPlayers
+      setPlayers,
+      setMeme,
+      setCaptions
     );
   } else {
     throw new Error("Incorrect response body format.");

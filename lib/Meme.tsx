@@ -1,3 +1,5 @@
+import { DCaptionDetails, DMemeWithCaptionDetails } from "../dbtypes";
+
 const CANVAS_WIDTH = 500;
 const CANVAS_HEIGHT = 500;
 
@@ -41,7 +43,7 @@ export class CaptionDetails {
     width,
     initialFontSize,
     maxNumberOfLines,
-  }: DCaptionsDetails) {
+  }: DCaptionDetails) {
     this.positionX = positionX;
     this.positionY = positionY;
     this.rotation = rotation;
@@ -60,7 +62,7 @@ export class Meme {
 
   constructor(
     canvas: HTMLCanvasElement | string,
-    { url, captionsDetails }: DMemeWithCaptionDetails
+    { url, captionsDetails }: Omit<DMemeWithCaptionDetails, "id">
   ) {
     if (typeof canvas === "string") {
       const canvasQuery = document.getElementById(canvas);

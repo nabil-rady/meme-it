@@ -5,6 +5,8 @@ import { GameStore } from "./GameStore";
 import { Player } from "./Player";
 import { PlayerStore } from "./PlayerStore";
 
+import prisma from "../../db";
+
 import {
   GameConnection,
   GameRequestBody,
@@ -16,7 +18,10 @@ import {
   UpdateGameResponseBody,
   UpdatePlayerRequestBody,
   UpdatePlayerResponseBody,
+  StartGameRequestBody,
+  StartGameResponseBody,
 } from "../types";
+import { DMemeWithCaptionDetails } from "../../dbtypes";
 
 abstract class RequestHandler {
   protected readonly connection: GameConnection;
@@ -235,6 +240,54 @@ class UpdatePlayerRequestHandler extends RequestHandler {
   }
 }
 
+class StartGameRequestHandler extends RequestHandler {
+  private requestBody: StartGameRequestBody;
+
+  constructor(
+    requestBody: StartGameRequestBody,
+    connection: GameConnection,
+    logger: Logger,
+    gameStore: GameStore,
+    playerStore: PlayerStore
+  ) {
+    super(connection, logger, gameStore, playerStore);
+    this.requestBody = requestBody;
+  }
+
+  async handle() {
+    const gameToStart = this.gameStore.getGame(this.requestBody.gameToStart.id);
+    if (!gameToStart) {
+      this.logger.debug("Attempted to update a game that doesn't exist.");
+      this.connection.send(JSON.stringify({ error: "game not found" }));
+      return;
+    }
+
+    gameToStart.setPhase("caption");
+    this.gameStore.addGame(gameToStart);
+
+    const numberOfMemes = await prisma.memes.count();
+    const skip = Math.floor(Math.random() * numberOfMemes);
+    const meme: DMemeWithCaptionDetails | undefined = (
+      await prisma.memes.findMany({
+        skip,
+        take: 1,
+        include: {
+          captionsDetails: true,
+        },
+      })
+    ).at(0);
+
+    if (meme) {
+      // TODO: Different meme for every player
+      const startGameResponse: StartGameResponseBody = {
+        method: "startGame",
+        meme,
+      };
+      gameToStart.broadcast(startGameResponse);
+    }
+  }
+}
+
 export function createRequestHandler(
   requestBody: GameRequestBody,
   connection: GameConnection,
@@ -268,6 +321,14 @@ export function createRequestHandler(
     );
   } else if (requestBody.method === "updatePlayer") {
     return new UpdatePlayerRequestHandler(
+      requestBody,
+      connection,
+      logger,
+      gameStore,
+      playerStore
+    );
+  } else if (requestBody.method === "startGame") {
+    return new StartGameRequestHandler(
       requestBody,
       connection,
       logger,

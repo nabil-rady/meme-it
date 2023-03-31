@@ -1,6 +1,7 @@
 import { v4 as uuid } from "uuid";
 import { Player } from "./Player";
 import {
+  GamePhase,
   GameInfo,
   PlayerInfo,
   GameResponseBody,
@@ -11,12 +12,14 @@ export class Game {
   private readonly id: string;
   private rounds: number;
   private maxPlayers: number;
+  private phase: GamePhase;
   private players: Player[];
 
   constructor(rounds: number, maxPlayers: number, admin: Player) {
     this.id = uuid();
     this.rounds = rounds;
     this.maxPlayers = maxPlayers;
+    this.phase = "lobby";
     this.players = [admin];
   }
 
@@ -29,6 +32,7 @@ export class Game {
       id: this.id,
       rounds: this.rounds,
       maxPlayers: this.maxPlayers,
+      phase: this.phase,
     };
   }
 
@@ -70,6 +74,10 @@ export class Game {
     this.players = this.players.filter(
       (player) => player.getPlayerId() !== playerToBeRemoved.getPlayerId()
     );
+  }
+
+  setPhase(phase: GamePhase) {
+    this.phase = phase;
   }
 
   broadcast(response: GameResponseBody) {

@@ -1,8 +1,9 @@
 import type { connection as Connection } from "websocket";
 import { Game } from "./lib/Game";
 import { Player } from "./lib/Player";
+import { DMemeWithCaptionDetails } from "../dbtypes";
 
-export type Phase = "lobby" | "caption" | "review" | "final";
+export type GamePhase = "lobby" | "caption" | "review" | "final";
 
 export type GameConnection = Connection & {
   playerId?: string;
@@ -29,12 +30,13 @@ export interface GameInfo {
   id: string;
   rounds: number;
   maxPlayers: number;
+  phase: GamePhase;
 }
 
 export interface CreateRequestBody {
   method: "create";
   admin: Omit<PlayerInfo, "id" | "joinedAt">;
-  game: Omit<GameInfo, "id">;
+  game: Omit<GameInfo, "id" | "phase">;
 }
 
 export interface JoinRequestBody {
@@ -53,11 +55,17 @@ export interface UpdateGameRequestBody {
   updatedGame: GameInfo;
 }
 
+export interface StartGameRequestBody {
+  method: "startGame";
+  gameToStart: GameInfo;
+}
+
 export type GameRequestBody =
   | CreateRequestBody
   | JoinRequestBody
   | UpdatePlayerRequestBody
-  | UpdateGameRequestBody;
+  | UpdateGameRequestBody
+  | StartGameRequestBody;
 
 export interface CreateResponseBody {
   method: "create";
@@ -81,6 +89,11 @@ export interface UpdateGameResponseBody {
   updatedGame: GameInfo;
 }
 
+export interface StartGameResponseBody {
+  method: "startGame";
+  meme: DMemeWithCaptionDetails;
+}
+
 export interface LeaveResponseBody {
   method: "leave";
   player: PlayerInfo;
@@ -100,5 +113,6 @@ export type GameResponseBody =
   | JoinResponseBody
   | UpdatePlayerResponseBody
   | UpdateGameResponseBody
+  | StartGameResponseBody
   | LeaveResponseBody
   | TerminateResponseBody;

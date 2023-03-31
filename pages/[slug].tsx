@@ -2,12 +2,10 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
 
-import Dropdown from "../components/Dropdown";
-import Invite from "../components/Invite";
-import Player from "../components/Player";
-
+import renderGameUI from "../lib/renderGameUI";
 import { createResponseHandler } from "../lib/ResponseHandler";
 
+import { DMemeWithCaptionDetails } from "../dbtypes";
 import {
   GameInfo,
   PlayerInfo,
@@ -23,6 +21,8 @@ export default function Home() {
   const [game, setGame] = useState<GameInfo>();
   const [thisPlayer, setThisPlayer] = useState<PlayerInfo>();
   const [players, setPlayers] = useState<PlayerInfo[]>([]);
+  const [meme, setMeme] = useState<DMemeWithCaptionDetails>();
+  const [captions, setCaptions] = useState<string[]>([]);
 
   useEffect(() => {
     if (!router.query.slug) return;
@@ -34,7 +34,9 @@ export default function Home() {
         response,
         setGame,
         setThisPlayer,
-        setPlayers
+        setPlayers,
+        setMeme,
+        setCaptions
       );
 
       responseHandler.handle();
@@ -55,60 +57,22 @@ export default function Home() {
     return () => ws.current?.close();
   }, [router.query.slug]);
 
-  const renderGameUI = (
-    game: GameInfo | undefined,
-    thisPlayer: PlayerInfo | undefined,
-    players: PlayerInfo[]
-  ) => {
-    return (
-      <>
-        <main className="home lobby">
-          <h1>Meme It</h1>
-          {game && thisPlayer && players.length !== 0 ? (
-            <div className="lobby-container">
-              <div className="players-container">
-                <h2>Players ({players.length})</h2>
-                <div className="players">
-                  {players.map((player) => (
-                    <Player
-                      key={player.id}
-                      player={player}
-                      thisPlayer={player.id === thisPlayer.id}
-                    />
-                  ))}
-                </div>
-              </div>
-              <div className="options">
-                <div className="game-options">
-                  <Dropdown
-                    label="Number of rounds"
-                    name="number-of-rounds"
-                    options={["1", "2", "3"]}
-                  />
-                  <Dropdown
-                    label="Number of players"
-                    name="number-of-players"
-                    options={["6", "8", "10"]}
-                  />
-                </div>
-                <div className="buttons">
-                  <Invite id={game.id} />
-                  <button className="button start-button">Start game</button>
-                </div>
-              </div>
-            </div>
-          ) : null}
-        </main>
-      </>
-    );
-  };
-
   return (
     <div className="app">
       <Head>
         <title>Meme It</title>
       </Head>
-      {renderGameUI(game, thisPlayer, players)}
+      {game && thisPlayer
+        ? renderGameUI(
+            game,
+            thisPlayer,
+            players,
+            meme,
+            captions,
+            setCaptions,
+            ws
+          )
+        : null}
     </div>
   );
 }

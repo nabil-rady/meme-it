@@ -4,10 +4,9 @@ import { useEffect, useRef, useState } from "react";
 import { BiRefresh } from "react-icons/bi";
 
 import AvatarSelect from "../components/AvatarSelect";
-import Dropdown from "../components/Dropdown";
-import Invite from "../components/Invite";
-import Player from "../components/Player";
+import { DMemeWithCaptionDetails } from "../dbtypes";
 
+import renderGameUI from "../lib/renderGameUI";
 import { createResponseHandler } from "../lib/ResponseHandler";
 
 import {
@@ -20,11 +19,14 @@ import {
 export default function Home() {
   const ws = useRef<WebSocket>();
 
+  const [game, setGame] = useState<GameInfo>();
   const [thisPlayer, setThisPlayer] = useState<PlayerInfo>();
   const [players, setPlayers] = useState<PlayerInfo[]>([]);
+  const [meme, setMeme] = useState<DMemeWithCaptionDetails>();
+  const [captions, setCaptions] = useState<string[]>([]);
+
   const [avatar, setAvatar] = useState<string>("/avatars/1.jpg");
   const [nickname, setNickname] = useState<string>("");
-  const [game, setGame] = useState<GameInfo>();
   const [showAvatarSelect, setShowAvatarSelect] = useState<boolean>(false);
   const [nicknameError, setNicknameError] = useState<boolean>(false);
 
@@ -55,7 +57,9 @@ export default function Home() {
         response,
         setGame,
         setThisPlayer,
-        setPlayers
+        setPlayers,
+        setMeme,
+        setCaptions
       );
 
       responseHandler.handle();
@@ -138,59 +142,13 @@ export default function Home() {
     </main>
   );
 
-  const renderGameLobby = (
-    game: GameInfo,
-    thisPlayer: PlayerInfo,
-    players: PlayerInfo[]
-  ) => {
-    return (
-      <>
-        <main className="home lobby">
-          <h1>Meme It</h1>
-          <div className="lobby-container">
-            <div className="players-container">
-              <h2>Players ({players.length})</h2>
-              <div className="players">
-                {players.map((player) => (
-                  <Player
-                    key={player.id}
-                    player={player}
-                    thisPlayer={player.id === thisPlayer.id}
-                  />
-                ))}
-              </div>
-            </div>
-            <div className="options">
-              <div className="game-options">
-                <Dropdown
-                  label="Number of rounds"
-                  name="number-of-rounds"
-                  options={["1", "2", "3"]}
-                />
-                <Dropdown
-                  label="Number of players"
-                  name="number-of-players"
-                  options={["6", "8", "10"]}
-                />
-              </div>
-              <div className="buttons">
-                <Invite id={(game as GameInfo).id} />
-                <button className="button start-button">Start game</button>
-              </div>
-            </div>
-          </div>
-        </main>
-      </>
-    );
-  };
-
-  const renderGameUI = (
+  const render = (
     game: GameInfo | undefined,
     thisPlayer: PlayerInfo | undefined,
     players: PlayerInfo[]
   ) =>
     game && thisPlayer && players.length !== 0
-      ? renderGameLobby(game, thisPlayer, players)
+      ? renderGameUI(game, thisPlayer, players, meme, captions, setCaptions, ws)
       : renderHome();
 
   return (
@@ -198,7 +156,7 @@ export default function Home() {
       <Head>
         <title>Meme It</title>
       </Head>
-      {renderGameUI(game, thisPlayer, players)}
+      {render(game, thisPlayer, players)}
     </div>
   );
 }
