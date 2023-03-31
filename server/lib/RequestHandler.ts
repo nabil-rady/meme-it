@@ -170,6 +170,34 @@ class UpdateGameRequestHandler extends RequestHandler {
       return;
     }
 
+    if (!this.connection.playerId) {
+      this.logger.debug(
+        "Attempted to update a player from an invalid connection."
+      );
+      return;
+    }
+
+    if (!this.connection.gameId) {
+      this.logger.debug(
+        "Attempted to update a game from an invalid connection."
+      );
+      return;
+    }
+
+    if (this.connection.gameId !== gameToBeUpdated.getGameId()) {
+      this.logger.debug("A player attempted to update another player.");
+      this.connection.send(JSON.stringify({ error: "unauthorized" }));
+      return;
+    }
+
+    if (
+      this.connection.playerId === gameToBeUpdated.getAdmin()?.getPlayerId()
+    ) {
+      this.logger.debug("A non admin attempted to update a game.");
+      this.connection.send(JSON.stringify({ error: "unauthorized" }));
+      return;
+    }
+
     const updatedGameInfo = this.requestBody.updatedGame;
     gameToBeUpdated.setGameInfo({
       ...gameToBeUpdated.getGameInfo(),
