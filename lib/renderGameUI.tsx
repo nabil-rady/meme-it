@@ -66,26 +66,27 @@ const renderGameLobby = (
 };
 
 export default function renderGameUI(
-  game: GameInfo,
-  thisPlayer: PlayerInfo,
+  game: GameInfo | undefined,
+  thisPlayer: PlayerInfo | undefined,
   players: PlayerInfo[],
   meme: DMemeWithCaptionDetails | undefined,
   captions: string[],
   setCaptions: Dispatch<SetStateAction<string[]>>,
   ws: MutableRefObject<WebSocket | undefined>
 ) {
+  // TODO: Error handling
+  if (!game || !thisPlayer) return <h1 className="loading">Loading...</h1>;
   if (game.phase === "lobby") {
     return renderGameLobby(game, thisPlayer, players, ws);
   } else if (game.phase === "caption") {
-    if (meme)
-      return (
-        <MemeComponent
-          meme={meme}
-          captions={captions}
-          setCaptions={setCaptions}
-        />
-      );
-    return null;
+    if (!meme) return <h1 className="loading">Loading...</h1>;
+    return (
+      <MemeComponent
+        meme={meme}
+        captions={captions}
+        setCaptions={setCaptions}
+      />
+    );
   } else {
     return <h1>Not Implemented</h1>;
   }
