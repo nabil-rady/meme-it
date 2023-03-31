@@ -87,7 +87,7 @@ export default function Home() {
 
   const renderHome = () => (
     <main className="home">
-      <h1>Meme It</h1>
+      <h1 className="title">Meme It</h1>
       <div className="avatar-container">
         <Image
           src={avatar}

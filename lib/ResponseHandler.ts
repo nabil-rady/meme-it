@@ -159,7 +159,9 @@ class StartGameResponseHandler extends ResponseHandler {
     );
     this.setMeme(this.responseBody.meme);
     this.setCaptions(
-      new Array(this.responseBody.meme.captionsDetails.length).fill("")
+      new Array(this.responseBody.meme.captionsDetails.length)
+        .fill("")
+        .map((_, index) => `Caption ${index + 1}`)
     );
   }
 }

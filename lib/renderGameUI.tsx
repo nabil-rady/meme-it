@@ -24,8 +24,8 @@ const renderGameLobby = (
 
   return (
     <>
-      <main className="home lobby">
-        <h1>Meme It</h1>
+      <main className="lobby">
+        <h1 className="title">Meme It</h1>
         <div className="lobby-container">
           <div className="players-container">
             <h2>Players ({players.length})</h2>
@@ -81,11 +81,14 @@ export default function renderGameUI(
   } else if (game.phase === "caption") {
     if (!meme) return <h1 className="loading">Loading...</h1>;
     return (
-      <MemeComponent
-        meme={meme}
-        captions={captions}
-        setCaptions={setCaptions}
-      />
+      <div className="caption">
+        <h1 className="title">Meme It</h1>
+        <MemeComponent
+          meme={meme}
+          captions={captions}
+          setCaptions={setCaptions}
+        />
+      </div>
     );
   } else {
     return <h1>Not Implemented</h1>;
