@@ -357,9 +357,22 @@ class StartGameRequestHandler extends RequestHandler {
   }
 
   async handle() {
-    const gameToStart = this.gameStore.getGame(this.requestBody.gameToStart.id);
+    if (!this.isValidConnection()) {
+      this.logger.debug(
+        "Attempted to update a player from an invalid connection."
+      );
+      return;
+    }
+
+    const gameId = this.connection.gameId!;
+    const gameToStart = this.gameStore.getGame(gameId);
     if (!gameToStart) {
-      this.send404Error("Game", this.requestBody.gameToStart.id);
+      this.send404Error("Game", gameId);
+      return;
+    }
+
+    if (!this.isAdmin(gameToStart)) {
+      this.send403Error("Game", gameId);
       return;
     }
 

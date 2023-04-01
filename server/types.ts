@@ -57,7 +57,6 @@ export interface UpdateGameRequestBody {
 
 export interface StartGameRequestBody {
   method: "startGame";
-  gameToStart: GameInfo;
 }
 
 export type GameRequestBody =

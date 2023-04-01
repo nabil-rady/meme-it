@@ -17,7 +17,6 @@ const renderGameLobby = (
   const startGame = () => {
     const startGameRequest: StartGameRequestBody = {
       method: "startGame",
-      gameToStart: game,
     };
     ws.current?.send(JSON.stringify(startGameRequest));
   };
