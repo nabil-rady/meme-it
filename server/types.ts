@@ -47,12 +47,12 @@ export interface JoinRequestBody {
 
 export interface UpdatePlayerRequestBody {
   method: "updatePlayer";
-  updatedPlayer: PlayerInfo;
+  updatedPlayer: Omit<PlayerInfo, "id" | "admin" | "joinedAt">;
 }
 
 export interface UpdateGameRequestBody {
   method: "updateGame";
-  updatedGame: GameInfo;
+  updatedGame: Omit<GameInfo, "id" | "phase">;
 }
 
 export interface StartGameRequestBody {

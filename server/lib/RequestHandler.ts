@@ -101,12 +101,25 @@ export abstract class RequestHandler {
     return game.getAdmin()?.getPlayerId() === this.connection.playerId;
   }
 
-  send404Error(resourceType: "Game" | "Player", resourceID: string) {
+  getRequestType(): string {
     const thisClassName = this.constructor.name;
-    const requestType = thisClassName.substring(
-      0,
-      thisClassName.indexOf("RequestHandler")
+    return thisClassName.substring(0, thisClassName.indexOf("RequestHandler"));
+  }
+
+  send403Error(resourceType: "Game" | "Player", resourceID: string) {
+    const requestType = this.getRequestType();
+    this.logger.debug(
+      `Requester ${
+        this.connection.playerId
+      } doesn't have access to edit ${resourceType} with id ${resourceID} with ${
+        ["a", "e", "i", "o", "u"].includes(requestType[0]) ? "an" : "a"
+      } ${requestType} request.`
     );
+    this.connection.send(JSON.stringify({ error: "unauthorized" }));
+  }
+
+  send404Error(resourceType: "Game" | "Player", resourceID: string) {
+    const requestType = this.getRequestType();
     this.logger.debug(
       `${resourceType} with id ${resourceID} not found when processing ${
         ["a", "e", "i", "o", "u"].includes(requestType[0]) ? "an" : "a"
@@ -242,23 +255,15 @@ class UpdateGameRequestHandler extends RequestHandler {
       return;
     }
 
-    const gameToBeUpdated = this.gameStore.getGame(
-      this.requestBody.updatedGame.id
-    );
+    const gameId = this.connection.gameId!;
+    const gameToBeUpdated = this.gameStore.getGame(gameId);
     if (!gameToBeUpdated) {
-      this.send404Error("Game", this.requestBody.updatedGame.id);
-      return;
-    }
-
-    if (this.connection.gameId !== gameToBeUpdated.getGameId()) {
-      this.logger.debug("A player attempted to update another player.");
-      this.connection.send(JSON.stringify({ error: "unauthorized" }));
+      this.send404Error("Game", gameId);
       return;
     }
 
     if (!this.isAdmin(gameToBeUpdated)) {
-      this.logger.debug("A non admin attempted to update a game.");
-      this.connection.send(JSON.stringify({ error: "unauthorized" }));
+      this.send403Error("Game", gameId);
       return;
     }
 
@@ -271,7 +276,7 @@ class UpdateGameRequestHandler extends RequestHandler {
 
     const updateGameResponse: UpdateGameResponseBody = {
       method: "updateGame",
-      updatedGame: updatedGameInfo,
+      updatedGame: gameToBeUpdated.getGameInfo(),
     };
     gameToBeUpdated.broadcast(updateGameResponse);
 
@@ -305,17 +310,10 @@ class UpdatePlayerRequestHandler extends RequestHandler {
       return;
     }
 
-    const playerToBeUpdated = this.playerStore.getPlayer(
-      this.requestBody.updatedPlayer.id
-    );
+    const playerId = this.connection.playerId!;
+    const playerToBeUpdated = this.playerStore.getPlayer(playerId);
     if (!playerToBeUpdated) {
-      this.send404Error("Player", this.requestBody.updatedPlayer.id);
-      return;
-    }
-
-    if (this.connection.playerId !== playerToBeUpdated.getPlayerId()) {
-      this.logger.debug("A player attempted to update another player.");
-      this.connection.send(JSON.stringify({ error: "unauthorized" }));
+      this.send404Error("Player", playerId);
       return;
     }
 
@@ -331,7 +329,7 @@ class UpdatePlayerRequestHandler extends RequestHandler {
     if (gameOfUpdatePlayer) {
       const updatePlayerResponse: UpdatePlayerResponseBody = {
         method: "updatePlayer",
-        updatedPlayer: updatedPlayerInfo,
+        updatedPlayer: playerToBeUpdated.getPlayerInfo(),
       };
       gameOfUpdatePlayer.broadcast(updatePlayerResponse);
     }
