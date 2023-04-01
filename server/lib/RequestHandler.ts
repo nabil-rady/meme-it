@@ -93,6 +93,30 @@ export abstract class RequestHandler {
     }
   }
 
+  isValidConnection(): boolean {
+    return !!this.connection.playerId && !!this.connection.gameId;
+  }
+
+  isAdmin(game: Game): boolean {
+    return game.getAdmin()?.getPlayerId() === this.connection.playerId;
+  }
+
+  send404Error(resourceType: "Game" | "Player", resourceID: string) {
+    const thisClassName = this.constructor.name;
+    const requestType = thisClassName.substring(
+      0,
+      thisClassName.indexOf("RequestHandler")
+    );
+    this.logger.debug(
+      `${resourceType} with id ${resourceID} not found when processing ${
+        ["a", "e", "i", "o", "u"].includes(requestType[0]) ? "an" : "a"
+      } "${requestType}" request.`
+    );
+    this.connection.send(
+      JSON.stringify({ error: `${resourceType} not found` })
+    );
+  }
+
   abstract handle(): void;
 }
 
@@ -161,9 +185,7 @@ class JoinRequestHandler extends RequestHandler {
     const desiredGame = this.gameStore.getGame(this.requestBody.gameId);
 
     if (!desiredGame) {
-      this.logger.debug("Attempted to join a game that doesn't exist.");
-      this.connection.send(JSON.stringify({ error: "game not found" }));
-      this.connection.close();
+      this.send404Error("Game", this.requestBody.gameId);
       return;
     }
 
@@ -213,26 +235,18 @@ class UpdateGameRequestHandler extends RequestHandler {
   }
 
   handle() {
-    const gameToBeUpdated = this.gameStore.getGame(
-      this.requestBody.updatedGame.id
-    );
-    if (!gameToBeUpdated) {
-      this.logger.debug("Attempted to update a game that doesn't exist.");
-      this.connection.send(JSON.stringify({ error: "game not found" }));
-      return;
-    }
-
-    if (!this.connection.playerId) {
+    if (!this.isValidConnection()) {
       this.logger.debug(
         "Attempted to update a player from an invalid connection."
       );
       return;
     }
 
-    if (!this.connection.gameId) {
-      this.logger.debug(
-        "Attempted to update a game from an invalid connection."
-      );
+    const gameToBeUpdated = this.gameStore.getGame(
+      this.requestBody.updatedGame.id
+    );
+    if (!gameToBeUpdated) {
+      this.send404Error("Game", this.requestBody.updatedGame.id);
       return;
     }
 
@@ -242,9 +256,7 @@ class UpdateGameRequestHandler extends RequestHandler {
       return;
     }
 
-    if (
-      this.connection.playerId === gameToBeUpdated.getAdmin()?.getPlayerId()
-    ) {
+    if (!this.isAdmin(gameToBeUpdated)) {
       this.logger.debug("A non admin attempted to update a game.");
       this.connection.send(JSON.stringify({ error: "unauthorized" }));
       return;
@@ -286,19 +298,18 @@ class UpdatePlayerRequestHandler extends RequestHandler {
   }
 
   handle() {
+    if (!this.isValidConnection()) {
+      this.logger.debug(
+        "Attempted to update a player from an invalid connection."
+      );
+      return;
+    }
+
     const playerToBeUpdated = this.playerStore.getPlayer(
       this.requestBody.updatedPlayer.id
     );
     if (!playerToBeUpdated) {
-      this.logger.debug("Attempted to update a player that doesn't exist.");
-      this.connection.send(JSON.stringify({ error: "player not found" }));
-      return;
-    }
-
-    if (!this.connection.playerId) {
-      this.logger.debug(
-        "Attempted to update a player from an invalid connection."
-      );
+      this.send404Error("Player", this.requestBody.updatedPlayer.id);
       return;
     }
 
@@ -350,8 +361,7 @@ class StartGameRequestHandler extends RequestHandler {
   async handle() {
     const gameToStart = this.gameStore.getGame(this.requestBody.gameToStart.id);
     if (!gameToStart) {
-      this.logger.debug("Attempted to update a game that doesn't exist.");
-      this.connection.send(JSON.stringify({ error: "game not found" }));
+      this.send404Error("Game", this.requestBody.gameToStart.id);
       return;
     }
 
