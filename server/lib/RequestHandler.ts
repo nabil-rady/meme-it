@@ -23,7 +23,7 @@ import {
 } from "../types";
 import { DMemeWithCaptionDetails } from "../../dbtypes";
 
-abstract class RequestHandler {
+export abstract class RequestHandler {
   protected readonly connection: GameConnection;
   protected readonly logger: Logger;
   protected readonly gameStore: GameStore;
@@ -39,6 +39,58 @@ abstract class RequestHandler {
     this.logger = logger;
     this.gameStore = gameStore;
     this.playerStore = playerStore;
+  }
+
+  static createRequestHandler(
+    requestBody: GameRequestBody,
+    connection: GameConnection,
+    logger: Logger,
+    gameStore: GameStore,
+    playerStore: PlayerStore
+  ): RequestHandler {
+    if (requestBody.method === "create") {
+      return new CreateRequestHandler(
+        requestBody,
+        connection,
+        logger,
+        gameStore,
+        playerStore
+      );
+    } else if (requestBody.method === "join") {
+      return new JoinRequestHandler(
+        requestBody,
+        connection,
+        logger,
+        gameStore,
+        playerStore
+      );
+    } else if (requestBody.method === "updateGame") {
+      return new UpdateGameRequestHandler(
+        requestBody,
+        connection,
+        logger,
+        gameStore,
+        playerStore
+      );
+    } else if (requestBody.method === "updatePlayer") {
+      return new UpdatePlayerRequestHandler(
+        requestBody,
+        connection,
+        logger,
+        gameStore,
+        playerStore
+      );
+    } else if (requestBody.method === "startGame") {
+      return new StartGameRequestHandler(
+        requestBody,
+        connection,
+        logger,
+        gameStore,
+        playerStore
+      );
+    } else {
+      throw new Error("Incorrect request body format.");
+    }
   }
 
   abstract handle(): void;
@@ -326,57 +378,5 @@ class StartGameRequestHandler extends RequestHandler {
       };
       gameToStart.broadcast(startGameResponse);
     }
-  }
-}
-
-export function createRequestHandler(
-  requestBody: GameRequestBody,
-  connection: GameConnection,
-  logger: Logger,
-  gameStore: GameStore,
-  playerStore: PlayerStore
-): RequestHandler {
-  if (requestBody.method === "create") {
-    return new CreateRequestHandler(
-      requestBody,
-      connection,
-      logger,
-      gameStore,
-      playerStore
-    );
-  } else if (requestBody.method === "join") {
-    return new JoinRequestHandler(
-      requestBody,
-      connection,
-      logger,
-      gameStore,
-      playerStore
-    );
-  } else if (requestBody.method === "updateGame") {
-    return new UpdateGameRequestHandler(
-      requestBody,
-      connection,
-      logger,
-      gameStore,
-      playerStore
-    );
-  } else if (requestBody.method === "updatePlayer") {
-    return new UpdatePlayerRequestHandler(
-      requestBody,
-      connection,
-      logger,
-      gameStore,
-      playerStore
-    );
-  } else if (requestBody.method === "startGame") {
-    return new StartGameRequestHandler(
-      requestBody,
-      connection,
-      logger,
-      gameStore,
-      playerStore
-    );
-  } else {
-    throw new Error("Incorrect request body format.");
   }
 }

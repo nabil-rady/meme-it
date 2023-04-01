@@ -7,7 +7,7 @@ import AvatarSelect from "../components/AvatarSelect";
 import { DMemeWithCaptionDetails } from "../dbtypes";
 
 import renderGameUI from "../lib/renderGameUI";
-import { createResponseHandler } from "../lib/ResponseHandler";
+import { ResponseHandler } from "../lib/ResponseHandler";
 
 import {
   GameInfo,
@@ -53,7 +53,7 @@ export default function Home() {
     ws.current = new WebSocket(`ws://${hostname}:9090`);
     ws.current.addEventListener("message", (e: MessageEvent<string>) => {
       const response = JSON.parse(e.data) as GameResponseBody;
-      const responseHandler = createResponseHandler(
+      const responseHandler = ResponseHandler.createResponseHandler(
         response,
         setGame,
         setThisPlayer,

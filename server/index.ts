@@ -12,7 +12,7 @@ import { GameConnection, GameRequestBody, LeaveResponseBody } from "./types";
 import { GameStore } from "./lib/GameStore";
 import { Player } from "./lib/Player";
 import { PlayerStore } from "./lib/PlayerStore";
-import { createRequestHandler } from "./lib/RequestHandler";
+import { RequestHandler } from "./lib/RequestHandler";
 
 const PORT = 9090;
 
@@ -101,7 +101,7 @@ function main(port: number) {
       try {
         const requestBody = JSON.parse(message.utf8Data) as GameRequestBody;
 
-        const requestHandler = createRequestHandler(
+        const requestHandler = RequestHandler.createRequestHandler(
           requestBody,
           connection,
           logger,

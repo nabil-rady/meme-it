@@ -13,7 +13,7 @@ import {
   StartGameResponseBody,
 } from "../server/types";
 
-abstract class ResponseHandler {
+export abstract class ResponseHandler {
   protected readonly setGame: Dispatch<SetStateAction<GameInfo | undefined>>;
   protected readonly setThisPlayer: Dispatch<
     SetStateAction<PlayerInfo | undefined>
@@ -36,6 +36,82 @@ abstract class ResponseHandler {
     this.setPlayers = setPlayers;
     this.setMeme = setMeme;
     this.setCaptions = setCaptions;
+  }
+
+  static createResponseHandler(
+    responseBody: GameResponseBody,
+    setGame: Dispatch<SetStateAction<GameInfo | undefined>>,
+    setThisPlayer: Dispatch<SetStateAction<PlayerInfo | undefined>>,
+    setPlayers: Dispatch<SetStateAction<PlayerInfo[]>>,
+    setMeme: Dispatch<SetStateAction<DMemeWithCaptionDetails | undefined>>,
+    setCaptions: Dispatch<SetStateAction<string[]>>
+  ): ResponseHandler {
+    if (responseBody.method === "create") {
+      return new CreateResponseHandler(
+        responseBody,
+        setGame,
+        setThisPlayer,
+        setPlayers,
+        setMeme,
+        setCaptions
+      );
+    } else if (responseBody.method === "join") {
+      return new JoinResponseHandler(
+        responseBody,
+        setGame,
+        setThisPlayer,
+        setPlayers,
+        setMeme,
+        setCaptions
+      );
+    } else if (responseBody.method === "updateGame") {
+      return new UpdateGameResponseHandler(
+        responseBody,
+        setGame,
+        setThisPlayer,
+        setPlayers,
+        setMeme,
+        setCaptions
+      );
+    } else if (responseBody.method === "updatePlayer") {
+      return new UpdatePlayerResponseHandler(
+        responseBody,
+        setGame,
+        setThisPlayer,
+        setPlayers,
+        setMeme,
+        setCaptions
+      );
+    } else if (responseBody.method === "startGame") {
+      return new StartGameResponseHandler(
+        responseBody,
+        setGame,
+        setThisPlayer,
+        setPlayers,
+        setMeme,
+        setCaptions
+      );
+    } else if (responseBody.method === "leave") {
+      return new LeaveResponseHandler(
+        responseBody,
+        setGame,
+        setThisPlayer,
+        setPlayers,
+        setMeme,
+        setCaptions
+      );
+    } else if (responseBody.method === "terminate") {
+      return new TerminateResponseHandler(
+        responseBody,
+        setGame,
+        setThisPlayer,
+        setPlayers,
+        setMeme,
+        setCaptions
+      );
+    } else {
+      throw new Error("Incorrect response body format.");
+    }
   }
 
   abstract handle(): void;
@@ -219,81 +295,5 @@ class TerminateResponseHandler extends ResponseHandler {
   handle() {
     // TODO: Termination handling here
     window.location.reload();
-  }
-}
-
-export function createResponseHandler(
-  body: GameResponseBody,
-  setGame: Dispatch<SetStateAction<GameInfo | undefined>>,
-  setThisPlayer: Dispatch<SetStateAction<PlayerInfo | undefined>>,
-  setPlayers: Dispatch<SetStateAction<PlayerInfo[]>>,
-  setMeme: Dispatch<SetStateAction<DMemeWithCaptionDetails | undefined>>,
-  setCaptions: Dispatch<SetStateAction<string[]>>
-): ResponseHandler {
-  if (body.method === "create") {
-    return new CreateResponseHandler(
-      body,
-      setGame,
-      setThisPlayer,
-      setPlayers,
-      setMeme,
-      setCaptions
-    );
-  } else if (body.method === "join") {
-    return new JoinResponseHandler(
-      body,
-      setGame,
-      setThisPlayer,
-      setPlayers,
-      setMeme,
-      setCaptions
-    );
-  } else if (body.method === "updateGame") {
-    return new UpdateGameResponseHandler(
-      body,
-      setGame,
-      setThisPlayer,
-      setPlayers,
-      setMeme,
-      setCaptions
-    );
-  } else if (body.method === "updatePlayer") {
-    return new UpdatePlayerResponseHandler(
-      body,
-      setGame,
-      setThisPlayer,
-      setPlayers,
-      setMeme,
-      setCaptions
-    );
-  } else if (body.method === "startGame") {
-    return new StartGameResponseHandler(
-      body,
-      setGame,
-      setThisPlayer,
-      setPlayers,
-      setMeme,
-      setCaptions
-    );
-  } else if (body.method === "leave") {
-    return new LeaveResponseHandler(
-      body,
-      setGame,
-      setThisPlayer,
-      setPlayers,
-      setMeme,
-      setCaptions
-    );
-  } else if (body.method === "terminate") {
-    return new TerminateResponseHandler(
-      body,
-      setGame,
-      setThisPlayer,
-      setPlayers,
-      setMeme,
-      setCaptions
-    );
-  } else {
-    throw new Error("Incorrect response body format.");
   }
 }

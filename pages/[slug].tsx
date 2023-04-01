@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
 
 import renderGameUI from "../lib/renderGameUI";
-import { createResponseHandler } from "../lib/ResponseHandler";
+import { ResponseHandler } from "../lib/ResponseHandler";
 
 import { DMemeWithCaptionDetails } from "../dbtypes";
 import {
@@ -30,7 +30,7 @@ export default function Home() {
     ws.current = new WebSocket(`ws://${hostname}:9090`);
     ws.current.addEventListener("message", (e: MessageEvent<string>) => {
       const response = JSON.parse(e.data) as GameResponseBody;
-      const responseHandler = createResponseHandler(
+      const responseHandler = ResponseHandler.createResponseHandler(
         response,
         setGame,
         setThisPlayer,
