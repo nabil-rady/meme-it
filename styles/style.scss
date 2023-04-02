@@ -478,6 +478,15 @@ body {
   }
 }
 
+/* Review */
+.review {
+  & > .meme {
+    &-container {
+      width: fit-content;
+    }
+  }
+}
+
 /* Media Queries */
 @media (max-width: 700px) {
   body {

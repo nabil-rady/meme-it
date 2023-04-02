@@ -4,12 +4,15 @@ import Dropdown from "../components/Dropdown";
 import Invite from "../components/Invite";
 import MemeComponent from "../components/Meme";
 import Player from "../components/Player";
+import ReviewPhase from "../components/ReviewPhase";
+
 import { DMemeWithCaptionDetails } from "../dbtypes";
 
 import {
-  CaptionRequestBody,
+  MemeForReview,
   GameInfo,
   PlayerInfo,
+  CaptionRequestBody,
   StartGameRequestBody,
 } from "../server/types";
 
@@ -99,11 +102,24 @@ const renderGameCaption = (
   );
 };
 
+const renderGameReview = (
+  thisPlayer: PlayerInfo,
+  memesForReview: MemeForReview[]
+) => {
+  return (
+    <div className="review">
+      <h1 className="title">Meme It</h1>
+      <ReviewPhase thisPlayer={thisPlayer} memes={memesForReview} />
+    </div>
+  );
+};
+
 export default function renderGameUI(
   game: GameInfo | undefined,
   thisPlayer: PlayerInfo | undefined,
   players: PlayerInfo[],
   meme: DMemeWithCaptionDetails | undefined,
+  memesforReviews: MemeForReview[],
   captions: string[],
   setCaptions: Dispatch<SetStateAction<string[]>>,
   ws: MutableRefObject<WebSocket | undefined>
@@ -115,6 +131,8 @@ export default function renderGameUI(
   } else if (game.phase === "caption") {
     if (!meme) return <h1 className="loading">Loading...</h1>;
     return renderGameCaption(meme, captions, setCaptions, ws);
+  } else if (game.phase === "review") {
+    return renderGameReview(thisPlayer, memesforReviews);
   } else {
     return <h1>Not Implemented</h1>;
   }

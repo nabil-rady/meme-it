@@ -10,6 +10,7 @@ import renderGameUI from "../lib/renderGameUI";
 import { ResponseHandler } from "../lib/ResponseHandler";
 
 import {
+  MemeForReview,
   GameInfo,
   PlayerInfo,
   GameResponseBody,
@@ -23,6 +24,7 @@ export default function Home() {
   const [thisPlayer, setThisPlayer] = useState<PlayerInfo>();
   const [players, setPlayers] = useState<PlayerInfo[]>([]);
   const [meme, setMeme] = useState<DMemeWithCaptionDetails>();
+  const [memesForReview, setMemesForReview] = useState<MemeForReview[]>([]);
   const [captions, setCaptions] = useState<string[]>([]);
 
   const [avatar, setAvatar] = useState<string>("/avatars/1.jpg");
@@ -59,6 +61,7 @@ export default function Home() {
         setThisPlayer,
         setPlayers,
         setMeme,
+        setMemesForReview,
         setCaptions
       );
 
@@ -144,7 +147,16 @@ export default function Home() {
 
   const render = () =>
     game && thisPlayer && players.length !== 0
-      ? renderGameUI(game, thisPlayer, players, meme, captions, setCaptions, ws)
+      ? renderGameUI(
+          game,
+          thisPlayer,
+          players,
+          meme,
+          memesForReview,
+          captions,
+          setCaptions,
+          ws
+        )
       : renderHome();
 
   return (
