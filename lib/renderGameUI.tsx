@@ -79,14 +79,11 @@ const renderGameCaption = (
   ws: MutableRefObject<WebSocket | undefined>
 ) => {
   const sendCaptions = async () => {
-    if (!ws.current) {
-      return;
-    }
     const captionRequest: CaptionRequestBody = {
       method: "caption",
       captions,
     };
-    ws.current.send(JSON.stringify(captionRequest));
+    ws.current?.send(JSON.stringify(captionRequest));
   };
 
   return (
