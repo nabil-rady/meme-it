@@ -405,6 +405,16 @@ class LeaveResponseHandler extends ResponseHandler {
   }
 
   handle() {
+    this.setThisPlayer((prevThisPlayer) => {
+      if (!prevThisPlayer) return prevThisPlayer;
+      if (prevThisPlayer.id === this.responseBody.newAdmin?.id) {
+        return {
+          ...prevThisPlayer,
+          admin: true,
+        };
+      }
+      return prevThisPlayer;
+    });
     this.setPlayers((prevPlayers) => {
       if (this.responseBody.newAdmin) {
         const newAdminIndex = prevPlayers.findIndex(
