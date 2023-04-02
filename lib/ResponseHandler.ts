@@ -11,6 +11,7 @@ import {
   LeaveResponseBody,
   TerminateResponseBody,
   StartGameResponseBody,
+  CaptionResponseBody,
 } from "../server/types";
 
 export abstract class ResponseHandler {
@@ -84,6 +85,15 @@ export abstract class ResponseHandler {
       );
     } else if (responseBody.method === "startGame") {
       return new StartGameResponseHandler(
+        responseBody,
+        setGame,
+        setThisPlayer,
+        setPlayers,
+        setMeme,
+        setCaptions
+      );
+    } else if (responseBody.method === "caption") {
+      return new CaptionResponseHandler(
         responseBody,
         setGame,
         setThisPlayer,
@@ -239,6 +249,26 @@ class StartGameResponseHandler extends ResponseHandler {
         .fill("")
         .map((_, index) => `Caption ${index + 1}`)
     );
+  }
+}
+
+class CaptionResponseHandler extends ResponseHandler {
+  private readonly responseBody: CaptionResponseBody;
+
+  constructor(
+    responseBody: CaptionResponseBody,
+    setGame: Dispatch<SetStateAction<GameInfo | undefined>>,
+    setThisPlayer: Dispatch<SetStateAction<PlayerInfo | undefined>>,
+    setPlayers: Dispatch<SetStateAction<PlayerInfo[]>>,
+    setMeme: Dispatch<SetStateAction<DMemeWithCaptionDetails | undefined>>,
+    setCaptions: Dispatch<SetStateAction<string[]>>
+  ) {
+    super(setGame, setThisPlayer, setPlayers, setMeme, setCaptions);
+    this.responseBody = responseBody;
+  }
+
+  handle() {
+    // TODO: Error handling
   }
 }
 

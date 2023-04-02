@@ -76,6 +76,10 @@ export class Game {
     );
   }
 
+  getPhase(): GamePhase {
+    return this.phase;
+  }
+
   setPhase(phase: GamePhase) {
     this.phase = phase;
   }

@@ -1,4 +1,5 @@
 import { v4 as uuid } from "uuid";
+import { DMemeWithCaptionDetails } from "../../dbtypes";
 import { GameConnection, PlayerInfo, GameResponseBody } from "../types";
 
 export class Player {
@@ -8,6 +9,8 @@ export class Player {
   private admin: boolean;
   private readonly joinedAt: number;
   private readonly connection: GameConnection;
+  private currentMeme: DMemeWithCaptionDetails | null;
+  private currentCaptions: string[] | null;
 
   constructor(
     nickname: string,
@@ -21,6 +24,8 @@ export class Player {
     this.admin = admin;
     this.joinedAt = Date.now().valueOf();
     this.connection = connection;
+    this.currentMeme = null;
+    this.currentCaptions = null;
   }
 
   getPlayerId(): string {
@@ -52,6 +57,22 @@ export class Player {
 
   makeAdmin() {
     this.admin = true;
+  }
+
+  getCurrentMeme(): DMemeWithCaptionDetails | null {
+    return this.currentMeme;
+  }
+
+  setCurrentMeme(meme: DMemeWithCaptionDetails | null) {
+    this.currentMeme = meme;
+  }
+
+  getCurrentCaptions(): string[] | null {
+    return this.currentCaptions;
+  }
+
+  setCurrentCaptions(captions: string[] | null) {
+    this.currentCaptions = captions;
   }
 
   send(message: GameResponseBody) {

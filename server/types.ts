@@ -59,12 +59,18 @@ export interface StartGameRequestBody {
   method: "startGame";
 }
 
+export interface CaptionRequestBody {
+  method: "caption";
+  captions: string[];
+}
+
 export type GameRequestBody =
   | CreateRequestBody
   | JoinRequestBody
   | UpdatePlayerRequestBody
   | UpdateGameRequestBody
-  | StartGameRequestBody;
+  | StartGameRequestBody
+  | CaptionRequestBody;
 
 export interface CreateResponseBody {
   method: "create";
@@ -93,6 +99,11 @@ export interface StartGameResponseBody {
   meme: DMemeWithCaptionDetails;
 }
 
+export interface CaptionResponseBody {
+  method: "caption";
+  success: boolean;
+}
+
 export interface LeaveResponseBody {
   method: "leave";
   player: PlayerInfo;
@@ -113,5 +124,6 @@ export type GameResponseBody =
   | UpdatePlayerResponseBody
   | UpdateGameResponseBody
   | StartGameResponseBody
+  | CaptionResponseBody
   | LeaveResponseBody
   | TerminateResponseBody;

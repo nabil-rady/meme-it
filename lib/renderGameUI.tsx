@@ -6,7 +6,12 @@ import MemeComponent from "../components/Meme";
 import Player from "../components/Player";
 import { DMemeWithCaptionDetails } from "../dbtypes";
 
-import { GameInfo, PlayerInfo, StartGameRequestBody } from "../server/types";
+import {
+  CaptionRequestBody,
+  GameInfo,
+  PlayerInfo,
+  StartGameRequestBody,
+} from "../server/types";
 
 const renderGameLobby = (
   game: GameInfo,
@@ -64,6 +69,36 @@ const renderGameLobby = (
   );
 };
 
+const renderGameCaption = (
+  meme: DMemeWithCaptionDetails,
+  captions: string[],
+  setCaptions: Dispatch<SetStateAction<string[]>>,
+  ws: MutableRefObject<WebSocket | undefined>
+) => {
+  const sendCaptions = async () => {
+    if (!ws.current) {
+      return;
+    }
+    const captionRequest: CaptionRequestBody = {
+      method: "caption",
+      captions,
+    };
+    ws.current.send(JSON.stringify(captionRequest));
+  };
+
+  return (
+    <div className="caption">
+      <h1 className="title">Meme It</h1>
+      <MemeComponent
+        meme={meme}
+        captions={captions}
+        setCaptions={setCaptions}
+        sendCaptions={sendCaptions}
+      />
+    </div>
+  );
+};
+
 export default function renderGameUI(
   game: GameInfo | undefined,
   thisPlayer: PlayerInfo | undefined,
@@ -79,16 +114,7 @@ export default function renderGameUI(
     return renderGameLobby(game, thisPlayer, players, ws);
   } else if (game.phase === "caption") {
     if (!meme) return <h1 className="loading">Loading...</h1>;
-    return (
-      <div className="caption">
-        <h1 className="title">Meme It</h1>
-        <MemeComponent
-          meme={meme}
-          captions={captions}
-          setCaptions={setCaptions}
-        />
-      </div>
-    );
+    return renderGameCaption(meme, captions, setCaptions, ws);
   } else {
     return <h1>Not Implemented</h1>;
   }

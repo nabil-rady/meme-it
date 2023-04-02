@@ -6,6 +6,7 @@ interface MemeProps {
   meme: DMemeWithCaptionDetails;
   captions: string[];
   setCaptions: Dispatch<SetStateAction<string[]>>;
+  sendCaptions: () => Promise<void>;
 }
 
 const CANVAS_ID = "meme-canvas";
@@ -49,7 +50,9 @@ export default function MemeComponent(props: MemeProps) {
               }}
             />
           ))}
-          <button className="button">Submit</button>
+          <button className="button" onClick={() => props.sendCaptions()}>
+            Submit
+          </button>
         </div>
       </div>
     </div>

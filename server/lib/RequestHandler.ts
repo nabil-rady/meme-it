@@ -20,6 +20,8 @@ import {
   UpdatePlayerResponseBody,
   StartGameRequestBody,
   StartGameResponseBody,
+  CaptionRequestBody,
+  CaptionResponseBody,
 } from "../types";
 import { DMemeWithCaptionDetails } from "../../dbtypes";
 
@@ -82,6 +84,14 @@ export abstract class RequestHandler {
       );
     } else if (requestBody.method === "startGame") {
       return new StartGameRequestHandler(
+        requestBody,
+        connection,
+        logger,
+        gameStore,
+        playerStore
+      );
+    } else if (requestBody.method === "caption") {
+      return new CaptionRequestHandler(
         requestBody,
         connection,
         logger,
@@ -391,13 +401,82 @@ class StartGameRequestHandler extends RequestHandler {
       })
     ).at(0);
 
-    if (meme) {
-      // TODO: Different meme for every player
+    if (!meme) {
+      throw new Error("Database has no memes.");
+    }
+    // TODO: Different meme for every player
+    for (const player of gameToStart.getPlayers()) {
+      player.setCurrentMeme(meme);
+      this.playerStore.addPlayer(player);
+
       const startGameResponse: StartGameResponseBody = {
         method: "startGame",
         meme,
       };
-      gameToStart.broadcast(startGameResponse);
+      player.send(startGameResponse);
     }
+  }
+}
+
+class CaptionRequestHandler extends RequestHandler {
+  private requestBody: CaptionRequestBody;
+
+  constructor(
+    requestBody: CaptionRequestBody,
+    connection: GameConnection,
+    logger: Logger,
+    gameStore: GameStore,
+    playerStore: PlayerStore
+  ) {
+    super(connection, logger, gameStore, playerStore);
+    this.requestBody = requestBody;
+  }
+
+  handle() {
+    if (!this.isValidConnection()) {
+      this.logger.debug(
+        "Attempted to send captions from an invalid connection."
+      );
+      return;
+    }
+
+    const playerId = this.connection.playerId!;
+    const player = this.playerStore.getPlayer(playerId);
+    if (!player) {
+      this.send404Error("Player", playerId);
+      return;
+    }
+
+    const gameId = this.connection.gameId!;
+    const game = this.gameStore.getGame(gameId);
+    if (!game) {
+      this.send404Error("Game", gameId);
+      return;
+    }
+
+    if (
+      this.requestBody.captions.length !==
+      player.getCurrentMeme()?.captionsDetails.length
+    ) {
+      this.connection.send(JSON.stringify({ error: "invalid request" }));
+      return;
+    }
+
+    if (game.getPhase() !== "caption") {
+      const captionResponse: CaptionResponseBody = {
+        method: "caption",
+        success: false,
+      };
+      player.send(captionResponse);
+      return;
+    }
+
+    player.setCurrentCaptions(this.requestBody.captions);
+
+    const captionResponse: CaptionResponseBody = {
+      method: "caption",
+      success: true,
+    };
+    player.send(captionResponse);
   }
 }
