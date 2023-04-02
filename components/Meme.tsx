@@ -12,17 +12,20 @@ interface MemeProps {
 const CANVAS_ID = "meme-canvas";
 
 export default function MemeComponent(props: MemeProps) {
+  const meme = useRef<Meme>();
   const intervalId = useRef<NodeJS.Timer>();
 
   const [secondsLeft, setSecondsLeft] = useState<number>(60);
 
   useEffect(() => {
-    const meme = new Meme(CANVAS_ID, {
-      url: props.meme.url,
-      captionsDetails: props.meme.captionsDetails,
-    });
-    meme.captions = props.captions;
-    meme.render();
+    if (!meme.current) {
+      meme.current = new Meme(CANVAS_ID, {
+        url: props.meme.url,
+        captionsDetails: props.meme.captionsDetails,
+      });
+    }
+    meme.current.captions = props.captions;
+    meme.current.render();
   }, [props.captions]);
 
   useEffect(() => {
