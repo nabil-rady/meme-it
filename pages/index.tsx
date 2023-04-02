@@ -142,11 +142,7 @@ export default function Home() {
     </main>
   );
 
-  const render = (
-    game: GameInfo | undefined,
-    thisPlayer: PlayerInfo | undefined,
-    players: PlayerInfo[]
-  ) =>
+  const render = () =>
     game && thisPlayer && players.length !== 0
       ? renderGameUI(game, thisPlayer, players, meme, captions, setCaptions, ws)
       : renderHome();
@@ -156,7 +152,7 @@ export default function Home() {
       <Head>
         <title>Meme It</title>
       </Head>
-      {render(game, thisPlayer, players)}
+      {render()}
     </div>
   );
 }
