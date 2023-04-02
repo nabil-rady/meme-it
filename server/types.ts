@@ -5,6 +5,12 @@ import { DMemeWithCaptionDetails } from "../dbtypes";
 
 export type GamePhase = "lobby" | "caption" | "review" | "final";
 
+export type MemeForReview = {
+  meme: DMemeWithCaptionDetails;
+  captions: string[] | null;
+  creatorPlayerId: string;
+};
+
 export type GameConnection = Connection & {
   playerId?: string;
   gameId?: string;
@@ -104,6 +110,11 @@ export interface CaptionResponseBody {
   success: boolean;
 }
 
+export interface EndCaptionPhaseResponseBody {
+  method: "endCaptionPhase";
+  memes: MemeForReview[];
+}
+
 export interface LeaveResponseBody {
   method: "leave";
   player: PlayerInfo;
@@ -125,5 +136,6 @@ export type GameResponseBody =
   | UpdateGameResponseBody
   | StartGameResponseBody
   | CaptionResponseBody
+  | EndCaptionPhaseResponseBody
   | LeaveResponseBody
   | TerminateResponseBody;

@@ -14,6 +14,7 @@ export class Game {
   private maxPlayers: number;
   private phase: GamePhase;
   private players: Player[];
+  private timeoudId: NodeJS.Timeout | undefined = undefined;
 
   constructor(rounds: number, maxPlayers: number, admin: Player) {
     this.id = uuid();
@@ -82,6 +83,14 @@ export class Game {
 
   setPhase(phase: GamePhase) {
     this.phase = phase;
+  }
+
+  getTimeoutId(): NodeJS.Timeout | undefined {
+    return this.timeoudId;
+  }
+
+  setTimeoutId(timeoudId: NodeJS.Timeout) {
+    this.timeoudId = timeoudId;
   }
 
   broadcast(response: GameResponseBody) {

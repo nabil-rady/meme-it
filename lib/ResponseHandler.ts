@@ -12,6 +12,7 @@ import {
   TerminateResponseBody,
   StartGameResponseBody,
   CaptionResponseBody,
+  EndCaptionPhaseResponseBody,
 } from "../server/types";
 
 export abstract class ResponseHandler {
@@ -94,6 +95,15 @@ export abstract class ResponseHandler {
       );
     } else if (responseBody.method === "caption") {
       return new CaptionResponseHandler(
+        responseBody,
+        setGame,
+        setThisPlayer,
+        setPlayers,
+        setMeme,
+        setCaptions
+      );
+    } else if (responseBody.method === "endCaptionPhase") {
+      return new EndCaptionPhaseResponseHandler(
         responseBody,
         setGame,
         setThisPlayer,
@@ -269,6 +279,32 @@ class CaptionResponseHandler extends ResponseHandler {
 
   handle() {
     // TODO: Error handling
+  }
+}
+
+class EndCaptionPhaseResponseHandler extends ResponseHandler {
+  private readonly responseBody: EndCaptionPhaseResponseBody;
+
+  constructor(
+    responseBody: EndCaptionPhaseResponseBody,
+    setGame: Dispatch<SetStateAction<GameInfo | undefined>>,
+    setThisPlayer: Dispatch<SetStateAction<PlayerInfo | undefined>>,
+    setPlayers: Dispatch<SetStateAction<PlayerInfo[]>>,
+    setMeme: Dispatch<SetStateAction<DMemeWithCaptionDetails | undefined>>,
+    setCaptions: Dispatch<SetStateAction<string[]>>
+  ) {
+    super(setGame, setThisPlayer, setPlayers, setMeme, setCaptions);
+    this.responseBody = responseBody;
+  }
+
+  handle() {
+    this.setGame((game) => {
+      if (!game) return game;
+      return {
+        ...game,
+        phase: "review",
+      };
+    });
   }
 }
 

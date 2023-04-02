@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { DMemeWithCaptionDetails } from "../dbtypes";
 import { Meme } from "../lib/Meme";
 
@@ -12,6 +12,8 @@ interface MemeProps {
 const CANVAS_ID = "meme-canvas";
 
 export default function MemeComponent(props: MemeProps) {
+  const intervalId = useRef<NodeJS.Timer>();
+
   const [secondsLeft, setSecondsLeft] = useState<number>(60);
 
   useEffect(() => {
@@ -24,10 +26,16 @@ export default function MemeComponent(props: MemeProps) {
   }, [props.captions]);
 
   useEffect(() => {
-    const intervalId = setInterval(() => {
+    if (secondsLeft === 0) {
+      clearInterval(intervalId.current);
+    }
+  }, [secondsLeft]);
+
+  useEffect(() => {
+    intervalId.current = setInterval(() => {
       setSecondsLeft((secs) => (secs > 0 ? secs - 1 : secs));
     }, 1000);
-    return () => clearInterval(intervalId);
+    return () => clearInterval(intervalId.current);
   }, []);
 
   return (

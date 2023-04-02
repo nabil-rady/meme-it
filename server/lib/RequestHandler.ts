@@ -8,6 +8,7 @@ import { PlayerStore } from "./PlayerStore";
 import prisma from "../../db";
 
 import {
+  MemeForReview,
   GameConnection,
   GameRequestBody,
   CreateRequestBody,
@@ -22,6 +23,7 @@ import {
   StartGameResponseBody,
   CaptionRequestBody,
   CaptionResponseBody,
+  EndCaptionPhaseResponseBody,
 } from "../types";
 import { DMemeWithCaptionDetails } from "../../dbtypes";
 
@@ -109,6 +111,27 @@ export abstract class RequestHandler {
 
   isAdmin(game: Game): boolean {
     return game.getAdmin()?.getPlayerId() === this.connection.playerId;
+  }
+
+  endCaptionPhase(game: Game) {
+    game.setPhase("review");
+    this.gameStore.addGame(game);
+
+    const memes: MemeForReview[] = game.getPlayers().map((player) => ({
+      meme: player.getCurrentMeme()!,
+      captions: player.getCurrentCaptions(),
+      creatorPlayerId: player.getPlayerId(),
+    }));
+
+    for (const player of game.getPlayers()) {
+      player.setCurrentCaptions(null);
+    }
+
+    const endCaptionPhaseResponse: EndCaptionPhaseResponseBody = {
+      method: "endCaptionPhase",
+      memes,
+    };
+    game.broadcast(endCaptionPhaseResponse);
   }
 
   getRequestType(): string {
@@ -415,6 +438,12 @@ class StartGameRequestHandler extends RequestHandler {
       };
       player.send(startGameResponse);
     }
+
+    const timeoutId = setTimeout(() => {
+      this.endCaptionPhase(gameToStart);
+    }, 1000 * (60 + 5)); // Add extra 5 seconds for good UX.
+
+    gameToStart.setTimeoutId(timeoutId);
   }
 }
 
@@ -478,5 +507,10 @@ class CaptionRequestHandler extends RequestHandler {
       success: true,
     };
     player.send(captionResponse);
+
+    if (game.getPlayers().every((player) => player.getCurrentCaptions())) {
+      clearTimeout(game.getTimeoutId());
+      this.endCaptionPhase(game);
+    }
   }
 }
