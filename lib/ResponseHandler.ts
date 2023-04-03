@@ -12,7 +12,7 @@ import {
   LeaveResponseBody,
   TerminateResponseBody,
   StartGameResponseBody,
-  CaptionResponseBody,
+  SubmitCaptionsResponseBody,
   EndCaptionPhaseResponseBody,
   SubmitReviewResponseBody,
 } from "../server/types";
@@ -106,7 +106,7 @@ export abstract class ResponseHandler {
         setMemesForReview,
         setCaptions
       );
-    } else if (responseBody.method === "caption") {
+    } else if (responseBody.method === "submitCaption") {
       return new CaptionResponseHandler(
         responseBody,
         setGame,
@@ -330,10 +330,10 @@ class StartGameResponseHandler extends ResponseHandler {
 }
 
 class CaptionResponseHandler extends ResponseHandler {
-  private readonly responseBody: CaptionResponseBody;
+  private readonly responseBody: SubmitCaptionsResponseBody;
 
   constructor(
-    responseBody: CaptionResponseBody,
+    responseBody: SubmitCaptionsResponseBody,
     setGame: Dispatch<SetStateAction<GameInfo | undefined>>,
     setThisPlayer: Dispatch<SetStateAction<PlayerInfo | undefined>>,
     setPlayers: Dispatch<SetStateAction<PlayerInfo[]>>,

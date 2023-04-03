@@ -12,7 +12,7 @@ import {
   MemeForReview,
   GameInfo,
   PlayerInfo,
-  CaptionRequestBody,
+  SubmitCaptionsRequestBody,
   StartGameRequestBody,
 } from "../server/types";
 
@@ -89,8 +89,11 @@ const renderGameCaption = (
   ws: MutableRefObject<WebSocket | undefined>
 ) => {
   const sendCaptions = async () => {
-    const captionRequest: CaptionRequestBody = {
-      method: "caption",
+    if (!ws.current) {
+      return;
+    }
+    const captionRequest: SubmitCaptionsRequestBody = {
+      method: "submitCaption",
       captions,
     };
     ws.current?.send(JSON.stringify(captionRequest));

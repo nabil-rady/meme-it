@@ -21,8 +21,8 @@ import {
   UpdatePlayerResponseBody,
   StartGameRequestBody,
   StartGameResponseBody,
-  CaptionRequestBody,
-  CaptionResponseBody,
+  SubmitCaptionsRequestBody,
+  SubmitCaptionsResponseBody,
   EndCaptionPhaseResponseBody,
   SubmitReviewRequestBody,
   SubmitReviewResponseBody,
@@ -94,8 +94,8 @@ export abstract class RequestHandler {
         gameStore,
         playerStore
       );
-    } else if (requestBody.method === "caption") {
-      return new CaptionRequestHandler(
+    } else if (requestBody.method === "submitCaption") {
+      return new SubmitCaptionsRequestHandler(
         requestBody,
         connection,
         logger,
@@ -143,6 +143,10 @@ export abstract class RequestHandler {
       memes,
     };
     game.broadcast(endCaptionPhaseResponse);
+
+    this.logger.info(
+      `Game ${game.getGameId()} caption phase has ended and is now in its review phase.`
+    );
   }
 
   getRequestType(): string {
@@ -456,14 +460,16 @@ class StartGameRequestHandler extends RequestHandler {
 
     gameToStart.setTimeoutId(timeoutId);
     this.gameStore.addGame(gameToStart);
+
+    this.logger.info(`Game ${gameId} started and is in now in round 1.`);
   }
 }
 
-class CaptionRequestHandler extends RequestHandler {
-  private requestBody: CaptionRequestBody;
+class SubmitCaptionsRequestHandler extends RequestHandler {
+  private requestBody: SubmitCaptionsRequestBody;
 
   constructor(
-    requestBody: CaptionRequestBody,
+    requestBody: SubmitCaptionsRequestBody,
     connection: GameConnection,
     logger: Logger,
     gameStore: GameStore,
@@ -504,8 +510,8 @@ class CaptionRequestHandler extends RequestHandler {
     }
 
     if (game.getPhase() !== "caption") {
-      const captionResponse: CaptionResponseBody = {
-        method: "caption",
+      const captionResponse: SubmitCaptionsResponseBody = {
+        method: "submitCaption",
         success: false,
       };
       player.send(captionResponse);
@@ -515,15 +521,27 @@ class CaptionRequestHandler extends RequestHandler {
     player.setCurrentCaptions(this.requestBody.captions);
     this.playerStore.addPlayer(player);
 
-    const captionResponse: CaptionResponseBody = {
-      method: "caption",
+    const captionResponse: SubmitCaptionsResponseBody = {
+      method: "submitCaption",
       success: true,
     };
     player.send(captionResponse);
 
+    this.logger.info(
+      `Player ${playerId} submitted captions to his/her/their meme for round ${
+        game.getGameInfo().currentRound
+      }.`
+    );
+
     if (game.getPlayers().every((player) => player.getCurrentCaptions())) {
       clearTimeout(game.getTimeoutId());
       this.endCaptionPhase(game);
+
+      this.logger.info(
+        `Players of game ${game.getGameId()} finished their captions for round ${
+          game.getGameInfo().currentRound
+        } before the alotted time.`
+      );
     }
   }
 }
@@ -596,5 +614,11 @@ class SubmitReviewRequestHandler extends RequestHandler {
       success: true,
     };
     this.connection.send(JSON.stringify(submitReviewResponse));
+
+    this.logger.info(
+      `Player ${playerId} submitted a review to the meme created by player ${playerToBeReviewed.getPlayerId()} in  round ${currentRound}, the meme now has ${
+        playerToBeReviewed.totalVotes
+      }.`
+    );
   }
 }
