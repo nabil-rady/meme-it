@@ -110,13 +110,13 @@ const renderGameCaption = (
 };
 
 const renderGameReview = (
-  thisPlayer: PlayerInfo,
-  memesForReview: MemeForReview[]
+  memesForReview: MemeForReview[],
+  ws: MutableRefObject<WebSocket | undefined>
 ) => {
   return (
     <div className="review">
       <h1 className="title">Meme It</h1>
-      <ReviewPhase thisPlayer={thisPlayer} memes={memesForReview} />
+      <ReviewPhase memes={memesForReview} ws={ws} />
     </div>
   );
 };
@@ -139,7 +139,7 @@ export default function renderGameUI(
     if (!meme) return <h1 className="loading">Loading...</h1>;
     return renderGameCaption(meme, captions, setCaptions, ws);
   } else if (game.phase === "review") {
-    return renderGameReview(thisPlayer, memesforReviews);
+    return renderGameReview(memesforReviews, ws);
   } else {
     return <h1>Not Implemented</h1>;
   }

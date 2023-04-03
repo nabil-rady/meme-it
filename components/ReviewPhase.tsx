@@ -1,12 +1,12 @@
-import { useEffect, useRef, useState } from "react";
+import { MutableRefObject, useEffect, useRef, useState } from "react";
 
 import MemeForReviewComponent from "./MemeForReview";
 
 import { MemeForReview, PlayerInfo } from "../server/types";
 
 interface ReviewPhaseProps {
-  thisPlayer: PlayerInfo;
   memes: MemeForReview[];
+  ws: MutableRefObject<WebSocket | undefined>;
 }
 
 export default function ReviewPhase(props: ReviewPhaseProps) {
@@ -42,8 +42,8 @@ export default function ReviewPhase(props: ReviewPhaseProps) {
   return (
     <MemeForReviewComponent
       secondsLeft={secondsLeft}
-      thisPlayer={props.thisPlayer}
       memeForReview={props.memes[Math.min(index, numberOfMemesToReview - 1)]}
+      ws={props.ws}
     />
   );
 }

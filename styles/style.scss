@@ -596,9 +596,21 @@ body {
 
 /* Review */
 .review {
-  & > .meme {
+  > .meme {
     &-container {
       width: fit-content;
+      > .buttons {
+        width: 50%;
+        display: flex;
+        margin: 1.5rem auto;
+        > svg {
+          display: block;
+          cursor: pointer;
+          &:last-child {
+            margin-left: auto;
+          }
+        }
+      }
     }
   }
 }
