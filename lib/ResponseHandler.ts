@@ -14,6 +14,7 @@ import {
   StartGameResponseBody,
   CaptionResponseBody,
   EndCaptionPhaseResponseBody,
+  SubmitReviewResponseBody,
 } from "../server/types";
 
 export abstract class ResponseHandler {
@@ -117,6 +118,16 @@ export abstract class ResponseHandler {
       );
     } else if (responseBody.method === "endCaptionPhase") {
       return new EndCaptionPhaseResponseHandler(
+        responseBody,
+        setGame,
+        setThisPlayer,
+        setPlayers,
+        setMeme,
+        setMemesForReview,
+        setCaptions
+      );
+    } else if (responseBody.method === "submitReview") {
+      return new SubmitReviewResponseHandler(
         responseBody,
         setGame,
         setThisPlayer,
@@ -378,6 +389,34 @@ class EndCaptionPhaseResponseHandler extends ResponseHandler {
       };
     });
     this.setMemesForReview(this.responseBody.memes);
+  }
+}
+
+class SubmitReviewResponseHandler extends ResponseHandler {
+  private readonly responseBody: SubmitReviewResponseBody;
+
+  constructor(
+    responseBody: SubmitReviewResponseBody,
+    setGame: Dispatch<SetStateAction<GameInfo | undefined>>,
+    setThisPlayer: Dispatch<SetStateAction<PlayerInfo | undefined>>,
+    setPlayers: Dispatch<SetStateAction<PlayerInfo[]>>,
+    setMeme: Dispatch<SetStateAction<DMemeWithCaptionDetails | undefined>>,
+    setMemesForReview: Dispatch<SetStateAction<MemeForReview[]>>,
+    setCaptions: Dispatch<SetStateAction<string[]>>
+  ) {
+    super(
+      setGame,
+      setThisPlayer,
+      setPlayers,
+      setMeme,
+      setMemesForReview,
+      setCaptions
+    );
+    this.responseBody = responseBody;
+  }
+
+  handle() {
+    // TODO: Error handling
   }
 }
 
