@@ -125,6 +125,7 @@ export abstract class RequestHandler {
 
     for (const player of game.getPlayers()) {
       player.setCurrentCaptions(null);
+      this.playerStore.addPlayer(player);
     }
 
     const endCaptionPhaseResponse: EndCaptionPhaseResponseBody = {
@@ -444,6 +445,7 @@ class StartGameRequestHandler extends RequestHandler {
     }, 1000 * (60 + 5)); // Add extra 5 seconds for good UX.
 
     gameToStart.setTimeoutId(timeoutId);
+    this.gameStore.addGame(gameToStart);
   }
 }
 
@@ -501,6 +503,7 @@ class CaptionRequestHandler extends RequestHandler {
     }
 
     player.setCurrentCaptions(this.requestBody.captions);
+    this.playerStore.addPlayer(player);
 
     const captionResponse: CaptionResponseBody = {
       method: "caption",
