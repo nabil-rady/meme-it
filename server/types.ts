@@ -11,6 +11,10 @@ export type MemeForReview = {
   creatorPlayerId: string;
 };
 
+export type Votes = {
+  [key: string]: boolean;
+};
+
 export type GameConnection = Connection & {
   playerId?: string;
   gameId?: string;
@@ -37,12 +41,13 @@ export interface GameInfo {
   rounds: number;
   maxPlayers: number;
   phase: GamePhase;
+  currentRound: number;
 }
 
 export interface CreateRequestBody {
   method: "create";
   admin: Omit<PlayerInfo, "id" | "joinedAt">;
-  game: Omit<GameInfo, "id" | "phase">;
+  game: Omit<GameInfo, "id" | "phase" | "currentRound">;
 }
 
 export interface JoinRequestBody {
@@ -58,7 +63,7 @@ export interface UpdatePlayerRequestBody {
 
 export interface UpdateGameRequestBody {
   method: "updateGame";
-  updatedGame: Omit<GameInfo, "id" | "phase">;
+  updatedGame: Omit<GameInfo, "id" | "phase" | "currentRound">;
 }
 
 export interface StartGameRequestBody {
@@ -70,13 +75,20 @@ export interface CaptionRequestBody {
   captions: string[];
 }
 
+export interface SubmitReviewRequestBody {
+  method: "submitReview";
+  like: boolean;
+  playerToBeReviewedId: string;
+}
+
 export type GameRequestBody =
   | CreateRequestBody
   | JoinRequestBody
   | UpdatePlayerRequestBody
   | UpdateGameRequestBody
   | StartGameRequestBody
-  | CaptionRequestBody;
+  | CaptionRequestBody
+  | SubmitReviewRequestBody;
 
 export interface CreateResponseBody {
   method: "create";
@@ -115,6 +127,11 @@ export interface EndCaptionPhaseResponseBody {
   memes: MemeForReview[];
 }
 
+export interface SubmitReviewResponseBody {
+  method: "submitReview";
+  success: boolean;
+}
+
 export interface LeaveResponseBody {
   method: "leave";
   player: PlayerInfo;
@@ -137,5 +154,6 @@ export type GameResponseBody =
   | StartGameResponseBody
   | CaptionResponseBody
   | EndCaptionPhaseResponseBody
+  | SubmitReviewResponseBody
   | LeaveResponseBody
   | TerminateResponseBody;

@@ -1,6 +1,6 @@
 import { v4 as uuid } from "uuid";
 import { DMemeWithCaptionDetails } from "../../dbtypes";
-import { GameConnection, PlayerInfo, GameResponseBody } from "../types";
+import { Votes, GameConnection, PlayerInfo, GameResponseBody } from "../types";
 
 export class Player {
   private readonly id: string;
@@ -11,6 +11,7 @@ export class Player {
   private readonly connection: GameConnection;
   private currentMeme: DMemeWithCaptionDetails | null;
   private currentCaptions: string[] | null;
+  private votes: Votes;
 
   constructor(
     nickname: string,
@@ -26,6 +27,7 @@ export class Player {
     this.connection = connection;
     this.currentMeme = null;
     this.currentCaptions = null;
+    this.votes = {};
   }
 
   getPlayerId(): string {
@@ -73,6 +75,27 @@ export class Player {
 
   setCurrentCaptions(captions: string[] | null) {
     this.currentCaptions = captions;
+  }
+
+  getVotes(): Votes {
+    return this.votes;
+  }
+
+  get totalVotes(): number {
+    let totalVotes = 0;
+    for (const key in this.votes) {
+      if (this.votes[key]) totalVotes++;
+      else totalVotes--;
+    }
+    return totalVotes;
+  }
+
+  upvote(playerId: string, round: number) {
+    this.votes[`${playerId}|${round}`] = true;
+  }
+
+  downvote(playerId: string, round: number) {
+    this.votes[`${playerId}|${round}`] = false;
   }
 
   send(message: GameResponseBody) {

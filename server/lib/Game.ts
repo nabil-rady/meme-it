@@ -14,6 +14,7 @@ export class Game {
   private maxPlayers: number;
   private phase: GamePhase;
   private players: Player[];
+  private currentRound: number;
   private timeoudId: NodeJS.Timeout | undefined = undefined;
 
   constructor(rounds: number, maxPlayers: number, admin: Player) {
@@ -22,6 +23,7 @@ export class Game {
     this.maxPlayers = maxPlayers;
     this.phase = "lobby";
     this.players = [admin];
+    this.currentRound = 1;
   }
 
   getGameId(): string {
@@ -34,6 +36,7 @@ export class Game {
       rounds: this.rounds,
       maxPlayers: this.maxPlayers,
       phase: this.phase,
+      currentRound: this.currentRound,
     };
   }
 

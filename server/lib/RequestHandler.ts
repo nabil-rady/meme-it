@@ -24,6 +24,8 @@ import {
   CaptionRequestBody,
   CaptionResponseBody,
   EndCaptionPhaseResponseBody,
+  SubmitReviewRequestBody,
+  SubmitReviewResponseBody,
 } from "../types";
 import { DMemeWithCaptionDetails } from "../../dbtypes";
 
@@ -94,6 +96,14 @@ export abstract class RequestHandler {
       );
     } else if (requestBody.method === "caption") {
       return new CaptionRequestHandler(
+        requestBody,
+        connection,
+        logger,
+        gameStore,
+        playerStore
+      );
+    } else if (requestBody.method === "submitReview") {
+      return new SubmitReviewRequestHandler(
         requestBody,
         connection,
         logger,
@@ -515,5 +525,76 @@ class CaptionRequestHandler extends RequestHandler {
       clearTimeout(game.getTimeoutId());
       this.endCaptionPhase(game);
     }
+  }
+}
+
+class SubmitReviewRequestHandler extends RequestHandler {
+  private requestBody: SubmitReviewRequestBody;
+
+  constructor(
+    requestBody: SubmitReviewRequestBody,
+    connection: GameConnection,
+    logger: Logger,
+    gameStore: GameStore,
+    playerStore: PlayerStore
+  ) {
+    super(connection, logger, gameStore, playerStore);
+    this.requestBody = requestBody;
+  }
+
+  handle() {
+    if (!this.isValidConnection()) {
+      this.logger.debug(
+        "Attempted to submit a review from an invalid connection."
+      );
+      return;
+    }
+
+    const playerId = this.connection.playerId!;
+    const player = this.playerStore.getPlayer(playerId);
+    if (!player) {
+      this.send404Error("Player", playerId);
+      return;
+    }
+
+    const gameId = this.connection.gameId!;
+    const game = this.gameStore.getGame(gameId);
+    if (!game) {
+      this.send404Error("Game", gameId);
+      return;
+    }
+    if (game.getPhase() !== "review") {
+      const captionResponse: SubmitReviewResponseBody = {
+        method: "submitReview",
+        success: false,
+      };
+      this.connection.send(JSON.stringify(captionResponse));
+      return;
+    }
+
+    const currentRound = game.getGameInfo().currentRound;
+
+    const playerToBeReviewed = this.playerStore.getPlayer(
+      this.requestBody.playerToBeReviewedId
+    );
+    if (!playerToBeReviewed) {
+      const submitReviewResponse: SubmitReviewResponseBody = {
+        method: "submitReview",
+        success: false,
+      };
+      this.connection.send(JSON.stringify(submitReviewResponse));
+      return;
+    }
+
+    if (this.requestBody.like)
+      playerToBeReviewed.upvote(playerId, currentRound);
+    else playerToBeReviewed.downvote(playerId, currentRound);
+    this.playerStore.addPlayer(playerToBeReviewed);
+
+    const submitReviewResponse: SubmitReviewResponseBody = {
+      method: "submitReview",
+      success: true,
+    };
+    this.connection.send(JSON.stringify(submitReviewResponse));
   }
 }
