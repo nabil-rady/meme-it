@@ -47,21 +47,30 @@ const renderGameLobby = (
             </div>
           </div>
           <div className="options">
-            <div className="game-options">
+            <div
+              className={`game-options ${thisPlayer.admin ? "" : "disabled"}`}
+            >
               <Dropdown
                 label="Number of rounds"
                 name="number-of-rounds"
                 options={["1", "2", "3"]}
+                admin={thisPlayer.admin}
               />
               <Dropdown
                 label="Number of players"
                 name="number-of-players"
                 options={["6", "8", "10"]}
+                admin={thisPlayer.admin}
               />
             </div>
             <div className="buttons">
               <Invite id={(game as GameInfo).id} />
-              <button className="button start-button" onClick={startGame}>
+              <button
+                className={`button start-button ${
+                  thisPlayer.admin ? "" : "disabled"
+                }`}
+                onClick={startGame}
+              >
                 Start game
               </button>
             </div>

@@ -36,6 +36,13 @@
   &:focus {
     background-color: $button-hover-bg;
     color: $button-hover-clr;
+
+    outline: none;
+  }
+
+  &.disabled {
+    pointer-events: none;
+    filter: brightness(0.7) opacity(0.8);
   }
 }
 
@@ -47,6 +54,7 @@
 
   &::-webkit-scrollbar {
     width: 7px;
+    height: 7px;
   }
 
   &::-webkit-scrollbar-thumb {
@@ -95,7 +103,10 @@ body {
 }
 
 .loading {
-  margin: 2rem;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .title {
@@ -150,6 +161,7 @@ body {
 
         position: relative;
 
+        user-select: none;
         cursor: pointer;
         transition: scale $transition-time;
 
@@ -182,11 +194,16 @@ body {
 
       border-radius: 50%;
 
+      user-select: none;
       cursor: pointer;
       transition: 0.35s;
 
       &:hover {
         background-color: rgba(128, 128, 128, 0.2);
+      }
+
+      > .icon {
+        position: absolute;
       }
     }
   }
@@ -226,6 +243,7 @@ body {
 
       margin-bottom: 1em;
 
+      user-select: none;
       cursor: pointer;
     }
 
@@ -254,7 +272,9 @@ body {
         transition: transform $transition-time;
       }
 
-      &:hover {
+      &:hover,
+      &:focus {
+        outline: none;
         > .icon {
           transform: rotate(180deg);
         }
@@ -291,7 +311,9 @@ body {
 
       &::placeholder {
         color: $text-clr;
+
         opacity: 0.7;
+        user-select: none;
       }
 
       &:hover,
@@ -336,7 +358,10 @@ body {
   align-items: center;
 
   > .lobby-container {
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1em;
+    // justify-content: space-between;
 
     width: min(820px, 90%);
     height: calc(100vh - 200px);
@@ -353,6 +378,8 @@ body {
       flex-direction: column;
       justify-content: space-between;
 
+      max-width: 350px;
+
       padding-block: 2em;
 
       > .game-options {
@@ -360,7 +387,7 @@ body {
         flex-direction: column;
         align-self: center;
 
-        width: min(70%, 300px);
+        width: min(80%, 280px);
 
         > select {
           background-color: $button-bg;
@@ -368,6 +395,15 @@ body {
           padding: 0.5em;
           margin-bottom: 1em;
           border-radius: 10px;
+
+          &:focus {
+            outline-color: $button-hover-bg;
+          }
+        }
+
+        &.disabled {
+          pointer-events: none;
+          filter: brightness(0.8) opacity(0.8);
         }
       }
     }
@@ -392,7 +428,10 @@ body {
     flex-direction: column;
     gap: 1rem;
 
-    padding: 1em 2em;
+    height: 100%;
+    width: 100%;
+
+    padding: 1em 1.5em;
 
     overflow-y: auto;
     @include custom-scrollbar;
@@ -419,9 +458,35 @@ body {
         width: 4em;
         height: 4em;
 
+        min-width: 64px;
+
+        user-select: none;
+
         & img {
           width: 100%;
           border-radius: 100%;
+        }
+      }
+
+      &-nickname {
+        all: unset;
+        font-size: 1em;
+
+        width: min-content;
+      }
+
+      > .edit-name {
+        background-color: transparent;
+        color: $text-clr;
+
+        margin-left: auto;
+        border: none;
+
+        cursor: pointer;
+        transition: $transition-time;
+
+        &:hover {
+          scale: 1.15;
         }
       }
     }
@@ -498,6 +563,20 @@ body {
 
     .nickname-input {
       font-size: 11px;
+    }
+
+    .lobby {
+      > .lobby-container {
+        padding-inline: 1em;
+      }
+    }
+
+    .players-container {
+      .players {
+        .player-image {
+          min-width: 48px;
+        }
+      }
     }
   }
 }
