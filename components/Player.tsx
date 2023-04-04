@@ -9,7 +9,7 @@ import { PlayerInfo } from "../server/types";
 interface PlayerProps {
   player: PlayerInfo;
   thisPlayer: boolean;
-  ws: MutableRefObject<WebSocket | undefined>;
+  ws?: MutableRefObject<WebSocket | undefined>;
 }
 
 export default function Player(props: PlayerProps) {
@@ -35,12 +35,12 @@ export default function Player(props: PlayerProps) {
         />
       </div>
       <div className="player-nickname">{props.player.nickname}</div>
-      {props.thisPlayer && (
+      {props.thisPlayer && props.ws && (
         <button className="edit-name" tabIndex={-1} onClick={openPlayerUpdate}>
           <HiPencilAlt size={20} />
         </button>
       )}
-      {showPlayerUpdate && (
+      {showPlayerUpdate && props.ws && (
         <PlayerUpdate
           avatar={props.player.avatar}
           nickname={props.player.nickname}

@@ -26,6 +26,8 @@ import {
   EndCaptionPhaseResponseBody,
   SubmitReviewRequestBody,
   SubmitReviewResponseBody,
+  MemeResult,
+  EndReviewPhaseResponseBody,
 } from "../types";
 import { DMemeWithCaptionDetails } from "../../dbtypes";
 
@@ -125,7 +127,6 @@ export abstract class RequestHandler {
 
   endCaptionPhase(game: Game) {
     game.setPhase("review");
-    this.gameStore.addGame(game);
 
     const memes: MemeForReview[] = game.getPlayers().map((player) => ({
       meme: player.getCurrentMeme()!,
@@ -133,20 +134,45 @@ export abstract class RequestHandler {
       creatorPlayerId: player.getPlayerId(),
     }));
 
-    for (const player of game.getPlayers()) {
-      player.setCurrentCaptions(null);
-      this.playerStore.addPlayer(player);
-    }
-
     const endCaptionPhaseResponse: EndCaptionPhaseResponseBody = {
       method: "endCaptionPhase",
       memes,
     };
     game.broadcast(endCaptionPhaseResponse);
 
+    const timeoutId = setTimeout(() => {
+      this.endReviewPhase(game);
+    }, 1000 * (15 * game.getPlayers().length));
+    game.setTimeoutId(timeoutId);
+    this.gameStore.addGame(game);
+
     this.logger.info(
       `Game ${game.getGameId()} caption phase has ended and is now in its review phase.`
     );
+  }
+
+  endReviewPhase(game: Game) {
+    game.setPhase("result");
+    this.gameStore.addGame(game);
+
+    const memes: MemeResult[] = game.getPlayers().map((player) => ({
+      meme: player.getCurrentMeme()!,
+      captions: player.getCurrentCaptions(),
+      creatorPlayerId: player.getPlayerId(),
+      upvotes: player.getRoundTotalUpvotes(game.getGameInfo().currentRound),
+      downvotes: player.getRoundTotalDownvotes(game.getGameInfo().currentRound),
+    }));
+
+    for (const player of game.getPlayers()) {
+      player.setCurrentCaptions(null);
+      this.playerStore.addPlayer(player);
+    }
+
+    const endReviewPhaseResponse: EndReviewPhaseResponseBody = {
+      method: "endReviewPhase",
+      results: memes,
+    };
+    game.broadcast(endReviewPhaseResponse);
   }
 
   getRequestType(): string {
@@ -604,6 +630,15 @@ class SubmitReviewRequestHandler extends RequestHandler {
       return;
     }
 
+    if (this.requestBody.playerToBeReviewedId === playerId) {
+      const submitReviewResponse: SubmitReviewResponseBody = {
+        method: "submitReview",
+        success: false,
+      };
+      this.connection.send(JSON.stringify(submitReviewResponse));
+      return;
+    }
+
     if (this.requestBody.like)
       playerToBeReviewed.upvote(playerId, currentRound);
     else playerToBeReviewed.downvote(playerId, currentRound);
@@ -616,9 +651,9 @@ class SubmitReviewRequestHandler extends RequestHandler {
     this.connection.send(JSON.stringify(submitReviewResponse));
 
     this.logger.info(
-      `Player ${playerId} submitted a review to the meme created by player ${playerToBeReviewed.getPlayerId()} in  round ${currentRound}, the meme now has ${
-        playerToBeReviewed.totalVotes
-      }.`
+      `Player ${playerId} submitted a review to the meme created by player ${playerToBeReviewed.getPlayerId()} in  round ${currentRound}, the meme now has ${playerToBeReviewed.getRoundTotalVotes(
+        currentRound
+      )}.`
     );
   }
 }

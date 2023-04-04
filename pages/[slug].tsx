@@ -8,6 +8,7 @@ import { ResponseHandler } from "../lib/ResponseHandler";
 import { DMemeWithCaptionDetails } from "../dbtypes";
 import {
   MemeForReview,
+  MemeResult,
   GameInfo,
   PlayerInfo,
   GameResponseBody,
@@ -24,6 +25,7 @@ export default function Home() {
   const [players, setPlayers] = useState<PlayerInfo[]>([]);
   const [meme, setMeme] = useState<DMemeWithCaptionDetails>();
   const [memesForReview, setMemesForReview] = useState<MemeForReview[]>([]);
+  const [memesResults, setMemesResults] = useState<MemeResult[]>([]);
   const [captions, setCaptions] = useState<string[]>([]);
 
   useEffect(() => {
@@ -39,6 +41,7 @@ export default function Home() {
         setPlayers,
         setMeme,
         setMemesForReview,
+        setMemesResults,
         setCaptions
       );
 
@@ -71,6 +74,7 @@ export default function Home() {
         players,
         meme,
         memesForReview,
+        memesResults,
         captions,
         setCaptions,
         ws

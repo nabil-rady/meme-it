@@ -3,12 +3,17 @@ import { Game } from "./lib/Game";
 import { Player } from "./lib/Player";
 import { DMemeWithCaptionDetails } from "../dbtypes";
 
-export type GamePhase = "lobby" | "caption" | "review" | "final";
+export type GamePhase = "lobby" | "caption" | "review" | "result" | "final";
 
 export type MemeForReview = {
   meme: DMemeWithCaptionDetails;
   captions: string[] | null;
   creatorPlayerId: string;
+};
+
+export type MemeResult = MemeForReview & {
+  upvotes: number;
+  downvotes: number;
 };
 
 export type Votes = {
@@ -132,6 +137,11 @@ export interface SubmitReviewResponseBody {
   success: boolean;
 }
 
+export interface EndReviewPhaseResponseBody {
+  method: "endReviewPhase";
+  results: MemeResult[];
+}
+
 export interface LeaveResponseBody {
   method: "leave";
   player: PlayerInfo;
@@ -155,5 +165,6 @@ export type GameResponseBody =
   | SubmitCaptionsResponseBody
   | EndCaptionPhaseResponseBody
   | SubmitReviewResponseBody
+  | EndReviewPhaseResponseBody
   | LeaveResponseBody
   | TerminateResponseBody;

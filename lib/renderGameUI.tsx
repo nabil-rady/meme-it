@@ -14,7 +14,9 @@ import {
   PlayerInfo,
   SubmitCaptionsRequestBody,
   StartGameRequestBody,
+  MemeResult,
 } from "../server/types";
+import ResultPhase from "../components/ResultPhase";
 
 const renderGameLobby = (
   game: GameInfo,
@@ -124,12 +126,30 @@ const renderGameReview = (
   );
 };
 
+const renderGameResult = (
+  thisPlayer: PlayerInfo,
+  players: PlayerInfo[],
+  memesResults: MemeResult[]
+) => {
+  return (
+    <div className="result">
+      <h1 className="title">Meme It</h1>
+      <ResultPhase
+        thisPlayer={thisPlayer}
+        players={players}
+        memesResults={memesResults}
+      />
+    </div>
+  );
+};
+
 export default function renderGameUI(
   game: GameInfo | undefined,
   thisPlayer: PlayerInfo | undefined,
   players: PlayerInfo[],
   meme: DMemeWithCaptionDetails | undefined,
   memesforReviews: MemeForReview[],
+  memesResults: MemeResult[],
   captions: string[],
   setCaptions: Dispatch<SetStateAction<string[]>>,
   ws: MutableRefObject<WebSocket | undefined>
@@ -143,6 +163,8 @@ export default function renderGameUI(
     return renderGameCaption(meme, captions, setCaptions, ws);
   } else if (game.phase === "review") {
     return renderGameReview(memesforReviews, ws);
+  } else if (game.phase === "result") {
+    return renderGameResult(thisPlayer, players, memesResults);
   } else {
     return <h1>Not Implemented</h1>;
   }

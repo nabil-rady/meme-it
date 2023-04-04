@@ -550,6 +550,34 @@ body {
   }
 }
 
+.player {
+  position: relative;
+
+  display: flex;
+  gap: 0.7em;
+  align-items: center;
+
+  font-weight: 600;
+
+  &-admin {
+    position: absolute;
+    top: -10px;
+    left: -5px;
+
+    height: 20px;
+  }
+
+  &-image {
+    width: 4em;
+    height: 4em;
+
+    & img {
+      width: 100%;
+      border-radius: 100%;
+    }
+  }
+}
+
 /* Caption */
 .caption {
   padding-top: 1rem;
@@ -608,6 +636,65 @@ body {
           cursor: pointer;
           &:last-child {
             margin-left: auto;
+          }
+        }
+      }
+    }
+  }
+}
+
+/* Result */
+.result {
+  > .meme {
+    &-container {
+      width: 70%;
+      margin: 0 auto;
+      display: flex;
+      max-width: 1200px;
+      > .leaderboard {
+        order: 2;
+        padding: 1rem;
+        margin: 0 2rem;
+        flex-grow: 1;
+        height: fit-content;
+        border: 1px solid gold;
+        & > h2 {
+          margin-bottom: 1rem;
+        }
+        > .players {
+          > .player {
+            margin: 0.5rem 0;
+          }
+        }
+      }
+      > .memes {
+        order: 1;
+        > .meme {
+          position: relative;
+          > .player-image {
+            position: absolute;
+            width: 4em;
+            height: 4em;
+            transform: translate(-50%, -50%);
+            > img {
+              width: 100%;
+              border-radius: 100%;
+            }
+          }
+        }
+        > .buttons {
+          display: flex;
+          width: 50%;
+          margin: 2rem auto;
+          margin-top: 1rem;
+          justify-content: space-between;
+          > .review-number {
+            & > span {
+              padding-left: 0.2rem;
+              font-size: 1.8rem;
+              position: relative;
+              bottom: 0.5rem;
+            }
           }
         }
       }

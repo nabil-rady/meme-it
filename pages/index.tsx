@@ -11,6 +11,7 @@ import { ResponseHandler } from "../lib/ResponseHandler";
 
 import {
   MemeForReview,
+  MemeResult,
   GameInfo,
   PlayerInfo,
   GameResponseBody,
@@ -26,6 +27,7 @@ export default function Home() {
   const [meme, setMeme] = useState<DMemeWithCaptionDetails>();
   const [memesForReview, setMemesForReview] = useState<MemeForReview[]>([]);
   const [captions, setCaptions] = useState<string[]>([]);
+  const [memesResults, setMemesResults] = useState<MemeResult[]>([]);
 
   const [avatar, setAvatar] = useState<string>("/avatars/1.jpg");
   const [nickname, setNickname] = useState<string>("");
@@ -62,6 +64,7 @@ export default function Home() {
         setPlayers,
         setMeme,
         setMemesForReview,
+        setMemesResults,
         setCaptions
       );
 
@@ -154,6 +157,7 @@ export default function Home() {
           players,
           meme,
           memesForReview,
+          memesResults,
           captions,
           setCaptions,
           ws

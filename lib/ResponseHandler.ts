@@ -15,6 +15,8 @@ import {
   SubmitCaptionsResponseBody,
   EndCaptionPhaseResponseBody,
   SubmitReviewResponseBody,
+  MemeResult,
+  EndReviewPhaseResponseBody,
 } from "../server/types";
 
 export abstract class ResponseHandler {
@@ -29,6 +31,7 @@ export abstract class ResponseHandler {
   protected readonly setMemesForReview: Dispatch<
     SetStateAction<MemeForReview[]>
   >;
+  protected readonly setMemesResults: Dispatch<SetStateAction<MemeResult[]>>;
   protected readonly setCaptions: Dispatch<SetStateAction<string[]>>;
 
   constructor(
@@ -37,6 +40,7 @@ export abstract class ResponseHandler {
     setPlayers: Dispatch<SetStateAction<PlayerInfo[]>>,
     setMeme: Dispatch<SetStateAction<DMemeWithCaptionDetails | undefined>>,
     setMemesForReview: Dispatch<SetStateAction<MemeForReview[]>>,
+    setMemesResults: Dispatch<SetStateAction<MemeResult[]>>,
     setCaptions: Dispatch<SetStateAction<string[]>>
   ) {
     this.setGame = setGame;
@@ -44,6 +48,7 @@ export abstract class ResponseHandler {
     this.setPlayers = setPlayers;
     this.setMeme = setMeme;
     this.setMemesForReview = setMemesForReview;
+    this.setMemesResults = setMemesResults;
     this.setCaptions = setCaptions;
   }
 
@@ -54,6 +59,7 @@ export abstract class ResponseHandler {
     setPlayers: Dispatch<SetStateAction<PlayerInfo[]>>,
     setMeme: Dispatch<SetStateAction<DMemeWithCaptionDetails | undefined>>,
     setMemesForReview: Dispatch<SetStateAction<MemeForReview[]>>,
+    setMemesResults: Dispatch<SetStateAction<MemeResult[]>>,
     setCaptions: Dispatch<SetStateAction<string[]>>
   ): ResponseHandler {
     if (responseBody.method === "create") {
@@ -64,6 +70,7 @@ export abstract class ResponseHandler {
         setPlayers,
         setMeme,
         setMemesForReview,
+        setMemesResults,
         setCaptions
       );
     } else if (responseBody.method === "join") {
@@ -74,6 +81,7 @@ export abstract class ResponseHandler {
         setPlayers,
         setMeme,
         setMemesForReview,
+        setMemesResults,
         setCaptions
       );
     } else if (responseBody.method === "updateGame") {
@@ -84,6 +92,7 @@ export abstract class ResponseHandler {
         setPlayers,
         setMeme,
         setMemesForReview,
+        setMemesResults,
         setCaptions
       );
     } else if (responseBody.method === "updatePlayer") {
@@ -94,6 +103,7 @@ export abstract class ResponseHandler {
         setPlayers,
         setMeme,
         setMemesForReview,
+        setMemesResults,
         setCaptions
       );
     } else if (responseBody.method === "startGame") {
@@ -104,6 +114,7 @@ export abstract class ResponseHandler {
         setPlayers,
         setMeme,
         setMemesForReview,
+        setMemesResults,
         setCaptions
       );
     } else if (responseBody.method === "submitCaption") {
@@ -114,6 +125,7 @@ export abstract class ResponseHandler {
         setPlayers,
         setMeme,
         setMemesForReview,
+        setMemesResults,
         setCaptions
       );
     } else if (responseBody.method === "endCaptionPhase") {
@@ -124,6 +136,7 @@ export abstract class ResponseHandler {
         setPlayers,
         setMeme,
         setMemesForReview,
+        setMemesResults,
         setCaptions
       );
     } else if (responseBody.method === "submitReview") {
@@ -134,6 +147,18 @@ export abstract class ResponseHandler {
         setPlayers,
         setMeme,
         setMemesForReview,
+        setMemesResults,
+        setCaptions
+      );
+    } else if (responseBody.method === "endReviewPhase") {
+      return new EndReviewPhaseResponsHandler(
+        responseBody,
+        setGame,
+        setThisPlayer,
+        setPlayers,
+        setMeme,
+        setMemesForReview,
+        setMemesResults,
         setCaptions
       );
     } else if (responseBody.method === "leave") {
@@ -144,6 +169,7 @@ export abstract class ResponseHandler {
         setPlayers,
         setMeme,
         setMemesForReview,
+        setMemesResults,
         setCaptions
       );
     } else if (responseBody.method === "terminate") {
@@ -154,6 +180,7 @@ export abstract class ResponseHandler {
         setPlayers,
         setMeme,
         setMemesForReview,
+        setMemesResults,
         setCaptions
       );
     } else {
@@ -174,6 +201,7 @@ class CreateResponseHandler extends ResponseHandler {
     setPlayers: Dispatch<SetStateAction<PlayerInfo[]>>,
     setMeme: Dispatch<SetStateAction<DMemeWithCaptionDetails | undefined>>,
     setMemesForReview: Dispatch<SetStateAction<MemeForReview[]>>,
+    setMemesResults: Dispatch<SetStateAction<MemeResult[]>>,
     setCaptions: Dispatch<SetStateAction<string[]>>
   ) {
     super(
@@ -182,6 +210,7 @@ class CreateResponseHandler extends ResponseHandler {
       setPlayers,
       setMeme,
       setMemesForReview,
+      setMemesResults,
       setCaptions
     );
     this.responseBody = responseBody;
@@ -204,6 +233,7 @@ class JoinResponseHandler extends ResponseHandler {
     setPlayers: Dispatch<SetStateAction<PlayerInfo[]>>,
     setMeme: Dispatch<SetStateAction<DMemeWithCaptionDetails | undefined>>,
     setMemesForReview: Dispatch<SetStateAction<MemeForReview[]>>,
+    setMemesResults: Dispatch<SetStateAction<MemeResult[]>>,
     setCaptions: Dispatch<SetStateAction<string[]>>
   ) {
     super(
@@ -212,6 +242,7 @@ class JoinResponseHandler extends ResponseHandler {
       setPlayers,
       setMeme,
       setMemesForReview,
+      setMemesResults,
       setCaptions
     );
     this.responseBody = responseBody;
@@ -236,6 +267,7 @@ class UpdateGameResponseHandler extends ResponseHandler {
     setPlayers: Dispatch<SetStateAction<PlayerInfo[]>>,
     setMeme: Dispatch<SetStateAction<DMemeWithCaptionDetails | undefined>>,
     setMemesForReview: Dispatch<SetStateAction<MemeForReview[]>>,
+    setMemesResults: Dispatch<SetStateAction<MemeResult[]>>,
     setCaptions: Dispatch<SetStateAction<string[]>>
   ) {
     super(
@@ -244,6 +276,7 @@ class UpdateGameResponseHandler extends ResponseHandler {
       setPlayers,
       setMeme,
       setMemesForReview,
+      setMemesResults,
       setCaptions
     );
     this.responseBody = responseBody;
@@ -264,6 +297,7 @@ class UpdatePlayerResponseHandler extends ResponseHandler {
     setPlayers: Dispatch<SetStateAction<PlayerInfo[]>>,
     setMeme: Dispatch<SetStateAction<DMemeWithCaptionDetails | undefined>>,
     setMemesForReview: Dispatch<SetStateAction<MemeForReview[]>>,
+    setMemesResults: Dispatch<SetStateAction<MemeResult[]>>,
     setCaptions: Dispatch<SetStateAction<string[]>>
   ) {
     super(
@@ -272,6 +306,7 @@ class UpdatePlayerResponseHandler extends ResponseHandler {
       setPlayers,
       setMeme,
       setMemesForReview,
+      setMemesResults,
       setCaptions
     );
     this.responseBody = responseBody;
@@ -303,6 +338,7 @@ class StartGameResponseHandler extends ResponseHandler {
     setPlayers: Dispatch<SetStateAction<PlayerInfo[]>>,
     setMeme: Dispatch<SetStateAction<DMemeWithCaptionDetails | undefined>>,
     setMemesForReview: Dispatch<SetStateAction<MemeForReview[]>>,
+    setMemesResults: Dispatch<SetStateAction<MemeResult[]>>,
     setCaptions: Dispatch<SetStateAction<string[]>>
   ) {
     super(
@@ -311,6 +347,7 @@ class StartGameResponseHandler extends ResponseHandler {
       setPlayers,
       setMeme,
       setMemesForReview,
+      setMemesResults,
       setCaptions
     );
     this.responseBody = responseBody;
@@ -339,6 +376,7 @@ class CaptionResponseHandler extends ResponseHandler {
     setPlayers: Dispatch<SetStateAction<PlayerInfo[]>>,
     setMeme: Dispatch<SetStateAction<DMemeWithCaptionDetails | undefined>>,
     setMemesForReview: Dispatch<SetStateAction<MemeForReview[]>>,
+    setMemesResults: Dispatch<SetStateAction<MemeResult[]>>,
     setCaptions: Dispatch<SetStateAction<string[]>>
   ) {
     super(
@@ -347,6 +385,7 @@ class CaptionResponseHandler extends ResponseHandler {
       setPlayers,
       setMeme,
       setMemesForReview,
+      setMemesResults,
       setCaptions
     );
     this.responseBody = responseBody;
@@ -367,6 +406,7 @@ class EndCaptionPhaseResponseHandler extends ResponseHandler {
     setPlayers: Dispatch<SetStateAction<PlayerInfo[]>>,
     setMeme: Dispatch<SetStateAction<DMemeWithCaptionDetails | undefined>>,
     setMemesForReview: Dispatch<SetStateAction<MemeForReview[]>>,
+    setMemesResults: Dispatch<SetStateAction<MemeResult[]>>,
     setCaptions: Dispatch<SetStateAction<string[]>>
   ) {
     super(
@@ -375,6 +415,7 @@ class EndCaptionPhaseResponseHandler extends ResponseHandler {
       setPlayers,
       setMeme,
       setMemesForReview,
+      setMemesResults,
       setCaptions
     );
     this.responseBody = responseBody;
@@ -402,6 +443,7 @@ class SubmitReviewResponseHandler extends ResponseHandler {
     setPlayers: Dispatch<SetStateAction<PlayerInfo[]>>,
     setMeme: Dispatch<SetStateAction<DMemeWithCaptionDetails | undefined>>,
     setMemesForReview: Dispatch<SetStateAction<MemeForReview[]>>,
+    setMemesResults: Dispatch<SetStateAction<MemeResult[]>>,
     setCaptions: Dispatch<SetStateAction<string[]>>
   ) {
     super(
@@ -410,6 +452,7 @@ class SubmitReviewResponseHandler extends ResponseHandler {
       setPlayers,
       setMeme,
       setMemesForReview,
+      setMemesResults,
       setCaptions
     );
     this.responseBody = responseBody;
@@ -417,6 +460,41 @@ class SubmitReviewResponseHandler extends ResponseHandler {
 
   handle() {
     // TODO: Error handling
+  }
+}
+
+class EndReviewPhaseResponsHandler extends ResponseHandler {
+  private readonly responseBody: EndReviewPhaseResponseBody;
+
+  constructor(
+    responseBody: EndReviewPhaseResponseBody,
+    setGame: Dispatch<SetStateAction<GameInfo | undefined>>,
+    setThisPlayer: Dispatch<SetStateAction<PlayerInfo | undefined>>,
+    setPlayers: Dispatch<SetStateAction<PlayerInfo[]>>,
+    setMeme: Dispatch<SetStateAction<DMemeWithCaptionDetails | undefined>>,
+    setMemesForReview: Dispatch<SetStateAction<MemeForReview[]>>,
+    setMemesResults: Dispatch<SetStateAction<MemeResult[]>>,
+    setCaptions: Dispatch<SetStateAction<string[]>>
+  ) {
+    super(
+      setGame,
+      setThisPlayer,
+      setPlayers,
+      setMeme,
+      setMemesForReview,
+      setMemesResults,
+      setCaptions
+    );
+    this.responseBody = responseBody;
+  }
+
+  handle() {
+    this.setGame((game) => {
+      if (!game) return game;
+      return { ...game, phase: "result" };
+    });
+    this.setMemesForReview([]);
+    this.setMemesResults(this.responseBody.results);
   }
 }
 
@@ -430,6 +508,7 @@ class LeaveResponseHandler extends ResponseHandler {
     setPlayers: Dispatch<SetStateAction<PlayerInfo[]>>,
     setMeme: Dispatch<SetStateAction<DMemeWithCaptionDetails | undefined>>,
     setMemesForReview: Dispatch<SetStateAction<MemeForReview[]>>,
+    setMemesResults: Dispatch<SetStateAction<MemeResult[]>>,
     setCaptions: Dispatch<SetStateAction<string[]>>
   ) {
     super(
@@ -438,6 +517,7 @@ class LeaveResponseHandler extends ResponseHandler {
       setPlayers,
       setMeme,
       setMemesForReview,
+      setMemesResults,
       setCaptions
     );
     this.responseBody = responseBody;
@@ -483,6 +563,7 @@ class TerminateResponseHandler extends ResponseHandler {
     setPlayers: Dispatch<SetStateAction<PlayerInfo[]>>,
     setMeme: Dispatch<SetStateAction<DMemeWithCaptionDetails | undefined>>,
     setMemesForReview: Dispatch<SetStateAction<MemeForReview[]>>,
+    setMemesResults: Dispatch<SetStateAction<MemeResult[]>>,
     setCaptions: Dispatch<SetStateAction<string[]>>
   ) {
     super(
@@ -491,6 +572,7 @@ class TerminateResponseHandler extends ResponseHandler {
       setPlayers,
       setMeme,
       setMemesForReview,
+      setMemesResults,
       setCaptions
     );
     this.responseBody = responseBody;

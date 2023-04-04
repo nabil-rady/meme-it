@@ -42,30 +42,32 @@ export default function MemeComponent(props: MemeProps) {
   }, []);
 
   return (
-    <div className="meme-container">
+    <>
       <div className="meme-timer">{secondsLeft} Seconds Left</div>
-      <div className="meme">
-        <canvas id="meme-canvas" width="500" height="500"></canvas>
-        <div className="meme-captions">
-          {props.captions.map((caption, index) => (
-            <input
-              key={index}
-              value={caption === `Caption ${index + 1}` ? "" : caption}
-              placeholder={`Caption ${index + 1}`}
-              onChange={(e) => {
-                props.setCaptions((prevCaptions) => {
-                  const newCaptions = [...prevCaptions];
-                  newCaptions[index] = e.target.value;
-                  return newCaptions;
-                });
-              }}
-            />
-          ))}
-          <button className="button" onClick={() => props.sendCaptions()}>
-            Submit
-          </button>
+      <div className="meme-container">
+        <div className="meme">
+          <canvas id="meme-canvas" width="500" height="500"></canvas>
+          <div className="meme-captions">
+            {props.captions.map((caption, index) => (
+              <input
+                key={index}
+                value={caption === `Caption ${index + 1}` ? "" : caption}
+                placeholder={`Caption ${index + 1}`}
+                onChange={(e) => {
+                  props.setCaptions((prevCaptions) => {
+                    const newCaptions = [...prevCaptions];
+                    newCaptions[index] = e.target.value;
+                    return newCaptions;
+                  });
+                }}
+              />
+            ))}
+            <button className="button" onClick={() => props.sendCaptions()}>
+              Submit
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

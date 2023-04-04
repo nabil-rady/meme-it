@@ -81,6 +81,40 @@ export class Player {
     return this.votes;
   }
 
+  getRoundTotalUpvotes(round: number): number {
+    let totalUpvotes = 0;
+    for (const key in this.votes) {
+      const split = key.split("|");
+      if (split.length !== 2) continue;
+      if (!(parseInt(split[1]) === round)) continue;
+      if (this.votes[key]) totalUpvotes++;
+    }
+    return totalUpvotes;
+  }
+
+  getRoundTotalDownvotes(round: number): number {
+    let totalDownvotes = 0;
+    for (const key in this.votes) {
+      const split = key.split("|");
+      if (split.length !== 2) continue;
+      if (!(parseInt(split[1]) === round)) continue;
+      if (!this.votes[key]) totalDownvotes++;
+    }
+    return totalDownvotes;
+  }
+
+  getRoundTotalVotes(round: number): number {
+    let totalVotes = 0;
+    for (const key in this.votes) {
+      const split = key.split("|");
+      if (split.length !== 2) continue;
+      if (!(parseInt(split[1]) === round)) continue;
+      if (this.votes[key]) totalVotes++;
+      else totalVotes--;
+    }
+    return totalVotes;
+  }
+
   get totalVotes(): number {
     let totalVotes = 0;
     for (const key in this.votes) {

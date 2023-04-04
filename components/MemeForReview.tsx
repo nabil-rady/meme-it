@@ -49,25 +49,31 @@ export default function MemeForReviewComponent(props: MemeForReviewProps) {
   }, [props.memeForReview.captions]);
 
   return (
-    <div className="meme-container">
+    <>
       <div className="meme-timer">{props.secondsLeft} Seconds Left</div>
-      <div className="meme">
-        <canvas id="meme-canvas" width="500" height="500"></canvas>
+      <div className="meme-container">
+        <div className="meme">
+          <canvas id="meme-canvas" width="500" height="500"></canvas>
+        </div>
+        <div className="buttons">
+          <AiFillLike
+            size={40}
+            onClick={() => {
+              submitReview(props.memeForReview.creatorPlayerId, props.ws, true);
+            }}
+          />
+          <AiFillDislike
+            size={40}
+            onClick={() => {
+              submitReview(
+                props.memeForReview.creatorPlayerId,
+                props.ws,
+                false
+              );
+            }}
+          />
+        </div>
       </div>
-      <div className="buttons">
-        <AiFillLike
-          size={40}
-          onClick={() => {
-            submitReview(props.memeForReview.creatorPlayerId, props.ws, true);
-          }}
-        />
-        <AiFillDislike
-          size={40}
-          onClick={() => {
-            submitReview(props.memeForReview.creatorPlayerId, props.ws, false);
-          }}
-        />
-      </div>
-    </div>
+    </>
   );
 }
