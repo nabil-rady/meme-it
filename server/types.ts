@@ -143,6 +143,17 @@ export interface EndReviewPhaseResponseBody {
   results: MemeResult[];
 }
 
+export type EndResultPhaseResponseBody =
+  | {
+      method: "endResultPhase";
+      end: true;
+    }
+  | {
+      method: "endResultPhase";
+      end: false;
+      meme: DMemeWithCaptionDetails;
+    };
+
 export interface LeaveResponseBody {
   method: "leave";
   player: PlayerInfo;
@@ -167,5 +178,6 @@ export type GameResponseBody =
   | EndCaptionPhaseResponseBody
   | SubmitReviewResponseBody
   | EndReviewPhaseResponseBody
+  | EndResultPhaseResponseBody
   | LeaveResponseBody
   | TerminateResponseBody;

@@ -28,6 +28,7 @@ import {
   SubmitReviewResponseBody,
   MemeResult,
   EndReviewPhaseResponseBody,
+  EndResultPhaseResponseBody,
 } from "../types";
 import { DMemeWithCaptionDetails } from "../../dbtypes";
 
@@ -125,6 +126,66 @@ export abstract class RequestHandler {
     return game.getAdmin()?.getPlayerId() === this.connection.playerId;
   }
 
+  async getRandomMeme(): Promise<DMemeWithCaptionDetails> {
+    const numberOfMemes = await prisma.memes.count();
+    const skip = Math.floor(Math.random() * numberOfMemes);
+    const meme: DMemeWithCaptionDetails | undefined = (
+      await prisma.memes.findMany({
+        skip,
+        take: 1,
+        include: {
+          captionsDetails: true,
+        },
+      })
+    ).at(0);
+
+    if (!meme) {
+      throw new Error("Database has no memes.");
+    }
+
+    return meme;
+  }
+
+  // TODO: Different meme for every player
+  async startCaptionPhase(game: Game) {
+    game.setPhase("caption");
+    this.gameStore.addGame(game);
+
+    const currentRound = game.getGameInfo().currentRound;
+
+    const meme = await this.getRandomMeme();
+    for (const player of game.getPlayers()) {
+      player.setCurrentMeme(meme);
+      this.playerStore.addPlayer(player);
+
+      if (currentRound === 1) {
+        const startGameResponse: StartGameResponseBody = {
+          method: "startGame",
+          meme,
+        };
+        player.send(startGameResponse);
+      } else {
+        const endResultPhaseResponse: EndResultPhaseResponseBody = {
+          method: "endResultPhase",
+          end: false,
+          meme,
+        };
+        player.send(endResultPhaseResponse);
+      }
+    }
+
+    const timeoutId = setTimeout(() => {
+      this.endCaptionPhase(game);
+    }, 1000 * (60 + 5)); // Add extra 5 seconds for good UX.
+
+    game.setTimeoutId(timeoutId);
+    this.gameStore.addGame(game);
+
+    this.logger.info(
+      `Game ${game.getGameId()} caption phase has started and is in now in round ${currentRound}.`
+    );
+  }
+
   endCaptionPhase(game: Game) {
     game.setPhase("review");
 
@@ -174,9 +235,31 @@ export abstract class RequestHandler {
     };
     game.broadcast(endReviewPhaseResponse);
 
+    const timeoutId = setTimeout(() => {
+      this.endResultPhase(game);
+    }, 1000 * (40 + 3)); // Add extra 3 seconds for good UX.
+    game.setTimeoutId(timeoutId);
+    this.gameStore.addGame(game);
+
     this.logger.info(
       `Game ${game.getGameId()} review phase has ended and is now in its result phase.`
     );
+  }
+
+  endResultPhase(game: Game) {
+    if (game.getGameInfo().currentRound < game.getGameInfo().rounds) {
+      game.incrementRound();
+      this.startCaptionPhase(game);
+    } else {
+      game.setPhase("final");
+      this.gameStore.addGame(game);
+
+      const endResultPhaseResponse: EndResultPhaseResponseBody = {
+        method: "endResultPhase",
+        end: true,
+      };
+      game.broadcast(endResultPhaseResponse);
+    }
   }
 
   getRequestType(): string {
@@ -454,44 +537,7 @@ class StartGameRequestHandler extends RequestHandler {
       return;
     }
 
-    gameToStart.setPhase("caption");
-    this.gameStore.addGame(gameToStart);
-
-    const numberOfMemes = await prisma.memes.count();
-    const skip = Math.floor(Math.random() * numberOfMemes);
-    const meme: DMemeWithCaptionDetails | undefined = (
-      await prisma.memes.findMany({
-        skip,
-        take: 1,
-        include: {
-          captionsDetails: true,
-        },
-      })
-    ).at(0);
-
-    if (!meme) {
-      throw new Error("Database has no memes.");
-    }
-    // TODO: Different meme for every player
-    for (const player of gameToStart.getPlayers()) {
-      player.setCurrentMeme(meme);
-      this.playerStore.addPlayer(player);
-
-      const startGameResponse: StartGameResponseBody = {
-        method: "startGame",
-        meme,
-      };
-      player.send(startGameResponse);
-    }
-
-    const timeoutId = setTimeout(() => {
-      this.endCaptionPhase(gameToStart);
-    }, 1000 * (60 + 5)); // Add extra 5 seconds for good UX.
-
-    gameToStart.setTimeoutId(timeoutId);
-    this.gameStore.addGame(gameToStart);
-
-    this.logger.info(`Game ${gameId} started and is in now in round 1.`);
+    this.startCaptionPhase(gameToStart);
   }
 }
 

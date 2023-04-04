@@ -80,6 +80,10 @@ export class Game {
     );
   }
 
+  incrementRound() {
+    this.currentRound++;
+  }
+
   getPhase(): GamePhase {
     return this.phase;
   }
