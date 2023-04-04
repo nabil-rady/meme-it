@@ -9,6 +9,7 @@ import { PlayerInfo } from "../server/types";
 interface PlayerProps {
   player: PlayerInfo;
   thisPlayer: boolean;
+  showScore?: boolean;
   ws?: MutableRefObject<WebSocket | undefined>;
 }
 
@@ -34,7 +35,10 @@ export default function Player(props: PlayerProps) {
           src={props.player.avatar}
         />
       </div>
-      <div className="player-nickname">{props.player.nickname}</div>
+      <div className="player-nickname">
+        {props.player.nickname}
+        {props.showScore ? ` (Score:  ${props.player.totalScore})` : null}
+      </div>
       {props.thisPlayer && props.ws && (
         <button className="edit-name" tabIndex={-1} onClick={openPlayerUpdate}>
           <HiPencilAlt size={20} />

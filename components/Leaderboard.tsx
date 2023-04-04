@@ -2,7 +2,7 @@ import { PlayerInfo } from "../server/types";
 import Player from "./Player";
 
 interface LeaderboardProps {
-  playersInOrder: (PlayerInfo | undefined)[];
+  playersInOrder: PlayerInfo[];
   thisPlayer: PlayerInfo;
 }
 
@@ -16,6 +16,7 @@ export default function Leaderboard(props: LeaderboardProps) {
             <Player
               player={player}
               thisPlayer={player.id === props.thisPlayer.id}
+              showScore
             />
           ) : (
             player

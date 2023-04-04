@@ -493,6 +493,19 @@ class EndReviewPhaseResponsHandler extends ResponseHandler {
       if (!game) return game;
       return { ...game, phase: "result" };
     });
+    this.setPlayers((players) => {
+      const newPlayers = [...players];
+      for (const memeResult of this.responseBody.results) {
+        for (let i = 0; i < newPlayers.length; i++) {
+          if (memeResult.creatorPlayerId === newPlayers[i].id) {
+            newPlayers[i].totalScore +=
+              memeResult.upvotes - memeResult.downvotes;
+            break;
+          }
+        }
+      }
+      return newPlayers;
+    });
     this.setMemesForReview([]);
     this.setMemesResults(this.responseBody.results);
   }

@@ -39,6 +39,7 @@ export interface PlayerInfo {
   nickname: string;
   avatar: string;
   joinedAt: number;
+  totalScore: number;
 }
 
 export interface GameInfo {
@@ -51,19 +52,19 @@ export interface GameInfo {
 
 export interface CreateRequestBody {
   method: "create";
-  admin: Omit<PlayerInfo, "id" | "joinedAt">;
+  admin: Omit<PlayerInfo, "id" | "joinedAt" | "totalScore">;
   game: Omit<GameInfo, "id" | "phase" | "currentRound">;
 }
 
 export interface JoinRequestBody {
   method: "join";
-  player: Omit<PlayerInfo, "id" | "joinedAt">;
+  player: Omit<PlayerInfo, "id" | "joinedAt" | "totalScore">;
   gameId: string;
 }
 
 export interface UpdatePlayerRequestBody {
   method: "updatePlayer";
-  updatedPlayer: Omit<PlayerInfo, "id" | "admin" | "joinedAt">;
+  updatedPlayer: Omit<PlayerInfo, "id" | "admin" | "joinedAt" | "totalScore">;
 }
 
 export interface UpdateGameRequestBody {

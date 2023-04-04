@@ -41,6 +41,7 @@ export class Player {
       avatar: this.avatar,
       admin: this.admin,
       joinedAt: this.joinedAt,
+      totalScore: this.totalScore,
     };
   }
 
@@ -115,13 +116,13 @@ export class Player {
     return totalVotes;
   }
 
-  get totalVotes(): number {
-    let totalVotes = 0;
+  get totalScore(): number {
+    let totalScore = 0;
     for (const key in this.votes) {
-      if (this.votes[key]) totalVotes++;
-      else totalVotes--;
+      if (this.votes[key]) totalScore++;
+      else totalScore--;
     }
-    return totalVotes;
+    return totalScore;
   }
 
   upvote(playerId: string, round: number) {
