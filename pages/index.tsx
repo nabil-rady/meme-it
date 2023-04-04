@@ -118,6 +118,7 @@ export default function Home() {
           }}
           className={`nickname-input ${nicknameError ? "error" : ""}`}
           placeholder="Nickname"
+          maxLength={15}
         />
       </div>
 

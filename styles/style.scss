@@ -64,8 +64,88 @@
   }
 }
 
+@mixin overlay {
+  position: fixed;
+  inset: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 10;
+
+  > .body {
+    position: relative;
+
+    background-color: $text-clr;
+    color: $button-clr;
+
+    border-radius: 1em;
+
+    > .avatars {
+      $green: rgb(3, 176, 3);
+
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5em;
+
+      > .avatar {
+        @include avatar(6em);
+
+        position: relative;
+
+        user-select: none;
+        cursor: pointer;
+        transition: scale $transition-time;
+
+        &.selected {
+          outline: 5px solid $green;
+        }
+
+        &:hover {
+          scale: 1.15;
+        }
+      }
+    }
+
+    > .close-button {
+      position: absolute;
+      top: 18px;
+      right: 12px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      background-color: inherit;
+      color: inherit;
+
+      height: 40px;
+      width: 40px;
+
+      border: none;
+
+      border-radius: 50%;
+
+      user-select: none;
+      cursor: pointer;
+      transition: 0.35s;
+
+      &:hover {
+        background-color: rgba(128, 128, 128, 0.2);
+      }
+
+      > .icon {
+        position: absolute;
+      }
+    }
+  }
+}
+
 /* Variables */
 $text-clr: rgb(245, 242, 242);
+$error-red: red;
 
 $button-bg: $text-clr;
 $button-clr: rgb(19, 62, 169);
@@ -122,88 +202,65 @@ body {
 }
 
 .avatar-select-overlay {
-  position: fixed;
-  inset: 0;
+  @include overlay();
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  h2 {
+    text-align: center;
 
-  background-color: rgba(0, 0, 0, 0.5);
+    text-transform: capitalize;
 
-  > .avatar-select-body {
-    position: relative;
+    margin-top: 0.9em;
+  }
 
-    background-color: $text-clr;
-    color: $button-clr;
+  .avatars {
+    padding: 2em 3em 3em 3em;
+  }
+}
 
-    border-radius: 1em;
+.player-update-overlay {
+  @include overlay();
 
-    > h2 {
-      text-align: center;
+  > .body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2em;
 
-      text-transform: capitalize;
+    padding: 3em 3em 1.5em 3em;
 
-      margin-top: 0.9em;
-    }
-
-    > .avatars {
-      $green: rgb(3, 176, 3);
-
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 1.5em;
-
-      padding: 2em 3em 3em 3em;
-
-      > .avatar {
-        @include avatar(6em);
-
-        position: relative;
-
-        user-select: none;
-        cursor: pointer;
-        transition: scale $transition-time;
-
-        &.selected {
-          outline: 5px solid $green;
-        }
-
-        &:hover {
-          scale: 1.15;
-        }
-      }
-    }
-
-    > button {
-      position: absolute;
-      top: 18px;
-      right: 12px;
-
+    > label {
       display: flex;
       align-items: center;
-      justify-content: center;
+      gap: 1em;
 
-      background-color: inherit;
-      color: inherit;
+      font-weight: 700;
 
-      height: 40px;
-      width: 40px;
+      > input {
+        font-family: inherit;
+        font-weight: inherit;
 
-      border: none;
+        background-color: $button-bg;
+        color: inherit;
 
-      border-radius: 50%;
+        padding: 0.4em 1em;
+        border: none;
+        border-radius: 6px;
+        outline: 2px solid $button-clr;
 
-      user-select: none;
-      cursor: pointer;
-      transition: 0.35s;
-
-      &:hover {
-        background-color: rgba(128, 128, 128, 0.2);
+        &.error {
+          outline: 3px solid $error-red;
+          transition: none;
+        }
       }
+    }
 
-      > .icon {
-        position: absolute;
+    > .button {
+      background-color: $button-hover-bg;
+      color: $button-hover-clr;
+
+      &:hover,
+      &:focus {
+        scale: 1.1;
       }
     }
   }
@@ -283,8 +340,6 @@ body {
   }
 
   > .nickname-container {
-    $error-red: red;
-
     position: relative;
 
     display: flex;
@@ -358,10 +413,8 @@ body {
   align-items: center;
 
   > .lobby-container {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1em;
-    // justify-content: space-between;
+    display: flex;
+    gap: 2em;
 
     width: min(820px, 90%);
     height: calc(100vh - 200px);
@@ -373,7 +426,7 @@ body {
       0 3px 0 0 rgba(255, 255, 255, 0.15);
 
     > .options {
-      flex-grow: 1;
+      flex: 1;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
@@ -419,6 +472,7 @@ body {
 
 /* Players */
 .players-container {
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -434,7 +488,7 @@ body {
     padding: 1em 1.5em;
 
     overflow-y: auto;
-    @include custom-scrollbar;
+    @include custom-scrollbar();
     scrollbar-gutter: stable;
 
     .player {
@@ -469,10 +523,7 @@ body {
       }
 
       &-nickname {
-        all: unset;
-        font-size: 1em;
-
-        width: min-content;
+        white-space: nowrap;
       }
 
       > .edit-name {
@@ -567,6 +618,7 @@ body {
 
     .lobby {
       > .lobby-container {
+        gap: 0;
         padding-inline: 1em;
       }
     }

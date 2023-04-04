@@ -18,6 +18,7 @@ export default function AvatarSelect({
 
     return (
       <Image
+        key={`avatar${n + 1}`}
         src={link}
         alt=""
         width={size}
@@ -30,11 +31,12 @@ export default function AvatarSelect({
 
   return (
     <div className="avatar-select-overlay" onClick={closeAvatarSelect}>
-      <div className="avatar-select-body" onClick={(e) => e.stopPropagation()}>
+      <div className="body" onClick={(e) => e.stopPropagation()}>
         <h2>pick an avatar</h2>
         <div className="avatars">{avatars}</div>
-        <button onClick={closeAvatarSelect}>
-          <IoMdClose size={26} />
+        <button className="close-button" onClick={closeAvatarSelect}>
+          &nbsp;
+          <IoMdClose size={26} className="icon" />
         </button>
       </div>
     </div>

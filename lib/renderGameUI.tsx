@@ -42,6 +42,7 @@ const renderGameLobby = (
                   key={player.id}
                   player={player}
                   thisPlayer={player.id === thisPlayer.id}
+                  ws={ws}
                 />
               ))}
             </div>
