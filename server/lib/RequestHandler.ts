@@ -173,6 +173,10 @@ export abstract class RequestHandler {
       results: memes,
     };
     game.broadcast(endReviewPhaseResponse);
+
+    this.logger.info(
+      `Game ${game.getGameId()} review phase has ended and is now in its result phase.`
+    );
   }
 
   getRequestType(): string {
