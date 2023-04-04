@@ -52,13 +52,13 @@ export interface GameInfo {
 
 export interface CreateRequestBody {
   method: "create";
-  admin: Omit<PlayerInfo, "id" | "joinedAt" | "totalScore">;
+  admin: Omit<PlayerInfo, "id" | "admin" | "joinedAt" | "totalScore">;
   game: Omit<GameInfo, "id" | "phase" | "currentRound">;
 }
 
 export interface JoinRequestBody {
   method: "join";
-  player: Omit<PlayerInfo, "id" | "joinedAt" | "totalScore">;
+  player: Omit<PlayerInfo, "id" | "admin" | "joinedAt" | "totalScore">;
   gameId: string;
 }
 

@@ -225,7 +225,7 @@ class CreateRequestHandler extends RequestHandler {
     const admin = new Player(
       this.requestBody.admin.nickname,
       this.requestBody.admin.avatar,
-      this.requestBody.admin.admin,
+      true,
       this.connection
     );
     this.playerStore.addPlayer(admin);
@@ -279,7 +279,7 @@ class JoinRequestHandler extends RequestHandler {
     const player = new Player(
       this.requestBody.player.nickname,
       this.requestBody.player.avatar,
-      this.requestBody.player.admin,
+      false,
       this.connection
     );
     this.playerStore.addPlayer(player);
