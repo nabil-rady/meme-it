@@ -5,6 +5,8 @@ import Invite from "../components/Invite";
 import MemeComponent from "../components/Meme";
 import Player from "../components/Player";
 import ReviewPhase from "../components/ReviewPhase";
+import ResultPhase from "../components/ResultPhase";
+import FinalPhase from "../components/FinalPhase";
 
 import { DMemeWithCaptionDetails } from "../dbtypes";
 
@@ -16,7 +18,6 @@ import {
   StartGameRequestBody,
   MemeResult,
 } from "../server/types";
-import ResultPhase from "../components/ResultPhase";
 
 const renderGameLobby = (
   game: GameInfo,
@@ -143,6 +144,15 @@ const renderGameResult = (
   );
 };
 
+const renderGameFinal = (thisPlayer: PlayerInfo, players: PlayerInfo[]) => {
+  return (
+    <div className="final">
+      <h1 className="title">Meme It</h1>
+      <FinalPhase thisPlayer={thisPlayer} players={players} />
+    </div>
+  );
+};
+
 export default function renderGameUI(
   game: GameInfo | undefined,
   thisPlayer: PlayerInfo | undefined,
@@ -166,6 +176,6 @@ export default function renderGameUI(
   } else if (game.phase === "result") {
     return renderGameResult(thisPlayer, players, memesResults);
   } else {
-    return <h1>Not Implemented</h1>;
+    return renderGameFinal(thisPlayer, players);
   }
 }

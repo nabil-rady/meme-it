@@ -78,7 +78,7 @@ export default function Home() {
           avatar,
         },
         game: {
-          rounds: 2,
+          rounds: 1,
           maxPlayers: 10,
         },
       };
