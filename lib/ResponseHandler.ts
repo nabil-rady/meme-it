@@ -17,6 +17,7 @@ import {
   SubmitReviewResponseBody,
   MemeResult,
   EndReviewPhaseResponseBody,
+  EndResultPhaseResponseBody,
 } from "../server/types";
 
 export abstract class ResponseHandler {
@@ -152,6 +153,17 @@ export abstract class ResponseHandler {
       );
     } else if (responseBody.method === "endReviewPhase") {
       return new EndReviewPhaseResponsHandler(
+        responseBody,
+        setGame,
+        setThisPlayer,
+        setPlayers,
+        setMeme,
+        setMemesForReview,
+        setMemesResults,
+        setCaptions
+      );
+    } else if (responseBody.method === "endResultPhase") {
+      return new EndResultPhaseResponseHandler(
         responseBody,
         setGame,
         setThisPlayer,
@@ -508,6 +520,50 @@ class EndReviewPhaseResponsHandler extends ResponseHandler {
     });
     this.setMemesForReview([]);
     this.setMemesResults(this.responseBody.results);
+  }
+}
+
+class EndResultPhaseResponseHandler extends ResponseHandler {
+  private readonly responseBody: EndResultPhaseResponseBody;
+
+  constructor(
+    responseBody: EndResultPhaseResponseBody,
+    setGame: Dispatch<SetStateAction<GameInfo | undefined>>,
+    setThisPlayer: Dispatch<SetStateAction<PlayerInfo | undefined>>,
+    setPlayers: Dispatch<SetStateAction<PlayerInfo[]>>,
+    setMeme: Dispatch<SetStateAction<DMemeWithCaptionDetails | undefined>>,
+    setMemesForReview: Dispatch<SetStateAction<MemeForReview[]>>,
+    setMemesResults: Dispatch<SetStateAction<MemeResult[]>>,
+    setCaptions: Dispatch<SetStateAction<string[]>>
+  ) {
+    super(
+      setGame,
+      setThisPlayer,
+      setPlayers,
+      setMeme,
+      setMemesForReview,
+      setMemesResults,
+      setCaptions
+    );
+    this.responseBody = responseBody;
+  }
+
+  handle() {
+    this.setGame((game) => {
+      if (!game) return game;
+      return {
+        ...game,
+        phase: this.responseBody.end ? "final" : "caption",
+      };
+    });
+    this.setMeme(this.responseBody.end ? undefined : this.responseBody.meme);
+    this.setCaptions(
+      this.responseBody.end
+        ? []
+        : new Array(this.responseBody.meme.captionsDetails.length)
+            .fill("")
+            .map((_, index) => `Caption ${index + 1}`)
+    );
   }
 }
 
