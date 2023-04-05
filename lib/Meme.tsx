@@ -116,7 +116,7 @@ export class Meme {
         const captionDetails = this.captionsDetails[i];
 
         let fontSize = captionDetails.initialFontSize;
-        ctx.font = `${fontSize}px serif`;
+        ctx.font = `${fontSize}px Poppins`;
         ctx.textAlign = "center";
 
         let line = "";
@@ -136,7 +136,7 @@ export class Meme {
           if (currentWidth > captionDetails.width && j > 0) {
             if (lines.length + 1 === captionDetails.maxNumberOfLines) {
               fontSize /= 1.2;
-              ctx.font = `${fontSize}px serif`;
+              ctx.font = `${fontSize}px Poppins`;
 
               drawImage(ctx, currentImageData);
 
@@ -148,7 +148,7 @@ export class Meme {
                 continue;
               }
               fontSize = 15;
-              ctx.font = `${fontSize}px serif`;
+              ctx.font = `${fontSize}px Poppins`;
 
               for (let k = 0; k < lines.length; k++) {
                 fillTextAndRotate(
