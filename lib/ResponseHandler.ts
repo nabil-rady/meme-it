@@ -18,6 +18,7 @@ import {
   MemeResult,
   EndReviewPhaseResponseBody,
   EndResultPhaseResponseBody,
+  RestartGameResponseBody,
 } from "../server/types";
 
 export abstract class ResponseHandler {
@@ -203,6 +204,20 @@ export abstract class ResponseHandler {
       );
     } else if (responseBody.method === "endResultPhase") {
       return new EndResultPhaseResponseHandler(
+        responseBody,
+        setGame,
+        setThisPlayer,
+        setPlayers,
+        setMeme,
+        setMemesForReview,
+        setUpvoted,
+        setMemesResults,
+        setCaptions,
+        setNotificationMessage,
+        setIsNotificationError
+      );
+    } else if (responseBody.method === "restart") {
+      return new RestartGameResponseHandler(
         responseBody,
         setGame,
         setThisPlayer,
@@ -681,6 +696,61 @@ class EndResultPhaseResponseHandler extends ResponseHandler {
             .fill("")
             .map((_, index) => `Caption ${index + 1}`)
     );
+  }
+}
+
+class RestartGameResponseHandler extends ResponseHandler {
+  private readonly responseBody: RestartGameResponseBody;
+
+  constructor(
+    responseBody: RestartGameResponseBody,
+    setGame: Dispatch<SetStateAction<GameInfo | undefined>>,
+    setThisPlayer: Dispatch<SetStateAction<PlayerInfo | undefined>>,
+    setPlayers: Dispatch<SetStateAction<PlayerInfo[]>>,
+    setMeme: Dispatch<SetStateAction<DMemeWithCaptionDetails | undefined>>,
+    setMemesForReview: Dispatch<SetStateAction<MemeForReview[]>>,
+    setUpvoted: Dispatch<SetStateAction<boolean | null>>,
+    setMemesResults: Dispatch<SetStateAction<MemeResult[]>>,
+    setCaptions: Dispatch<SetStateAction<string[]>>,
+    setNotificationMessage: Dispatch<SetStateAction<string>>,
+    setIsNotificationError: Dispatch<SetStateAction<boolean>>
+  ) {
+    super(
+      setGame,
+      setThisPlayer,
+      setPlayers,
+      setMeme,
+      setMemesForReview,
+      setUpvoted,
+      setMemesResults,
+      setCaptions,
+      setNotificationMessage,
+      setIsNotificationError
+    );
+    this.responseBody = responseBody;
+  }
+  handle() {
+    this.setGame((game) => {
+      if (!game) return game;
+      return {
+        ...game,
+        phase: "lobby",
+        currentRound: 1,
+      };
+    });
+    this.setPlayers((prevPlayers) =>
+      prevPlayers.map((player) => ({
+        ...player,
+        totalScore: 0,
+      }))
+    );
+    this.setThisPlayer((prevThisPlayer) => {
+      if (!prevThisPlayer) return prevThisPlayer;
+      return {
+        ...prevThisPlayer,
+        totalScore: 0,
+      };
+    });
   }
 }
 
