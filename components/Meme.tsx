@@ -14,7 +14,6 @@ const CANVAS_ID = "meme-canvas";
 export default function MemeComponent(props: MemeProps) {
   const meme = useRef<Meme>();
   const intervalId = useRef<NodeJS.Timer>();
-  const button = useRef<HTMLButtonElement>(null);
 
   const [secondsLeft, setSecondsLeft] = useState<number>(60);
   const [submitted, setSubmitted] = useState<boolean>(false);
@@ -32,6 +31,7 @@ export default function MemeComponent(props: MemeProps) {
 
   useEffect(() => {
     if (secondsLeft === 0) {
+      props.sendCaptions();
       clearInterval(intervalId.current);
     }
   }, [secondsLeft]);
@@ -67,17 +67,12 @@ export default function MemeComponent(props: MemeProps) {
             ))}
             <button
               className="button"
-              ref={button}
               onClick={
                 submitted
-                  ? () => {
-                      setSubmitted(false);
-                      button.current?.blur();
-                    }
+                  ? () => setSubmitted(false)
                   : () => {
                       props.sendCaptions();
                       setSubmitted(true);
-                      button.current?.blur();
                     }
               }
             >
