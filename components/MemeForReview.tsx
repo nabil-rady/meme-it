@@ -67,6 +67,7 @@ export default function MemeForReviewComponent(props: MemeForReviewProps) {
         </div>
         <div className="buttons">
           <AiFillLike
+            className="vote-button like"
             size={40}
             fill={props.upvoted === true ? "#133ea9" : "currentColor"}
             onClick={() => {
@@ -75,6 +76,7 @@ export default function MemeForReviewComponent(props: MemeForReviewProps) {
             }}
           />
           <AiFillDislike
+            className="vote-button dislike"
             size={40}
             fill={props.upvoted === false ? "#133ea9" : "currentColor"}
             onClick={() => {
