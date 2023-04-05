@@ -101,6 +101,7 @@ export default function Home() {
           width={585}
           height={585}
           onClick={openAvatarSelect}
+          draggable={false}
           priority
         />
         <button className="change-avatar" onClick={openAvatarSelect}>

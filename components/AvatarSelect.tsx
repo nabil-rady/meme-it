@@ -25,6 +25,7 @@ export default function AvatarSelect({
         height={size}
         className={`avatar ${avatar === link ? "selected" : ""}`}
         onClick={() => changeAvatar(link)}
+        draggable={false}
       />
     );
   });

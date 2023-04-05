@@ -35,6 +35,7 @@ export default function PlayerUpdate({
         height={size}
         className={`avatar ${newAvatar === link ? "selected" : ""}`}
         onClick={() => setNewNAvatar(link)}
+        draggable={false}
       />
     );
   });

@@ -31,8 +31,9 @@ export default function Player(props: PlayerProps) {
       ) : null}
       <div className="player-image">
         <img
-          alt={`${props.player.nickname} avatar`}
           src={props.player.avatar}
+          alt={`${props.player.nickname} avatar`}
+          draggable={false}
         />
       </div>
       <div className="player-nickname">

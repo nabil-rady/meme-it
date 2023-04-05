@@ -42,6 +42,7 @@ export default function MemeResultComponent(props: MemeResultProps) {
           <img
             alt={`${props.player?.nickname} avatar`}
             src={props.player?.avatar}
+            draggable={false}
           />
         </div>
       </div>
