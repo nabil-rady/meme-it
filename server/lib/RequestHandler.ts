@@ -31,6 +31,7 @@ import {
   EndResultPhaseResponseBody,
   RestartGameRequestBody,
   RestartGameResponseBody,
+  TerminateGameRequestBody,
 } from "../types";
 import { DMemeWithCaptionDetails } from "../../dbtypes";
 
@@ -117,6 +118,14 @@ export abstract class RequestHandler {
       );
     } else if (requestBody.method === "restart") {
       return new RestartGameRequestHandler(
+        requestBody,
+        connection,
+        logger,
+        gameStore,
+        playerStore
+      );
+    } else if (requestBody.method === "terminate") {
+      return new TerminateGameRequestHandler(
         requestBody,
         connection,
         logger,
@@ -765,5 +774,47 @@ class RestartGameRequestHandler extends RequestHandler {
     gameToBeRestarted.broadcast(restartGameResponse);
 
     this.logger.info(`Game ${gameId} restart and is now in its lobby phase.`);
+  }
+}
+
+class TerminateGameRequestHandler extends RequestHandler {
+  private requestBody: TerminateGameRequestBody;
+
+  constructor(
+    requestBody: TerminateGameRequestBody,
+    connection: GameConnection,
+    logger: Logger,
+    gameStore: GameStore,
+    playerStore: PlayerStore
+  ) {
+    super(connection, logger, gameStore, playerStore);
+    this.requestBody = requestBody;
+  }
+
+  handle() {
+    if (!this.isValidConnection()) {
+      this.logger.debug(
+        "Attempted to submit a review from an invalid connection."
+      );
+      return;
+    }
+
+    const gameId = this.connection.gameId!;
+    const gameToBeTerminated = this.gameStore.getGame(gameId);
+    if (!gameToBeTerminated) {
+      this.send404Error("Game", gameId);
+      return;
+    }
+
+    if (!this.isAdmin(gameToBeTerminated)) {
+      this.send403Error("Game", gameId);
+      return;
+    }
+
+    gameToBeTerminated.terminate();
+    this.playerStore.removeGamePlayers(gameToBeTerminated);
+    this.gameStore.removeGame(gameToBeTerminated);
+
+    this.logger.info(`Game ${gameToBeTerminated.getGameId()} terminated.`);
   }
 }

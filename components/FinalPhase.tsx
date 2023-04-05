@@ -2,7 +2,11 @@ import { MutableRefObject } from "react";
 
 import Player from "./Player";
 
-import { PlayerInfo, RestartGameRequestBody } from "../server/types";
+import {
+  PlayerInfo,
+  RestartGameRequestBody,
+  TerminateGameRequestBody,
+} from "../server/types";
 
 interface FinalPhaseProps {
   thisPlayer: PlayerInfo;
@@ -21,6 +25,15 @@ const sendRestartGameRequest = (
     method: "restart",
   };
   ws.current?.send(JSON.stringify(restartGameRequest));
+};
+
+const sendTerminateGameRequest = (
+  ws: MutableRefObject<WebSocket | undefined>
+) => {
+  const terminateGameRequest: TerminateGameRequestBody = {
+    method: "terminate",
+  };
+  ws.current?.send(JSON.stringify(terminateGameRequest));
 };
 
 export default function FinalPhase(props: FinalPhaseProps) {
@@ -49,7 +62,14 @@ export default function FinalPhase(props: FinalPhaseProps) {
           >
             Back to lobby
           </button>
-          <button className="button">Terminate game</button>
+          <button
+            className="button"
+            onClick={() => {
+              sendTerminateGameRequest(props.ws);
+            }}
+          >
+            Terminate game
+          </button>
         </div>
       )}
     </>

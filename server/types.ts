@@ -91,6 +91,10 @@ export interface RestartGameRequestBody {
   method: "restart";
 }
 
+export interface TerminateGameRequestBody {
+  method: "terminate";
+}
+
 export type GameRequestBody =
   | CreateRequestBody
   | JoinRequestBody
@@ -99,7 +103,8 @@ export type GameRequestBody =
   | StartGameRequestBody
   | SubmitCaptionsRequestBody
   | SubmitReviewRequestBody
-  | RestartGameRequestBody;
+  | RestartGameRequestBody
+  | TerminateGameRequestBody;
 
 export interface CreateResponseBody {
   method: "create";
