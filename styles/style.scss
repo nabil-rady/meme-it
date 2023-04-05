@@ -580,7 +580,7 @@ body {
 
 /* Caption */
 .caption {
-  padding-top: 1rem;
+  padding-top: 1em;
 }
 
 .meme {
@@ -604,20 +604,52 @@ body {
   }
 
   &-captions {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+
     margin: 0 2rem;
-    flex-grow: 1;
+
     & > input {
-      width: 100%;
       display: block;
-      padding: 1rem;
+
+      font-family: inherit;
+      font-weight: 700;
+      font-size: 1em;
+
+      color: $button-clr;
+
+      width: 100%;
+
+      padding: 0.8em 1em;
       margin: 1rem 0;
       border-radius: 10px;
       border: none;
       outline: none;
+
+      &:first-of-type {
+        margin-block: 1em 0;
+      }
     }
+
     & > button {
       display: block;
       margin: 0 auto;
+    }
+
+    &.disabled {
+      > input {
+        pointer-events: none;
+        filter: brightness(0.7) opacity(0.8);
+      }
+    }
+
+    .waiting {
+      text-align: center;
+      font-weight: 600;
+
+      padding-bottom: 2em;
+      margin-top: auto;
     }
   }
 }
@@ -630,12 +662,28 @@ body {
       > .buttons {
         width: 50%;
         display: flex;
-        margin: 1.5rem auto;
+        margin: 3.5em auto 0;
         > svg {
           display: block;
           cursor: pointer;
           &:last-child {
             margin-left: auto;
+          }
+        }
+
+        .vote-button {
+          transition: $transition-time;
+        }
+
+        .like {
+          &:hover {
+            transform: rotate(-30deg) scale(1.35);
+          }
+        }
+
+        .dislike {
+          &:hover {
+            transform: rotate(30deg) scale(1.35);
           }
         }
       }
@@ -657,7 +705,8 @@ body {
         margin: 0 2rem;
         flex-grow: 1;
         height: fit-content;
-        border: 1px solid gold;
+        border: 3px solid gold;
+        border-radius: 10px;
         & > h2 {
           margin-bottom: 1rem;
         }
@@ -706,10 +755,11 @@ body {
 .final {
   > .top-3 {
     width: fit-content;
+
+    padding: 3em 10em 3em 3em;
     margin: 0 auto;
-    border: 1px solid gold;
-    padding: 1rem;
-    padding-right: 8rem;
+    border: 3px solid gold;
+    border-radius: 10px;
     > .players {
       > div {
         display: flex;

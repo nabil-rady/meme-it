@@ -14,8 +14,10 @@ const CANVAS_ID = "meme-canvas";
 export default function MemeComponent(props: MemeProps) {
   const meme = useRef<Meme>();
   const intervalId = useRef<NodeJS.Timer>();
+  const button = useRef<HTMLButtonElement>(null);
 
   const [secondsLeft, setSecondsLeft] = useState<number>(60);
+  const [submitted, setSubmitted] = useState<boolean>(false);
 
   useEffect(() => {
     if (!meme.current) {
@@ -47,7 +49,7 @@ export default function MemeComponent(props: MemeProps) {
       <div className="meme-container">
         <div className="meme">
           <canvas id="meme-canvas" width="500" height="500"></canvas>
-          <div className="meme-captions">
+          <div className={`meme-captions ${submitted ? "disabled" : ""}`}>
             {props.captions.map((caption, index) => (
               <input
                 key={index}
@@ -60,11 +62,28 @@ export default function MemeComponent(props: MemeProps) {
                     return newCaptions;
                   });
                 }}
+                tabIndex={submitted ? -1 : 0}
               />
             ))}
-            <button className="button" onClick={() => props.sendCaptions()}>
-              Submit
+            <button
+              className="button"
+              ref={button}
+              onClick={
+                submitted
+                  ? () => {
+                      setSubmitted(false);
+                      button.current?.blur();
+                    }
+                  : () => {
+                      props.sendCaptions();
+                      setSubmitted(true);
+                      button.current?.blur();
+                    }
+              }
+            >
+              {submitted ? "Edit" : "Submit"}
             </button>
+            {submitted && <div className="waiting">Waiting For Players...</div>}
           </div>
         </div>
       </div>
