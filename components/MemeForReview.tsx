@@ -1,4 +1,10 @@
-import { MutableRefObject, useEffect, useRef } from "react";
+import {
+  Dispatch,
+  MutableRefObject,
+  SetStateAction,
+  useEffect,
+  useRef,
+} from "react";
 import { AiFillLike, AiFillDislike } from "react-icons/ai";
 
 import { Meme } from "../lib/Meme";
@@ -8,6 +14,8 @@ import { MemeForReview, SubmitReviewRequestBody } from "../server/types";
 interface MemeForReviewProps {
   secondsLeft: number;
   memeForReview: MemeForReview;
+  upvoted: boolean | null;
+  setUpvoted: Dispatch<SetStateAction<boolean | null>>;
   ws: MutableRefObject<WebSocket | undefined>;
 }
 
@@ -38,6 +46,8 @@ export default function MemeForReviewComponent(props: MemeForReviewProps) {
       props.memeForReview.captions ??
       new Array(props.memeForReview.meme.captionsDetails.length).fill("");
     meme.current.render();
+
+    props.setUpvoted(null);
   }, [props.memeForReview.meme]);
 
   useEffect(() => {
@@ -58,13 +68,17 @@ export default function MemeForReviewComponent(props: MemeForReviewProps) {
         <div className="buttons">
           <AiFillLike
             size={40}
+            fill={props.upvoted === true ? "#133ea9" : "currentColor"}
             onClick={() => {
+              props.setUpvoted(true);
               submitReview(props.memeForReview.creatorPlayerId, props.ws, true);
             }}
           />
           <AiFillDislike
             size={40}
+            fill={props.upvoted === false ? "#133ea9" : "currentColor"}
             onClick={() => {
+              props.setUpvoted(false);
               submitReview(
                 props.memeForReview.creatorPlayerId,
                 props.ws,

@@ -31,6 +31,7 @@ export default function Home() {
   const [memesForReview, setMemesForReview] = useState<MemeForReview[]>([]);
   const [captions, setCaptions] = useState<string[]>([]);
   const [memesResults, setMemesResults] = useState<MemeResult[]>([]);
+  const [upvoted, setUpvoted] = useState<boolean | null>(null);
   const [notificationMessage, setNotificationMessage] = useState<string>("");
   const [isNotificationError, setIsNotificationError] =
     useState<boolean>(false);
@@ -70,6 +71,7 @@ export default function Home() {
         setPlayers,
         setMeme,
         setMemesForReview,
+        setUpvoted,
         setMemesResults,
         setCaptions,
         setNotificationMessage,
@@ -197,9 +199,11 @@ export default function Home() {
           players,
           meme,
           memesForReview,
+          upvoted,
           memesResults,
           captions,
           setCaptions,
+          setUpvoted,
           ws
         )
       : renderHome();

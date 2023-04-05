@@ -102,12 +102,19 @@ const renderGameCaption = (
 
 const renderGameReview = (
   memesForReview: MemeForReview[],
+  upvoted: boolean | null,
+  setUpvoted: Dispatch<SetStateAction<boolean | null>>,
   ws: MutableRefObject<WebSocket | undefined>
 ) => {
   return (
     <div className="review">
       <h1 className="title">Meme It</h1>
-      <ReviewPhase memes={memesForReview} ws={ws} />
+      <ReviewPhase
+        memes={memesForReview}
+        upvoted={upvoted}
+        setUpvoted={setUpvoted}
+        ws={ws}
+      />
     </div>
   );
 };
@@ -144,9 +151,11 @@ export default function renderGameUI(
   players: PlayerInfo[],
   meme: DMemeWithCaptionDetails | undefined,
   memesforReviews: MemeForReview[],
+  upvoted: boolean | null,
   memesResults: MemeResult[],
   captions: string[],
   setCaptions: Dispatch<SetStateAction<string[]>>,
+  setUpvoted: Dispatch<SetStateAction<boolean | null>>,
   ws: MutableRefObject<WebSocket | undefined>
 ) {
   // TODO: Error handling
@@ -157,7 +166,7 @@ export default function renderGameUI(
     if (!meme) return <h1 className="loading">Loading...</h1>;
     return renderGameCaption(meme, captions, setCaptions, ws);
   } else if (game.phase === "review") {
-    return renderGameReview(memesforReviews, ws);
+    return renderGameReview(memesforReviews, upvoted, setUpvoted, ws);
   } else if (game.phase === "result") {
     return renderGameResult(thisPlayer, players, memesResults);
   } else {

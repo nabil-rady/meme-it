@@ -28,6 +28,7 @@ export default function Home() {
   const [players, setPlayers] = useState<PlayerInfo[]>([]);
   const [meme, setMeme] = useState<DMemeWithCaptionDetails>();
   const [memesForReview, setMemesForReview] = useState<MemeForReview[]>([]);
+  const [upvoted, setUpvoted] = useState<boolean | null>(null);
   const [memesResults, setMemesResults] = useState<MemeResult[]>([]);
   const [captions, setCaptions] = useState<string[]>([]);
   const [notificationMessage, setNotificationMessage] = useState<string>("");
@@ -79,6 +80,7 @@ export default function Home() {
         setPlayers,
         setMeme,
         setMemesForReview,
+        setUpvoted,
         setMemesResults,
         setCaptions,
         setNotificationMessage,
@@ -113,9 +115,11 @@ export default function Home() {
         players,
         meme,
         memesForReview,
+        upvoted,
         memesResults,
         captions,
         setCaptions,
+        setUpvoted,
         ws
       )}
       <ToastContainer className="pop-up-container" pauseOnFocusLoss={false} />
