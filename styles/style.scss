@@ -32,12 +32,15 @@
   cursor: pointer;
   transition: $transition-time;
 
-  &:hover,
-  &:focus {
+  &:hover {
     background-color: $button-hover-bg;
     color: $button-hover-clr;
 
     outline: none;
+  }
+
+  &:focus {
+    outline-color: $button-clr;
   }
 
   &.disabled {
@@ -331,7 +334,7 @@ body {
 
       &:hover,
       &:focus {
-        outline: none;
+        outline-color: $button-clr;
         > .icon {
           transform: rotate(180deg);
         }
@@ -450,7 +453,7 @@ body {
           border-radius: 10px;
 
           &:focus {
-            outline-color: $button-hover-bg;
+            outline-color: $button-clr;
           }
         }
 
