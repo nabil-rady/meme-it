@@ -30,8 +30,8 @@ const logger = winston.createLogger({
 
 function handleClosingConnection(connection: GameConnection) {
   if (connection.playerId && connection.gameId) {
-    const playerStore = PlayerStore.getInstace();
-    const gameStore = GameStore.getInstace();
+    const playerStore = PlayerStore.getInstance();
+    const gameStore = GameStore.getInstance();
 
     const player = playerStore.getPlayer(connection.playerId);
     const leftGame = gameStore.getGame(connection.gameId);
@@ -105,8 +105,8 @@ function main(port: number) {
           requestBody,
           connection,
           logger,
-          GameStore.getInstace(),
-          PlayerStore.getInstace()
+          GameStore.getInstance(),
+          PlayerStore.getInstance()
         );
 
         requestHandler.handle();

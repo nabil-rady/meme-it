@@ -5,7 +5,7 @@ export class PlayerStore {
   private static instance: PlayerStore;
   private constructor() {}
 
-  static getInstace(): PlayerStore {
+  static getInstance(): PlayerStore {
     if (!PlayerStore.instance) {
       PlayerStore.instance = new PlayerStore();
     }
