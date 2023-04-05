@@ -775,6 +775,14 @@ body {
       }
     }
   }
+
+  > .buttons {
+    width: fit-content;
+    margin: 1rem auto;
+    > .button {
+      margin: 0 1rem;
+    }
+  }
 }
 
 /* Media Queries */

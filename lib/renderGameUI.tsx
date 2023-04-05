@@ -136,11 +136,15 @@ const renderGameResult = (
   );
 };
 
-const renderGameFinal = (thisPlayer: PlayerInfo, players: PlayerInfo[]) => {
+const renderGameFinal = (
+  thisPlayer: PlayerInfo,
+  players: PlayerInfo[],
+  ws: MutableRefObject<WebSocket | undefined>
+) => {
   return (
     <div className="final">
       <h1 className="title">Meme It</h1>
-      <FinalPhase thisPlayer={thisPlayer} players={players} />
+      <FinalPhase thisPlayer={thisPlayer} players={players} ws={ws} />
     </div>
   );
 };
@@ -170,6 +174,6 @@ export default function renderGameUI(
   } else if (game.phase === "result") {
     return renderGameResult(thisPlayer, players, memesResults);
   } else {
-    return renderGameFinal(thisPlayer, players);
+    return renderGameFinal(thisPlayer, players, ws);
   }
 }
