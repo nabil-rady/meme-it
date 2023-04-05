@@ -686,6 +686,9 @@ class EndResultPhaseResponseHandler extends ResponseHandler {
       return {
         ...game,
         phase: this.responseBody.end ? "final" : "caption",
+        currentRound: this.responseBody.end
+          ? game.currentRound
+          : game.currentRound + 1,
       };
     });
     this.setMeme(this.responseBody.end ? undefined : this.responseBody.meme);
