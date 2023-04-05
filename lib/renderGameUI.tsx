@@ -1,6 +1,6 @@
 import { Dispatch, MutableRefObject, SetStateAction } from "react";
 
-import Dropdown from "../components/Dropdown";
+import GameSettings from "../components/GameSettings";
 import Invite from "../components/Invite";
 import MemeComponent from "../components/Meme";
 import Player from "../components/Player";
@@ -51,22 +51,7 @@ const renderGameLobby = (
             </div>
           </div>
           <div className="options">
-            <div
-              className={`game-options ${thisPlayer.admin ? "" : "disabled"}`}
-            >
-              <Dropdown
-                label="Number of rounds"
-                name="number-of-rounds"
-                options={["1", "2", "3"]}
-                admin={thisPlayer.admin}
-              />
-              <Dropdown
-                label="Number of players"
-                name="number-of-players"
-                options={["6", "8", "10"]}
-                admin={thisPlayer.admin}
-              />
-            </div>
+            <GameSettings game={game} admin={thisPlayer.admin} ws={ws} />
             <div className="buttons">
               <Invite id={(game as GameInfo).id} />
               <button

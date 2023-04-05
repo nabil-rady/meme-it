@@ -79,7 +79,7 @@ export default function Home() {
         },
         game: {
           rounds: 1,
-          maxPlayers: 10,
+          maxPlayers: 6,
         },
       };
       ws.current?.send(JSON.stringify(request));
