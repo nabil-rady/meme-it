@@ -129,6 +129,20 @@ export default function Home() {
   }, [notificationMessage, isNotificationError]);
 
   useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    console.log(urlParams.get("terminate"));
+    if (urlParams.get("terminated") === "true")
+      toast("Game has been terminated by admin", {
+        position: "bottom-center",
+        toastId: "pop-up",
+        theme: "dark",
+        hideProgressBar: true,
+        closeButton: false,
+        closeOnClick: false,
+        pauseOnHover: false,
+        draggable: false,
+        autoClose: 1000,
+      });
     return () => ws.current?.close();
   }, []);
 

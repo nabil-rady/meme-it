@@ -850,7 +850,6 @@ class TerminateResponseHandler extends ResponseHandler {
   }
 
   handle() {
-    // TODO: Termination handling here
-    window.location.reload();
+    window.location.href = "/?terminated=true";
   }
 }
