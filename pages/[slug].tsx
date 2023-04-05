@@ -1,6 +1,9 @@
+import "react-toastify/dist/ReactToastify.css";
+
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
+import { ToastContainer, toast } from "react-toastify";
 
 import renderGameUI from "../lib/renderGameUI";
 import { ResponseHandler } from "../lib/ResponseHandler";
@@ -27,6 +30,41 @@ export default function Home() {
   const [memesForReview, setMemesForReview] = useState<MemeForReview[]>([]);
   const [memesResults, setMemesResults] = useState<MemeResult[]>([]);
   const [captions, setCaptions] = useState<string[]>([]);
+  const [notificationMessage, setNotificationMessage] = useState<string>("");
+  const [isNotificationError, setIsNotificationError] =
+    useState<boolean>(false);
+
+  useEffect(() => {
+    if (!notificationMessage) {
+      return;
+    }
+    toast.dismiss();
+    if (isNotificationError)
+      toast.error(notificationMessage, {
+        position: "bottom-center",
+        toastId: "pop-up",
+        theme: "dark",
+        hideProgressBar: true,
+        closeButton: false,
+        closeOnClick: false,
+        pauseOnHover: false,
+        draggable: false,
+        autoClose: 1000,
+      });
+    else
+      toast.success(notificationMessage, {
+        position: "bottom-center",
+        toastId: "pop-up",
+        theme: "dark",
+        hideProgressBar: true,
+        closeButton: false,
+        closeOnClick: false,
+        pauseOnHover: false,
+        draggable: false,
+        autoClose: 1000,
+      });
+    setNotificationMessage("");
+  }, [notificationMessage, isNotificationError]);
 
   useEffect(() => {
     if (!router.query.slug) return;
@@ -42,7 +80,9 @@ export default function Home() {
         setMeme,
         setMemesForReview,
         setMemesResults,
-        setCaptions
+        setCaptions,
+        setNotificationMessage,
+        setIsNotificationError
       );
 
       responseHandler.handle();
@@ -78,6 +118,7 @@ export default function Home() {
         setCaptions,
         ws
       )}
+      <ToastContainer className="pop-up-container" pauseOnFocusLoss={false} />
     </div>
   );
 }

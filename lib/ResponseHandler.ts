@@ -34,6 +34,8 @@ export abstract class ResponseHandler {
   >;
   protected readonly setMemesResults: Dispatch<SetStateAction<MemeResult[]>>;
   protected readonly setCaptions: Dispatch<SetStateAction<string[]>>;
+  protected readonly setNotificationMessage: Dispatch<SetStateAction<string>>;
+  protected readonly setIsNotificationError: Dispatch<SetStateAction<boolean>>;
 
   constructor(
     setGame: Dispatch<SetStateAction<GameInfo | undefined>>,
@@ -42,7 +44,9 @@ export abstract class ResponseHandler {
     setMeme: Dispatch<SetStateAction<DMemeWithCaptionDetails | undefined>>,
     setMemesForReview: Dispatch<SetStateAction<MemeForReview[]>>,
     setMemesResults: Dispatch<SetStateAction<MemeResult[]>>,
-    setCaptions: Dispatch<SetStateAction<string[]>>
+    setCaptions: Dispatch<SetStateAction<string[]>>,
+    setNotificationMessage: Dispatch<SetStateAction<string>>,
+    setIsNotificationError: Dispatch<SetStateAction<boolean>>
   ) {
     this.setGame = setGame;
     this.setThisPlayer = setThisPlayer;
@@ -51,6 +55,8 @@ export abstract class ResponseHandler {
     this.setMemesForReview = setMemesForReview;
     this.setMemesResults = setMemesResults;
     this.setCaptions = setCaptions;
+    this.setNotificationMessage = setNotificationMessage;
+    this.setIsNotificationError = setIsNotificationError;
   }
 
   static createResponseHandler(
@@ -61,7 +67,9 @@ export abstract class ResponseHandler {
     setMeme: Dispatch<SetStateAction<DMemeWithCaptionDetails | undefined>>,
     setMemesForReview: Dispatch<SetStateAction<MemeForReview[]>>,
     setMemesResults: Dispatch<SetStateAction<MemeResult[]>>,
-    setCaptions: Dispatch<SetStateAction<string[]>>
+    setCaptions: Dispatch<SetStateAction<string[]>>,
+    setNotificationMessage: Dispatch<SetStateAction<string>>,
+    setIsNotificationError: Dispatch<SetStateAction<boolean>>
   ): ResponseHandler {
     if (responseBody.method === "create") {
       return new CreateResponseHandler(
@@ -72,7 +80,9 @@ export abstract class ResponseHandler {
         setMeme,
         setMemesForReview,
         setMemesResults,
-        setCaptions
+        setCaptions,
+        setNotificationMessage,
+        setIsNotificationError
       );
     } else if (responseBody.method === "join") {
       return new JoinResponseHandler(
@@ -83,7 +93,9 @@ export abstract class ResponseHandler {
         setMeme,
         setMemesForReview,
         setMemesResults,
-        setCaptions
+        setCaptions,
+        setNotificationMessage,
+        setIsNotificationError
       );
     } else if (responseBody.method === "updateGame") {
       return new UpdateGameResponseHandler(
@@ -94,7 +106,9 @@ export abstract class ResponseHandler {
         setMeme,
         setMemesForReview,
         setMemesResults,
-        setCaptions
+        setCaptions,
+        setNotificationMessage,
+        setIsNotificationError
       );
     } else if (responseBody.method === "updatePlayer") {
       return new UpdatePlayerResponseHandler(
@@ -105,7 +119,9 @@ export abstract class ResponseHandler {
         setMeme,
         setMemesForReview,
         setMemesResults,
-        setCaptions
+        setCaptions,
+        setNotificationMessage,
+        setIsNotificationError
       );
     } else if (responseBody.method === "startGame") {
       return new StartGameResponseHandler(
@@ -116,7 +132,9 @@ export abstract class ResponseHandler {
         setMeme,
         setMemesForReview,
         setMemesResults,
-        setCaptions
+        setCaptions,
+        setNotificationMessage,
+        setIsNotificationError
       );
     } else if (responseBody.method === "submitCaption") {
       return new CaptionResponseHandler(
@@ -127,7 +145,9 @@ export abstract class ResponseHandler {
         setMeme,
         setMemesForReview,
         setMemesResults,
-        setCaptions
+        setCaptions,
+        setNotificationMessage,
+        setIsNotificationError
       );
     } else if (responseBody.method === "endCaptionPhase") {
       return new EndCaptionPhaseResponseHandler(
@@ -138,7 +158,9 @@ export abstract class ResponseHandler {
         setMeme,
         setMemesForReview,
         setMemesResults,
-        setCaptions
+        setCaptions,
+        setNotificationMessage,
+        setIsNotificationError
       );
     } else if (responseBody.method === "submitReview") {
       return new SubmitReviewResponseHandler(
@@ -149,7 +171,9 @@ export abstract class ResponseHandler {
         setMeme,
         setMemesForReview,
         setMemesResults,
-        setCaptions
+        setCaptions,
+        setNotificationMessage,
+        setIsNotificationError
       );
     } else if (responseBody.method === "endReviewPhase") {
       return new EndReviewPhaseResponsHandler(
@@ -160,7 +184,9 @@ export abstract class ResponseHandler {
         setMeme,
         setMemesForReview,
         setMemesResults,
-        setCaptions
+        setCaptions,
+        setNotificationMessage,
+        setIsNotificationError
       );
     } else if (responseBody.method === "endResultPhase") {
       return new EndResultPhaseResponseHandler(
@@ -171,7 +197,9 @@ export abstract class ResponseHandler {
         setMeme,
         setMemesForReview,
         setMemesResults,
-        setCaptions
+        setCaptions,
+        setNotificationMessage,
+        setIsNotificationError
       );
     } else if (responseBody.method === "leave") {
       return new LeaveResponseHandler(
@@ -182,7 +210,9 @@ export abstract class ResponseHandler {
         setMeme,
         setMemesForReview,
         setMemesResults,
-        setCaptions
+        setCaptions,
+        setNotificationMessage,
+        setIsNotificationError
       );
     } else if (responseBody.method === "terminate") {
       return new TerminateResponseHandler(
@@ -193,7 +223,9 @@ export abstract class ResponseHandler {
         setMeme,
         setMemesForReview,
         setMemesResults,
-        setCaptions
+        setCaptions,
+        setNotificationMessage,
+        setIsNotificationError
       );
     } else {
       throw new Error("Incorrect response body format.");
@@ -214,7 +246,9 @@ class CreateResponseHandler extends ResponseHandler {
     setMeme: Dispatch<SetStateAction<DMemeWithCaptionDetails | undefined>>,
     setMemesForReview: Dispatch<SetStateAction<MemeForReview[]>>,
     setMemesResults: Dispatch<SetStateAction<MemeResult[]>>,
-    setCaptions: Dispatch<SetStateAction<string[]>>
+    setCaptions: Dispatch<SetStateAction<string[]>>,
+    setNotificationMessage: Dispatch<SetStateAction<string>>,
+    setIsNotificationError: Dispatch<SetStateAction<boolean>>
   ) {
     super(
       setGame,
@@ -223,7 +257,9 @@ class CreateResponseHandler extends ResponseHandler {
       setMeme,
       setMemesForReview,
       setMemesResults,
-      setCaptions
+      setCaptions,
+      setNotificationMessage,
+      setIsNotificationError
     );
     this.responseBody = responseBody;
   }
@@ -246,7 +282,9 @@ class JoinResponseHandler extends ResponseHandler {
     setMeme: Dispatch<SetStateAction<DMemeWithCaptionDetails | undefined>>,
     setMemesForReview: Dispatch<SetStateAction<MemeForReview[]>>,
     setMemesResults: Dispatch<SetStateAction<MemeResult[]>>,
-    setCaptions: Dispatch<SetStateAction<string[]>>
+    setCaptions: Dispatch<SetStateAction<string[]>>,
+    setNotificationMessage: Dispatch<SetStateAction<string>>,
+    setIsNotificationError: Dispatch<SetStateAction<boolean>>
   ) {
     super(
       setGame,
@@ -255,7 +293,9 @@ class JoinResponseHandler extends ResponseHandler {
       setMeme,
       setMemesForReview,
       setMemesResults,
-      setCaptions
+      setCaptions,
+      setNotificationMessage,
+      setIsNotificationError
     );
     this.responseBody = responseBody;
   }
@@ -280,7 +320,9 @@ class UpdateGameResponseHandler extends ResponseHandler {
     setMeme: Dispatch<SetStateAction<DMemeWithCaptionDetails | undefined>>,
     setMemesForReview: Dispatch<SetStateAction<MemeForReview[]>>,
     setMemesResults: Dispatch<SetStateAction<MemeResult[]>>,
-    setCaptions: Dispatch<SetStateAction<string[]>>
+    setCaptions: Dispatch<SetStateAction<string[]>>,
+    setNotificationMessage: Dispatch<SetStateAction<string>>,
+    setIsNotificationError: Dispatch<SetStateAction<boolean>>
   ) {
     super(
       setGame,
@@ -289,7 +331,9 @@ class UpdateGameResponseHandler extends ResponseHandler {
       setMeme,
       setMemesForReview,
       setMemesResults,
-      setCaptions
+      setCaptions,
+      setNotificationMessage,
+      setIsNotificationError
     );
     this.responseBody = responseBody;
   }
@@ -310,7 +354,9 @@ class UpdatePlayerResponseHandler extends ResponseHandler {
     setMeme: Dispatch<SetStateAction<DMemeWithCaptionDetails | undefined>>,
     setMemesForReview: Dispatch<SetStateAction<MemeForReview[]>>,
     setMemesResults: Dispatch<SetStateAction<MemeResult[]>>,
-    setCaptions: Dispatch<SetStateAction<string[]>>
+    setCaptions: Dispatch<SetStateAction<string[]>>,
+    setNotificationMessage: Dispatch<SetStateAction<string>>,
+    setIsNotificationError: Dispatch<SetStateAction<boolean>>
   ) {
     super(
       setGame,
@@ -319,7 +365,9 @@ class UpdatePlayerResponseHandler extends ResponseHandler {
       setMeme,
       setMemesForReview,
       setMemesResults,
-      setCaptions
+      setCaptions,
+      setNotificationMessage,
+      setIsNotificationError
     );
     this.responseBody = responseBody;
   }
@@ -351,7 +399,9 @@ class StartGameResponseHandler extends ResponseHandler {
     setMeme: Dispatch<SetStateAction<DMemeWithCaptionDetails | undefined>>,
     setMemesForReview: Dispatch<SetStateAction<MemeForReview[]>>,
     setMemesResults: Dispatch<SetStateAction<MemeResult[]>>,
-    setCaptions: Dispatch<SetStateAction<string[]>>
+    setCaptions: Dispatch<SetStateAction<string[]>>,
+    setNotificationMessage: Dispatch<SetStateAction<string>>,
+    setIsNotificationError: Dispatch<SetStateAction<boolean>>
   ) {
     super(
       setGame,
@@ -360,7 +410,9 @@ class StartGameResponseHandler extends ResponseHandler {
       setMeme,
       setMemesForReview,
       setMemesResults,
-      setCaptions
+      setCaptions,
+      setNotificationMessage,
+      setIsNotificationError
     );
     this.responseBody = responseBody;
   }
@@ -389,7 +441,9 @@ class CaptionResponseHandler extends ResponseHandler {
     setMeme: Dispatch<SetStateAction<DMemeWithCaptionDetails | undefined>>,
     setMemesForReview: Dispatch<SetStateAction<MemeForReview[]>>,
     setMemesResults: Dispatch<SetStateAction<MemeResult[]>>,
-    setCaptions: Dispatch<SetStateAction<string[]>>
+    setCaptions: Dispatch<SetStateAction<string[]>>,
+    setNotificationMessage: Dispatch<SetStateAction<string>>,
+    setIsNotificationError: Dispatch<SetStateAction<boolean>>
   ) {
     super(
       setGame,
@@ -398,7 +452,9 @@ class CaptionResponseHandler extends ResponseHandler {
       setMeme,
       setMemesForReview,
       setMemesResults,
-      setCaptions
+      setCaptions,
+      setNotificationMessage,
+      setIsNotificationError
     );
     this.responseBody = responseBody;
   }
@@ -419,7 +475,9 @@ class EndCaptionPhaseResponseHandler extends ResponseHandler {
     setMeme: Dispatch<SetStateAction<DMemeWithCaptionDetails | undefined>>,
     setMemesForReview: Dispatch<SetStateAction<MemeForReview[]>>,
     setMemesResults: Dispatch<SetStateAction<MemeResult[]>>,
-    setCaptions: Dispatch<SetStateAction<string[]>>
+    setCaptions: Dispatch<SetStateAction<string[]>>,
+    setNotificationMessage: Dispatch<SetStateAction<string>>,
+    setIsNotificationError: Dispatch<SetStateAction<boolean>>
   ) {
     super(
       setGame,
@@ -428,7 +486,9 @@ class EndCaptionPhaseResponseHandler extends ResponseHandler {
       setMeme,
       setMemesForReview,
       setMemesResults,
-      setCaptions
+      setCaptions,
+      setNotificationMessage,
+      setIsNotificationError
     );
     this.responseBody = responseBody;
   }
@@ -456,7 +516,9 @@ class SubmitReviewResponseHandler extends ResponseHandler {
     setMeme: Dispatch<SetStateAction<DMemeWithCaptionDetails | undefined>>,
     setMemesForReview: Dispatch<SetStateAction<MemeForReview[]>>,
     setMemesResults: Dispatch<SetStateAction<MemeResult[]>>,
-    setCaptions: Dispatch<SetStateAction<string[]>>
+    setCaptions: Dispatch<SetStateAction<string[]>>,
+    setNotificationMessage: Dispatch<SetStateAction<string>>,
+    setIsNotificationError: Dispatch<SetStateAction<boolean>>
   ) {
     super(
       setGame,
@@ -465,13 +527,23 @@ class SubmitReviewResponseHandler extends ResponseHandler {
       setMeme,
       setMemesForReview,
       setMemesResults,
-      setCaptions
+      setCaptions,
+      setNotificationMessage,
+      setIsNotificationError
     );
     this.responseBody = responseBody;
   }
 
   handle() {
-    // TODO: Error handling
+    if (this.responseBody.success) {
+      this.setNotificationMessage("Vote sent successfully");
+      this.setIsNotificationError(false);
+    } else {
+      this.setNotificationMessage(
+        "Error while sending your vote, please vote again"
+      );
+      this.setIsNotificationError(true);
+    }
   }
 }
 
@@ -486,7 +558,9 @@ class EndReviewPhaseResponsHandler extends ResponseHandler {
     setMeme: Dispatch<SetStateAction<DMemeWithCaptionDetails | undefined>>,
     setMemesForReview: Dispatch<SetStateAction<MemeForReview[]>>,
     setMemesResults: Dispatch<SetStateAction<MemeResult[]>>,
-    setCaptions: Dispatch<SetStateAction<string[]>>
+    setCaptions: Dispatch<SetStateAction<string[]>>,
+    setNotificationMessage: Dispatch<SetStateAction<string>>,
+    setIsNotificationError: Dispatch<SetStateAction<boolean>>
   ) {
     super(
       setGame,
@@ -495,7 +569,9 @@ class EndReviewPhaseResponsHandler extends ResponseHandler {
       setMeme,
       setMemesForReview,
       setMemesResults,
-      setCaptions
+      setCaptions,
+      setNotificationMessage,
+      setIsNotificationError
     );
     this.responseBody = responseBody;
   }
@@ -534,7 +610,9 @@ class EndResultPhaseResponseHandler extends ResponseHandler {
     setMeme: Dispatch<SetStateAction<DMemeWithCaptionDetails | undefined>>,
     setMemesForReview: Dispatch<SetStateAction<MemeForReview[]>>,
     setMemesResults: Dispatch<SetStateAction<MemeResult[]>>,
-    setCaptions: Dispatch<SetStateAction<string[]>>
+    setCaptions: Dispatch<SetStateAction<string[]>>,
+    setNotificationMessage: Dispatch<SetStateAction<string>>,
+    setIsNotificationError: Dispatch<SetStateAction<boolean>>
   ) {
     super(
       setGame,
@@ -543,7 +621,9 @@ class EndResultPhaseResponseHandler extends ResponseHandler {
       setMeme,
       setMemesForReview,
       setMemesResults,
-      setCaptions
+      setCaptions,
+      setNotificationMessage,
+      setIsNotificationError
     );
     this.responseBody = responseBody;
   }
@@ -578,7 +658,9 @@ class LeaveResponseHandler extends ResponseHandler {
     setMeme: Dispatch<SetStateAction<DMemeWithCaptionDetails | undefined>>,
     setMemesForReview: Dispatch<SetStateAction<MemeForReview[]>>,
     setMemesResults: Dispatch<SetStateAction<MemeResult[]>>,
-    setCaptions: Dispatch<SetStateAction<string[]>>
+    setCaptions: Dispatch<SetStateAction<string[]>>,
+    setNotificationMessage: Dispatch<SetStateAction<string>>,
+    setIsNotificationError: Dispatch<SetStateAction<boolean>>
   ) {
     super(
       setGame,
@@ -587,7 +669,9 @@ class LeaveResponseHandler extends ResponseHandler {
       setMeme,
       setMemesForReview,
       setMemesResults,
-      setCaptions
+      setCaptions,
+      setNotificationMessage,
+      setIsNotificationError
     );
     this.responseBody = responseBody;
   }
@@ -633,7 +717,9 @@ class TerminateResponseHandler extends ResponseHandler {
     setMeme: Dispatch<SetStateAction<DMemeWithCaptionDetails | undefined>>,
     setMemesForReview: Dispatch<SetStateAction<MemeForReview[]>>,
     setMemesResults: Dispatch<SetStateAction<MemeResult[]>>,
-    setCaptions: Dispatch<SetStateAction<string[]>>
+    setCaptions: Dispatch<SetStateAction<string[]>>,
+    setNotificationMessage: Dispatch<SetStateAction<string>>,
+    setIsNotificationError: Dispatch<SetStateAction<boolean>>
   ) {
     super(
       setGame,
@@ -642,7 +728,9 @@ class TerminateResponseHandler extends ResponseHandler {
       setMeme,
       setMemesForReview,
       setMemesResults,
-      setCaptions
+      setCaptions,
+      setNotificationMessage,
+      setIsNotificationError
     );
     this.responseBody = responseBody;
   }

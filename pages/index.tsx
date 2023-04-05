@@ -1,6 +1,9 @@
+import "react-toastify/dist/ReactToastify.css";
+
 import Head from "next/head";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
+import { ToastContainer, toast } from "react-toastify";
 import { BiRefresh } from "react-icons/bi";
 
 import AvatarSelect from "../components/AvatarSelect";
@@ -28,6 +31,9 @@ export default function Home() {
   const [memesForReview, setMemesForReview] = useState<MemeForReview[]>([]);
   const [captions, setCaptions] = useState<string[]>([]);
   const [memesResults, setMemesResults] = useState<MemeResult[]>([]);
+  const [notificationMessage, setNotificationMessage] = useState<string>("");
+  const [isNotificationError, setIsNotificationError] =
+    useState<boolean>(false);
 
   const [avatar, setAvatar] = useState<string>("/avatars/1.jpg");
   const [nickname, setNickname] = useState<string>("");
@@ -65,7 +71,9 @@ export default function Home() {
         setMeme,
         setMemesForReview,
         setMemesResults,
-        setCaptions
+        setCaptions,
+        setNotificationMessage,
+        setIsNotificationError
       );
 
       responseHandler.handle();
@@ -85,6 +93,38 @@ export default function Home() {
       ws.current?.send(JSON.stringify(request));
     });
   };
+
+  useEffect(() => {
+    if (!notificationMessage) {
+      return;
+    }
+    toast.dismiss();
+    if (isNotificationError)
+      toast.error(notificationMessage, {
+        position: "bottom-center",
+        toastId: "pop-up",
+        theme: "dark",
+        hideProgressBar: true,
+        closeButton: false,
+        closeOnClick: false,
+        pauseOnHover: false,
+        draggable: false,
+        autoClose: 1000,
+      });
+    else
+      toast.success(notificationMessage, {
+        position: "bottom-center",
+        toastId: "pop-up",
+        theme: "dark",
+        hideProgressBar: true,
+        closeButton: false,
+        closeOnClick: false,
+        pauseOnHover: false,
+        draggable: false,
+        autoClose: 1000,
+      });
+    setNotificationMessage("");
+  }, [notificationMessage, isNotificationError]);
 
   useEffect(() => {
     return () => ws.current?.close();
@@ -170,6 +210,7 @@ export default function Home() {
         <title>Meme It</title>
       </Head>
       {render()}
+      <ToastContainer className="pop-up-container" pauseOnFocusLoss={false} />
     </div>
   );
 }

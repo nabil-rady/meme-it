@@ -1,5 +1,4 @@
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 
 interface InviteProps {
   id: string;
@@ -28,7 +27,6 @@ export default function Invite(props: InviteProps) {
       <button className="button" onClick={copyLink}>
         Invite
       </button>
-      <ToastContainer className="pop-up-container" pauseOnFocusLoss={false} />
     </div>
   );
 }
