@@ -29,6 +29,8 @@ import {
   MemeResult,
   EndReviewPhaseResponseBody,
   EndResultPhaseResponseBody,
+  RestartGameRequestBody,
+  RestartGameResponseBody,
 } from "../types";
 import { DMemeWithCaptionDetails } from "../../dbtypes";
 
@@ -107,6 +109,14 @@ export abstract class RequestHandler {
       );
     } else if (requestBody.method === "submitReview") {
       return new SubmitReviewRequestHandler(
+        requestBody,
+        connection,
+        logger,
+        gameStore,
+        playerStore
+      );
+    } else if (requestBody.method === "restart") {
+      return new RestartGameRequestHandler(
         requestBody,
         connection,
         logger,
@@ -705,5 +715,55 @@ class SubmitReviewRequestHandler extends RequestHandler {
         currentRound
       )}.`
     );
+  }
+}
+
+class RestartGameRequestHandler extends RequestHandler {
+  private requestBody: RestartGameRequestBody;
+
+  constructor(
+    requestBody: RestartGameRequestBody,
+    connection: GameConnection,
+    logger: Logger,
+    gameStore: GameStore,
+    playerStore: PlayerStore
+  ) {
+    super(connection, logger, gameStore, playerStore);
+    this.requestBody = requestBody;
+  }
+
+  handle() {
+    if (!this.isValidConnection()) {
+      this.logger.debug(
+        "Attempted to submit a review from an invalid connection."
+      );
+      return;
+    }
+
+    const gameId = this.connection.gameId!;
+    const gameToBeRestarted = this.gameStore.getGame(gameId);
+    if (!gameToBeRestarted) {
+      this.send404Error("Game", gameId);
+      return;
+    }
+
+    if (!this.isAdmin(gameToBeRestarted)) {
+      this.send403Error("Game", gameId);
+      return;
+    }
+
+    gameToBeRestarted.restart();
+
+    this.gameStore.addGame(gameToBeRestarted);
+    for (const player of gameToBeRestarted.getPlayers()) {
+      this.playerStore.addPlayer(player);
+    }
+
+    const restartGameResponse: RestartGameResponseBody = {
+      method: "restart",
+    };
+    gameToBeRestarted.broadcast(restartGameResponse);
+
+    this.logger.info(`Game ${gameId} restart and is now in its lobby phase.`);
   }
 }

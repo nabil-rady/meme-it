@@ -87,6 +87,10 @@ export interface SubmitReviewRequestBody {
   playerToBeReviewedId: string;
 }
 
+export interface RestartGameRequestBody {
+  method: "restart";
+}
+
 export type GameRequestBody =
   | CreateRequestBody
   | JoinRequestBody
@@ -94,7 +98,8 @@ export type GameRequestBody =
   | UpdateGameRequestBody
   | StartGameRequestBody
   | SubmitCaptionsRequestBody
-  | SubmitReviewRequestBody;
+  | SubmitReviewRequestBody
+  | RestartGameRequestBody;
 
 export interface CreateResponseBody {
   method: "create";
@@ -154,6 +159,10 @@ export type EndResultPhaseResponseBody =
       meme: DMemeWithCaptionDetails;
     };
 
+export interface RestartGameResponseBody {
+  method: "restart";
+}
+
 export interface LeaveResponseBody {
   method: "leave";
   player: PlayerInfo;
@@ -179,5 +188,6 @@ export type GameResponseBody =
   | SubmitReviewResponseBody
   | EndReviewPhaseResponseBody
   | EndResultPhaseResponseBody
+  | RestartGameResponseBody
   | LeaveResponseBody
   | TerminateResponseBody;

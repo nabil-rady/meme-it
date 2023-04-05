@@ -100,6 +100,15 @@ export class Game {
     this.timeoudId = timeoudId;
   }
 
+  restart() {
+    this.phase = "lobby";
+    this.currentRound = 1;
+
+    for (const player of this.players) {
+      player.reset();
+    }
+  }
+
   broadcast(response: GameResponseBody) {
     for (const player of this.players) {
       player.send(response);

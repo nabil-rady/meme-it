@@ -133,6 +133,12 @@ export class Player {
     this.votes[`${playerId}|${round}`] = false;
   }
 
+  reset() {
+    this.votes = {};
+    this.currentCaptions = [];
+    this.currentMeme = null;
+  }
+
   send(message: GameResponseBody) {
     this.connection.send(JSON.stringify(message));
   }
