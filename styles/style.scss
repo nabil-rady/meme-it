@@ -676,6 +676,11 @@ body {
 
         .vote-button {
           transition: $transition-time;
+
+          &.disabled {
+            pointer-events: none;
+            filter: brightness(0.7) opacity(0.8);
+          }
         }
 
         .like {

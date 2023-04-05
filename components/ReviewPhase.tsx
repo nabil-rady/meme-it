@@ -13,6 +13,7 @@ import { MemeForReview, PlayerInfo } from "../server/types";
 
 interface ReviewPhaseProps {
   memes: MemeForReview[];
+  thisPlayer: PlayerInfo;
   upvoted: boolean | null;
   setUpvoted: Dispatch<SetStateAction<boolean | null>>;
   ws: MutableRefObject<WebSocket | undefined>;
@@ -51,9 +52,10 @@ export default function ReviewPhase(props: ReviewPhaseProps) {
   return (
     <MemeForReviewComponent
       secondsLeft={secondsLeft}
+      memeForReview={props.memes[Math.min(index, numberOfMemesToReview - 1)]}
+      thisPlayer={props.thisPlayer}
       upvoted={props.upvoted}
       setUpvoted={props.setUpvoted}
-      memeForReview={props.memes[Math.min(index, numberOfMemesToReview - 1)]}
       ws={props.ws}
     />
   );

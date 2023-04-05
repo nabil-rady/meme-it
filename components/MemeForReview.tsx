@@ -9,11 +9,16 @@ import { AiFillLike, AiFillDislike } from "react-icons/ai";
 
 import { Meme } from "../lib/Meme";
 
-import { MemeForReview, SubmitReviewRequestBody } from "../server/types";
+import {
+  MemeForReview,
+  PlayerInfo,
+  SubmitReviewRequestBody,
+} from "../server/types";
 
 interface MemeForReviewProps {
   secondsLeft: number;
   memeForReview: MemeForReview;
+  thisPlayer: PlayerInfo;
   upvoted: boolean | null;
   setUpvoted: Dispatch<SetStateAction<boolean | null>>;
   ws: MutableRefObject<WebSocket | undefined>;
@@ -36,6 +41,8 @@ const submitReview = (
 
 export default function MemeForReviewComponent(props: MemeForReviewProps) {
   const meme = useRef<Meme>();
+
+  const creator = props.memeForReview.creatorPlayerId === props.thisPlayer.id;
 
   useEffect(() => {
     meme.current = new Meme(CANVAS_ID, {
@@ -67,7 +74,7 @@ export default function MemeForReviewComponent(props: MemeForReviewProps) {
         </div>
         <div className="buttons">
           <AiFillLike
-            className="vote-button like"
+            className={`vote-button like ${creator ? "disabled" : ""}`}
             size={40}
             fill={props.upvoted === true ? "#133ea9" : "currentColor"}
             onClick={() => {
@@ -76,7 +83,7 @@ export default function MemeForReviewComponent(props: MemeForReviewProps) {
             }}
           />
           <AiFillDislike
-            className="vote-button dislike"
+            className={`vote-button dislike ${creator ? "disabled" : ""}`}
             size={40}
             fill={props.upvoted === false ? "#133ea9" : "currentColor"}
             onClick={() => {
