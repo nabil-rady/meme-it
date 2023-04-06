@@ -10,6 +10,13 @@ interface MemeResultProps {
   index: number;
 }
 
+const downloadMeme = (player: PlayerInfo | undefined, meme: Meme) => {
+  const filename = `memeit-${Date.now().valueOf()}-${
+    player ? player.nickname : ""
+  }.png`;
+  meme.download(filename);
+};
+
 export default function MemeResultComponent(props: MemeResultProps) {
   const CANVAS_ID = `meme-canvas-${[props.index]}`;
 
@@ -47,7 +54,14 @@ export default function MemeResultComponent(props: MemeResultProps) {
         </div>
       </div>
       <div className="buttons">
-        <button className="button">Download</button>
+        <button
+          className="button"
+          onClick={() => {
+            if (meme.current) downloadMeme(props.player, meme.current);
+          }}
+        >
+          Download
+        </button>
         <div className="review-buttons">
           <div className="review-number">
             <AiFillLike size={40} />

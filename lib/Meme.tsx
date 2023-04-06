@@ -85,6 +85,13 @@ export class Meme {
     return this._captions;
   }
 
+  download(filename: string) {
+    const a = document.createElement("a");
+    a.download = filename;
+    a.href = this.canvas.toDataURL("image/png");
+    a.click();
+  }
+
   async fetchImage(): Promise<boolean> {
     try {
       const response = await fetch(this.url);
