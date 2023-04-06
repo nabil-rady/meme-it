@@ -47,13 +47,16 @@ export default function MemeResultComponent(props: MemeResultProps) {
         </div>
       </div>
       <div className="buttons">
-        <div className="review-number">
-          <AiFillLike size={40} />
-          <span>{props.memeResult.upvotes}</span>
-        </div>
-        <div className="review-number">
-          <AiFillDislike size={40} />
-          <span>{props.memeResult.downvotes}</span>
+        <button className="button">Download</button>
+        <div className="review-buttons">
+          <div className="review-number">
+            <AiFillLike size={40} />
+            <span>{props.memeResult.upvotes}</span>
+          </div>
+          <div className="review-number">
+            <AiFillDislike size={40} />
+            <span>{props.memeResult.downvotes}</span>
+          </div>
         </div>
       </div>
     </>
