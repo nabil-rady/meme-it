@@ -562,14 +562,6 @@ body {
 
   font-weight: 600;
 
-  &-admin {
-    position: absolute;
-    top: -10px;
-    left: -5px;
-
-    height: 20px;
-  }
-
   &-image {
     width: 4em;
     height: 4em;
@@ -767,22 +759,180 @@ body {
 
 /* Final */
 .final {
-  > .top-3 {
+  > .leaderboard {
+    display: flex;
+    flex-direction: column;
+    gap: 5em;
+
+    background-color: rgba(0, 0, 0, 0.13);
+
     width: fit-content;
 
-    padding: 3em 10em 3em 3em;
+    padding: 2em 5em;
     margin: 0 auto;
-    border: 3px solid gold;
-    border-radius: 10px;
+    border-radius: 1.5em;
+
+    > h2 {
+      text-transform: uppercase;
+      text-align: center;
+    }
+
     > .players {
-      > div {
-        display: flex;
-        > p {
-          font-size: 2.2rem;
-          margin-right: 1rem;
-          position: relative;
-          top: 0.2rem;
+      display: flex;
+      flex-direction: column;
+
+      > .top-3 {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-areas:
+          "second first third"
+          "bar bar bar";
+        gap: 1.5em 2em;
+
+        animation: Grow-In 0.3s linear;
+
+        .player {
+          display: flex;
+          flex-direction: column;
         }
+
+        > div {
+          position: relative;
+
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        > .first {
+          grid-area: first;
+
+          .player-image {
+            width: 7.5em;
+            height: 7.5em;
+          }
+
+          &::after {
+            content: "";
+            position: absolute;
+            top: -3.75em;
+
+            display: inline-block;
+
+            background: url(/crown.svg);
+            background-size: cover;
+
+            width: 3.75em;
+            height: 3.75em;
+          }
+        }
+
+        > .second {
+          grid-area: second;
+
+          .player-image {
+            width: 6em;
+            height: 6em;
+          }
+
+          &::after {
+            content: "";
+            position: absolute;
+            top: -2.8125em;
+
+            display: inline-block;
+
+            background: url(/silver-icon.svg);
+            background-size: cover;
+
+            width: 2.1875em;
+            height: 2.1875em;
+          }
+        }
+
+        > .third {
+          grid-area: third;
+
+          .player-image {
+            width: 5em;
+            height: 5em;
+          }
+
+          &::after {
+            content: "";
+            position: absolute;
+            top: -2.5em;
+
+            display: inline-block;
+
+            background: url(/bronze-icon.svg);
+            background-size: cover;
+
+            width: 1.5625em;
+            height: 1.5625em;
+          }
+        }
+      }
+
+      > .bar {
+        grid-area: bar;
+
+        display: block;
+
+        background-color: $text-clr;
+
+        height: 4px;
+
+        border-radius: 1em;
+      }
+
+      > .rest {
+        display: flex;
+        flex-direction: column;
+        gap: 1em;
+
+        list-style: none;
+        counter-set: ranking 3;
+
+        padding-left: 8.5em;
+
+        > li {
+          position: relative;
+          counter-increment: ranking;
+
+          display: flex;
+          gap: 0.75em;
+
+          opacity: 0;
+          animation: Fall-In 0.2s linear forwards;
+
+          &::before {
+            content: "#" counter(ranking);
+
+            display: flex;
+            align-items: center;
+
+            font-weight: 600;
+            font-size: 1.3em;
+          }
+
+          &:first-child {
+            padding-top: 2em;
+          }
+        }
+
+        @for $i from 1 through 7 {
+          > li:nth-child(#{$i}) {
+            animation-delay: 0.35s * calc($i * 0.7);
+          }
+        }
+      }
+
+      > p {
+        font-size: 2.2rem;
+        margin-right: 1rem;
+        position: relative;
+        top: 0.2rem;
       }
     }
   }
@@ -790,9 +940,31 @@ body {
   > .buttons {
     width: fit-content;
     margin: 1rem auto;
-    > .button {
-      margin: 0 1rem;
-    }
+
+    display: flex;
+    gap: 0.7em;
+  }
+}
+
+/* Animations */
+@keyframes Grow-In {
+  0% {
+    transform: scale(0);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes Fall-In {
+  0% {
+    opacity: 0;
+    transform: translateY(-40px);
+  }
+
+  100% {
+    opacity: 1;
   }
 }
 
@@ -820,6 +992,16 @@ body {
       .players {
         .player-image {
           min-width: 48px;
+        }
+      }
+    }
+
+    .final {
+      > .leaderboard {
+        > .players {
+          > .bar {
+            height: 3px;
+          }
         }
       }
     }

@@ -14,10 +14,6 @@ interface FinalPhaseProps {
   ws: MutableRefObject<WebSocket | undefined>;
 }
 
-const getTopThree = (players: PlayerInfo[]): PlayerInfo[] => {
-  return [...players].sort((a, b) => b.totalScore - a.totalScore).slice(0, 3);
-};
-
 const sendRestartGameRequest = (
   ws: MutableRefObject<WebSocket | undefined>
 ) => {
@@ -36,20 +32,41 @@ const sendTerminateGameRequest = (
   ws.current?.send(JSON.stringify(terminateGameRequest));
 };
 
+const rankings = ["first", "second", "third"];
+
 export default function FinalPhase(props: FinalPhaseProps) {
+  const orderedPlayers = [...props.players].sort(
+    (a, b) => b.totalScore - a.totalScore
+  );
+  const topThree = orderedPlayers.slice(0, 3);
+  const restOfPlayers = orderedPlayers.slice(3);
+
   return (
     <>
-      <div className="top-3">
+      <div className="leaderboard">
+        <h2>Leaderboard</h2>
         <div className="players">
-          {getTopThree(props.players).map((player, index) => (
-            <div>
-              <p>{index + 1})</p>
-              <Player
-                player={player}
-                thisPlayer={props.thisPlayer.id === player.id}
-              />
-            </div>
-          ))}
+          <div className="top-3">
+            {topThree.map((player, index) => (
+              <div key={player.id} className={`${rankings[index]}`}>
+                <Player
+                  player={player}
+                  thisPlayer={props.thisPlayer.id === player.id}
+                />
+              </div>
+            ))}
+          </div>
+          {props.players.length > 3 && <span className="bar"></span>}
+          <ul className="rest">
+            {restOfPlayers.map((player) => (
+              <li key={player.id}>
+                <Player
+                  player={player}
+                  thisPlayer={props.thisPlayer.id === player.id}
+                />
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
       {props.thisPlayer.admin && (

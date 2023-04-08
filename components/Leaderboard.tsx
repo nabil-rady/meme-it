@@ -14,6 +14,7 @@ export default function Leaderboard(props: LeaderboardProps) {
         {props.playersInOrder.map((player) =>
           player ? (
             <Player
+              key={player.id}
               player={player}
               thisPlayer={player.id === props.thisPlayer.id}
               showScore
