@@ -45,6 +45,7 @@ const renderGameLobby = (
                   key={player.id}
                   player={player}
                   thisPlayer={player.id === thisPlayer.id}
+                  inLobby={game.phase === "lobby"}
                   ws={ws}
                 />
               ))}

@@ -9,6 +9,7 @@ import { PlayerInfo } from "../server/types";
 interface PlayerProps {
   player: PlayerInfo;
   thisPlayer: boolean;
+  inLobby?: boolean;
   showScore?: boolean;
   ws?: MutableRefObject<WebSocket | undefined>;
 }
@@ -26,7 +27,7 @@ export default function Player(props: PlayerProps) {
 
   return (
     <div className="player">
-      {props.player.admin ? (
+      {props.player.admin && props.inLobby ? (
         <FaCrown className="player-admin" size={30} />
       ) : null}
       <div className="player-image">
