@@ -78,7 +78,7 @@ export default function MemeComponent(props: MemeProps) {
             >
               {submitted ? "Edit" : "Submit"}
             </button>
-            {submitted && <div className="waiting">Waiting For Players...</div>}
+            {submitted && <div className="waiting">Waiting For Other Players...</div>}
           </div>
         </div>
       </div>
