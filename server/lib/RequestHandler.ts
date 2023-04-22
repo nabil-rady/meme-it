@@ -24,6 +24,7 @@ import {
   SubmitCaptionsRequestBody,
   SubmitCaptionsResponseBody,
   EndCaptionPhaseResponseBody,
+  MemeForReviewResponseBody,
   SubmitReviewRequestBody,
   SubmitReviewResponseBody,
   MemeResult,
@@ -205,26 +206,50 @@ export abstract class RequestHandler {
     );
   }
 
-  endCaptionPhase(game: Game) {
-    game.setPhase("review");
+  async sendMemeForReview(game: Game, memeIndex = 0) {
+    if (!this.gameStore.getGame(game.getGameId())) return;
+    if (memeIndex === game.getPlayers().length) {
+      this.endReviewPhase(game);
+      return;
+    }
 
-    const memes: MemeForReview[] = game.getPlayers().map((player) => ({
+    const player = game.getPlayers()[memeIndex];
+    const memeForReview: MemeForReview = {
       meme: player.getCurrentMeme()!,
       captions: player.getCurrentCaptions(),
       creatorPlayerId: player.getPlayerId(),
-    }));
+    };
+
+    const memeReviewResponse: MemeForReviewResponseBody = {
+      method: "memeForReview",
+      meme: memeForReview,
+    };
+    game.broadcast(memeReviewResponse);
+
+    const timeoutId = setTimeout(() => {
+      this.sendMemeForReview(game, memeIndex + 1);
+    }, 1000 * (15 + 2)); // Add extra 2 seconds for good UX.
+    game.setTimeoutId(timeoutId);
+    this.gameStore.addGame(game);
+
+    this.logger.info(
+      `Meme number ${
+        memeIndex + 1
+      } of game ${game.getGameId()} has been sent for review.`
+    );
+  }
+
+  endCaptionPhase(game: Game) {
+    game.setPhase("review");
+    game.shufflePlayers();
+    this.gameStore.addGame(game);
 
     const endCaptionPhaseResponse: EndCaptionPhaseResponseBody = {
       method: "endCaptionPhase",
-      memes,
     };
     game.broadcast(endCaptionPhaseResponse);
 
-    const timeoutId = setTimeout(() => {
-      this.endReviewPhase(game);
-    }, 1000 * (15 * game.getPlayers().length));
-    game.setTimeoutId(timeoutId);
-    this.gameStore.addGame(game);
+    this.sendMemeForReview(game);
 
     this.logger.info(
       `Game ${game.getGameId()} caption phase has ended and is now in its review phase.`

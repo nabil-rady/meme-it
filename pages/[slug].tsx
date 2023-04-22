@@ -27,7 +27,7 @@ export default function Home() {
   const [thisPlayer, setThisPlayer] = useState<PlayerInfo>();
   const [players, setPlayers] = useState<PlayerInfo[]>([]);
   const [meme, setMeme] = useState<DMemeWithCaptionDetails>();
-  const [memesForReview, setMemesForReview] = useState<MemeForReview[]>([]);
+  const [memeForReview, setMemeForReview] = useState<MemeForReview>();
   const [upvoted, setUpvoted] = useState<boolean | null>(null);
   const [memesResults, setMemesResults] = useState<MemeResult[]>([]);
   const [captions, setCaptions] = useState<string[]>([]);
@@ -79,7 +79,7 @@ export default function Home() {
         setThisPlayer,
         setPlayers,
         setMeme,
-        setMemesForReview,
+        setMemeForReview,
         setUpvoted,
         setMemesResults,
         setCaptions,
@@ -114,7 +114,7 @@ export default function Home() {
         thisPlayer,
         players,
         meme,
-        memesForReview,
+        memeForReview,
         upvoted,
         memesResults,
         captions,

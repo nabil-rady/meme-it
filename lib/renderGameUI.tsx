@@ -102,7 +102,7 @@ const renderGameCaption = (
 };
 
 const renderGameReview = (
-  memesForReview: MemeForReview[],
+  memeForReview: MemeForReview,
   thisPlayer: PlayerInfo,
   upvoted: boolean | null,
   setUpvoted: Dispatch<SetStateAction<boolean | null>>,
@@ -112,7 +112,7 @@ const renderGameReview = (
     <div className="review">
       <h1 className="title">Meme It</h1>
       <ReviewPhase
-        memes={memesForReview}
+        meme={memeForReview}
         thisPlayer={thisPlayer}
         upvoted={upvoted}
         setUpvoted={setUpvoted}
@@ -157,7 +157,7 @@ export default function renderGameUI(
   thisPlayer: PlayerInfo | undefined,
   players: PlayerInfo[],
   meme: DMemeWithCaptionDetails | undefined,
-  memesforReviews: MemeForReview[],
+  memeforReviews: MemeForReview | undefined,
   upvoted: boolean | null,
   memesResults: MemeResult[],
   captions: string[],
@@ -173,8 +173,9 @@ export default function renderGameUI(
     if (!meme) return <h1 className="loading">Loading...</h1>;
     return renderGameCaption(meme, captions, setCaptions, ws);
   } else if (game.phase === "review") {
+    if (!memeforReviews) return <h1 className="loading">Loading...</h1>;
     return renderGameReview(
-      memesforReviews,
+      memeforReviews,
       thisPlayer,
       upvoted,
       setUpvoted,

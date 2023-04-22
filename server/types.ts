@@ -140,7 +140,11 @@ export interface SubmitCaptionsResponseBody {
 
 export interface EndCaptionPhaseResponseBody {
   method: "endCaptionPhase";
-  memes: MemeForReview[];
+}
+
+export interface MemeForReviewResponseBody {
+  method: "memeForReview";
+  meme: MemeForReview;
 }
 
 export interface SubmitReviewResponseBody {
@@ -190,6 +194,7 @@ export type GameResponseBody =
   | StartGameResponseBody
   | SubmitCaptionsResponseBody
   | EndCaptionPhaseResponseBody
+  | MemeForReviewResponseBody
   | SubmitReviewResponseBody
   | EndReviewPhaseResponseBody
   | EndResultPhaseResponseBody

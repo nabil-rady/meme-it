@@ -14,6 +14,7 @@ import {
   StartGameResponseBody,
   SubmitCaptionsResponseBody,
   EndCaptionPhaseResponseBody,
+  MemeForReviewResponseBody,
   SubmitReviewResponseBody,
   MemeResult,
   EndReviewPhaseResponseBody,
@@ -30,8 +31,8 @@ export abstract class ResponseHandler {
   protected readonly setMeme: Dispatch<
     SetStateAction<DMemeWithCaptionDetails | undefined>
   >;
-  protected readonly setMemesForReview: Dispatch<
-    SetStateAction<MemeForReview[]>
+  protected readonly setMemeForReview: Dispatch<
+    SetStateAction<MemeForReview | undefined>
   >;
   protected readonly setUpvoted: Dispatch<SetStateAction<boolean | null>>;
   protected readonly setMemesResults: Dispatch<SetStateAction<MemeResult[]>>;
@@ -44,7 +45,7 @@ export abstract class ResponseHandler {
     setThisPlayer: Dispatch<SetStateAction<PlayerInfo | undefined>>,
     setPlayers: Dispatch<SetStateAction<PlayerInfo[]>>,
     setMeme: Dispatch<SetStateAction<DMemeWithCaptionDetails | undefined>>,
-    setMemesForReview: Dispatch<SetStateAction<MemeForReview[]>>,
+    setMemeForReview: Dispatch<SetStateAction<MemeForReview | undefined>>,
     setUpvoted: Dispatch<SetStateAction<boolean | null>>,
     setMemesResults: Dispatch<SetStateAction<MemeResult[]>>,
     setCaptions: Dispatch<SetStateAction<string[]>>,
@@ -55,7 +56,7 @@ export abstract class ResponseHandler {
     this.setThisPlayer = setThisPlayer;
     this.setPlayers = setPlayers;
     this.setMeme = setMeme;
-    this.setMemesForReview = setMemesForReview;
+    this.setMemeForReview = setMemeForReview;
     this.setUpvoted = setUpvoted;
     this.setMemesResults = setMemesResults;
     this.setCaptions = setCaptions;
@@ -69,7 +70,7 @@ export abstract class ResponseHandler {
     setThisPlayer: Dispatch<SetStateAction<PlayerInfo | undefined>>,
     setPlayers: Dispatch<SetStateAction<PlayerInfo[]>>,
     setMeme: Dispatch<SetStateAction<DMemeWithCaptionDetails | undefined>>,
-    setMemesForReview: Dispatch<SetStateAction<MemeForReview[]>>,
+    setMemeForReview: Dispatch<SetStateAction<MemeForReview | undefined>>,
     setUpvoted: Dispatch<SetStateAction<boolean | null>>,
     setMemesResults: Dispatch<SetStateAction<MemeResult[]>>,
     setCaptions: Dispatch<SetStateAction<string[]>>,
@@ -83,7 +84,7 @@ export abstract class ResponseHandler {
         setThisPlayer,
         setPlayers,
         setMeme,
-        setMemesForReview,
+        setMemeForReview,
         setUpvoted,
         setMemesResults,
         setCaptions,
@@ -97,7 +98,7 @@ export abstract class ResponseHandler {
         setThisPlayer,
         setPlayers,
         setMeme,
-        setMemesForReview,
+        setMemeForReview,
         setUpvoted,
         setMemesResults,
         setCaptions,
@@ -111,7 +112,7 @@ export abstract class ResponseHandler {
         setThisPlayer,
         setPlayers,
         setMeme,
-        setMemesForReview,
+        setMemeForReview,
         setUpvoted,
         setMemesResults,
         setCaptions,
@@ -125,7 +126,7 @@ export abstract class ResponseHandler {
         setThisPlayer,
         setPlayers,
         setMeme,
-        setMemesForReview,
+        setMemeForReview,
         setUpvoted,
         setMemesResults,
         setCaptions,
@@ -139,7 +140,7 @@ export abstract class ResponseHandler {
         setThisPlayer,
         setPlayers,
         setMeme,
-        setMemesForReview,
+        setMemeForReview,
         setUpvoted,
         setMemesResults,
         setCaptions,
@@ -153,7 +154,7 @@ export abstract class ResponseHandler {
         setThisPlayer,
         setPlayers,
         setMeme,
-        setMemesForReview,
+        setMemeForReview,
         setUpvoted,
         setMemesResults,
         setCaptions,
@@ -167,7 +168,21 @@ export abstract class ResponseHandler {
         setThisPlayer,
         setPlayers,
         setMeme,
-        setMemesForReview,
+        setMemeForReview,
+        setUpvoted,
+        setMemesResults,
+        setCaptions,
+        setNotificationMessage,
+        setIsNotificationError
+      );
+    } else if (responseBody.method === "memeForReview") {
+      return new MemeForReviewResponseHandler(
+        responseBody,
+        setGame,
+        setThisPlayer,
+        setPlayers,
+        setMeme,
+        setMemeForReview,
         setUpvoted,
         setMemesResults,
         setCaptions,
@@ -181,7 +196,7 @@ export abstract class ResponseHandler {
         setThisPlayer,
         setPlayers,
         setMeme,
-        setMemesForReview,
+        setMemeForReview,
         setUpvoted,
         setMemesResults,
         setCaptions,
@@ -195,7 +210,7 @@ export abstract class ResponseHandler {
         setThisPlayer,
         setPlayers,
         setMeme,
-        setMemesForReview,
+        setMemeForReview,
         setUpvoted,
         setMemesResults,
         setCaptions,
@@ -209,7 +224,7 @@ export abstract class ResponseHandler {
         setThisPlayer,
         setPlayers,
         setMeme,
-        setMemesForReview,
+        setMemeForReview,
         setUpvoted,
         setMemesResults,
         setCaptions,
@@ -223,7 +238,7 @@ export abstract class ResponseHandler {
         setThisPlayer,
         setPlayers,
         setMeme,
-        setMemesForReview,
+        setMemeForReview,
         setUpvoted,
         setMemesResults,
         setCaptions,
@@ -237,7 +252,7 @@ export abstract class ResponseHandler {
         setThisPlayer,
         setPlayers,
         setMeme,
-        setMemesForReview,
+        setMemeForReview,
         setUpvoted,
         setMemesResults,
         setCaptions,
@@ -251,7 +266,7 @@ export abstract class ResponseHandler {
         setThisPlayer,
         setPlayers,
         setMeme,
-        setMemesForReview,
+        setMemeForReview,
         setUpvoted,
         setMemesResults,
         setCaptions,
@@ -275,7 +290,7 @@ class CreateResponseHandler extends ResponseHandler {
     setThisPlayer: Dispatch<SetStateAction<PlayerInfo | undefined>>,
     setPlayers: Dispatch<SetStateAction<PlayerInfo[]>>,
     setMeme: Dispatch<SetStateAction<DMemeWithCaptionDetails | undefined>>,
-    setMemesForReview: Dispatch<SetStateAction<MemeForReview[]>>,
+    setMemeForReview: Dispatch<SetStateAction<MemeForReview | undefined>>,
     setUpvoted: Dispatch<SetStateAction<boolean | null>>,
     setMemesResults: Dispatch<SetStateAction<MemeResult[]>>,
     setCaptions: Dispatch<SetStateAction<string[]>>,
@@ -287,7 +302,7 @@ class CreateResponseHandler extends ResponseHandler {
       setThisPlayer,
       setPlayers,
       setMeme,
-      setMemesForReview,
+      setMemeForReview,
       setUpvoted,
       setMemesResults,
       setCaptions,
@@ -313,7 +328,7 @@ class JoinResponseHandler extends ResponseHandler {
     setThisPlayer: Dispatch<SetStateAction<PlayerInfo | undefined>>,
     setPlayers: Dispatch<SetStateAction<PlayerInfo[]>>,
     setMeme: Dispatch<SetStateAction<DMemeWithCaptionDetails | undefined>>,
-    setMemesForReview: Dispatch<SetStateAction<MemeForReview[]>>,
+    setMemeForReview: Dispatch<SetStateAction<MemeForReview | undefined>>,
     setUpvoted: Dispatch<SetStateAction<boolean | null>>,
     setMemesResults: Dispatch<SetStateAction<MemeResult[]>>,
     setCaptions: Dispatch<SetStateAction<string[]>>,
@@ -325,7 +340,7 @@ class JoinResponseHandler extends ResponseHandler {
       setThisPlayer,
       setPlayers,
       setMeme,
-      setMemesForReview,
+      setMemeForReview,
       setUpvoted,
       setMemesResults,
       setCaptions,
@@ -353,7 +368,7 @@ class UpdateGameResponseHandler extends ResponseHandler {
     setThisPlayer: Dispatch<SetStateAction<PlayerInfo | undefined>>,
     setPlayers: Dispatch<SetStateAction<PlayerInfo[]>>,
     setMeme: Dispatch<SetStateAction<DMemeWithCaptionDetails | undefined>>,
-    setMemesForReview: Dispatch<SetStateAction<MemeForReview[]>>,
+    setMemeForReview: Dispatch<SetStateAction<MemeForReview | undefined>>,
     setUpvoted: Dispatch<SetStateAction<boolean | null>>,
     setMemesResults: Dispatch<SetStateAction<MemeResult[]>>,
     setCaptions: Dispatch<SetStateAction<string[]>>,
@@ -365,7 +380,7 @@ class UpdateGameResponseHandler extends ResponseHandler {
       setThisPlayer,
       setPlayers,
       setMeme,
-      setMemesForReview,
+      setMemeForReview,
       setUpvoted,
       setMemesResults,
       setCaptions,
@@ -389,7 +404,7 @@ class UpdatePlayerResponseHandler extends ResponseHandler {
     setThisPlayer: Dispatch<SetStateAction<PlayerInfo | undefined>>,
     setPlayers: Dispatch<SetStateAction<PlayerInfo[]>>,
     setMeme: Dispatch<SetStateAction<DMemeWithCaptionDetails | undefined>>,
-    setMemesForReview: Dispatch<SetStateAction<MemeForReview[]>>,
+    setMemeForReview: Dispatch<SetStateAction<MemeForReview | undefined>>,
     setUpvoted: Dispatch<SetStateAction<boolean | null>>,
     setMemesResults: Dispatch<SetStateAction<MemeResult[]>>,
     setCaptions: Dispatch<SetStateAction<string[]>>,
@@ -401,7 +416,7 @@ class UpdatePlayerResponseHandler extends ResponseHandler {
       setThisPlayer,
       setPlayers,
       setMeme,
-      setMemesForReview,
+      setMemeForReview,
       setUpvoted,
       setMemesResults,
       setCaptions,
@@ -436,7 +451,7 @@ class StartGameResponseHandler extends ResponseHandler {
     setThisPlayer: Dispatch<SetStateAction<PlayerInfo | undefined>>,
     setPlayers: Dispatch<SetStateAction<PlayerInfo[]>>,
     setMeme: Dispatch<SetStateAction<DMemeWithCaptionDetails | undefined>>,
-    setMemesForReview: Dispatch<SetStateAction<MemeForReview[]>>,
+    setMemeForReview: Dispatch<SetStateAction<MemeForReview | undefined>>,
     setUpvoted: Dispatch<SetStateAction<boolean | null>>,
     setMemesResults: Dispatch<SetStateAction<MemeResult[]>>,
     setCaptions: Dispatch<SetStateAction<string[]>>,
@@ -448,7 +463,7 @@ class StartGameResponseHandler extends ResponseHandler {
       setThisPlayer,
       setPlayers,
       setMeme,
-      setMemesForReview,
+      setMemeForReview,
       setUpvoted,
       setMemesResults,
       setCaptions,
@@ -480,7 +495,7 @@ class CaptionResponseHandler extends ResponseHandler {
     setThisPlayer: Dispatch<SetStateAction<PlayerInfo | undefined>>,
     setPlayers: Dispatch<SetStateAction<PlayerInfo[]>>,
     setMeme: Dispatch<SetStateAction<DMemeWithCaptionDetails | undefined>>,
-    setMemesForReview: Dispatch<SetStateAction<MemeForReview[]>>,
+    setMemeForReview: Dispatch<SetStateAction<MemeForReview | undefined>>,
     setUpvoted: Dispatch<SetStateAction<boolean | null>>,
     setMemesResults: Dispatch<SetStateAction<MemeResult[]>>,
     setCaptions: Dispatch<SetStateAction<string[]>>,
@@ -492,7 +507,7 @@ class CaptionResponseHandler extends ResponseHandler {
       setThisPlayer,
       setPlayers,
       setMeme,
-      setMemesForReview,
+      setMemeForReview,
       setUpvoted,
       setMemesResults,
       setCaptions,
@@ -516,7 +531,7 @@ class EndCaptionPhaseResponseHandler extends ResponseHandler {
     setThisPlayer: Dispatch<SetStateAction<PlayerInfo | undefined>>,
     setPlayers: Dispatch<SetStateAction<PlayerInfo[]>>,
     setMeme: Dispatch<SetStateAction<DMemeWithCaptionDetails | undefined>>,
-    setMemesForReview: Dispatch<SetStateAction<MemeForReview[]>>,
+    setMemeForReview: Dispatch<SetStateAction<MemeForReview | undefined>>,
     setUpvoted: Dispatch<SetStateAction<boolean | null>>,
     setMemesResults: Dispatch<SetStateAction<MemeResult[]>>,
     setCaptions: Dispatch<SetStateAction<string[]>>,
@@ -528,7 +543,7 @@ class EndCaptionPhaseResponseHandler extends ResponseHandler {
       setThisPlayer,
       setPlayers,
       setMeme,
-      setMemesForReview,
+      setMemeForReview,
       setUpvoted,
       setMemesResults,
       setCaptions,
@@ -546,7 +561,42 @@ class EndCaptionPhaseResponseHandler extends ResponseHandler {
         phase: "review",
       };
     });
-    this.setMemesForReview(this.responseBody.memes);
+  }
+}
+
+class MemeForReviewResponseHandler extends ResponseHandler {
+  private readonly responseBody: MemeForReviewResponseBody;
+
+  constructor(
+    responseBody: MemeForReviewResponseBody,
+    setGame: Dispatch<SetStateAction<GameInfo | undefined>>,
+    setThisPlayer: Dispatch<SetStateAction<PlayerInfo | undefined>>,
+    setPlayers: Dispatch<SetStateAction<PlayerInfo[]>>,
+    setMeme: Dispatch<SetStateAction<DMemeWithCaptionDetails | undefined>>,
+    setMemeForReview: Dispatch<SetStateAction<MemeForReview | undefined>>,
+    setUpvoted: Dispatch<SetStateAction<boolean | null>>,
+    setMemesResults: Dispatch<SetStateAction<MemeResult[]>>,
+    setCaptions: Dispatch<SetStateAction<string[]>>,
+    setNotificationMessage: Dispatch<SetStateAction<string>>,
+    setIsNotificationError: Dispatch<SetStateAction<boolean>>
+  ) {
+    super(
+      setGame,
+      setThisPlayer,
+      setPlayers,
+      setMeme,
+      setMemeForReview,
+      setUpvoted,
+      setMemesResults,
+      setCaptions,
+      setNotificationMessage,
+      setIsNotificationError
+    );
+    this.responseBody = responseBody;
+  }
+
+  handle() {
+    this.setMemeForReview(this.responseBody.meme);
   }
 }
 
@@ -559,7 +609,7 @@ class SubmitReviewResponseHandler extends ResponseHandler {
     setThisPlayer: Dispatch<SetStateAction<PlayerInfo | undefined>>,
     setPlayers: Dispatch<SetStateAction<PlayerInfo[]>>,
     setMeme: Dispatch<SetStateAction<DMemeWithCaptionDetails | undefined>>,
-    setMemesForReview: Dispatch<SetStateAction<MemeForReview[]>>,
+    setMemeForReview: Dispatch<SetStateAction<MemeForReview | undefined>>,
     setUpvoted: Dispatch<SetStateAction<boolean | null>>,
     setMemesResults: Dispatch<SetStateAction<MemeResult[]>>,
     setCaptions: Dispatch<SetStateAction<string[]>>,
@@ -571,7 +621,7 @@ class SubmitReviewResponseHandler extends ResponseHandler {
       setThisPlayer,
       setPlayers,
       setMeme,
-      setMemesForReview,
+      setMemeForReview,
       setUpvoted,
       setMemesResults,
       setCaptions,
@@ -604,7 +654,7 @@ class EndReviewPhaseResponsHandler extends ResponseHandler {
     setThisPlayer: Dispatch<SetStateAction<PlayerInfo | undefined>>,
     setPlayers: Dispatch<SetStateAction<PlayerInfo[]>>,
     setMeme: Dispatch<SetStateAction<DMemeWithCaptionDetails | undefined>>,
-    setMemesForReview: Dispatch<SetStateAction<MemeForReview[]>>,
+    setMemeForReview: Dispatch<SetStateAction<MemeForReview | undefined>>,
     setUpvoted: Dispatch<SetStateAction<boolean | null>>,
     setMemesResults: Dispatch<SetStateAction<MemeResult[]>>,
     setCaptions: Dispatch<SetStateAction<string[]>>,
@@ -616,7 +666,7 @@ class EndReviewPhaseResponsHandler extends ResponseHandler {
       setThisPlayer,
       setPlayers,
       setMeme,
-      setMemesForReview,
+      setMemeForReview,
       setUpvoted,
       setMemesResults,
       setCaptions,
@@ -644,7 +694,7 @@ class EndReviewPhaseResponsHandler extends ResponseHandler {
       }
       return newPlayers;
     });
-    this.setMemesForReview([]);
+    this.setMemeForReview(undefined);
     this.setMemesResults(this.responseBody.results);
   }
 }
@@ -658,7 +708,7 @@ class EndResultPhaseResponseHandler extends ResponseHandler {
     setThisPlayer: Dispatch<SetStateAction<PlayerInfo | undefined>>,
     setPlayers: Dispatch<SetStateAction<PlayerInfo[]>>,
     setMeme: Dispatch<SetStateAction<DMemeWithCaptionDetails | undefined>>,
-    setMemesForReview: Dispatch<SetStateAction<MemeForReview[]>>,
+    setMemeForReview: Dispatch<SetStateAction<MemeForReview | undefined>>,
     setUpvoted: Dispatch<SetStateAction<boolean | null>>,
     setMemesResults: Dispatch<SetStateAction<MemeResult[]>>,
     setCaptions: Dispatch<SetStateAction<string[]>>,
@@ -670,7 +720,7 @@ class EndResultPhaseResponseHandler extends ResponseHandler {
       setThisPlayer,
       setPlayers,
       setMeme,
-      setMemesForReview,
+      setMemeForReview,
       setUpvoted,
       setMemesResults,
       setCaptions,
@@ -711,7 +761,7 @@ class RestartGameResponseHandler extends ResponseHandler {
     setThisPlayer: Dispatch<SetStateAction<PlayerInfo | undefined>>,
     setPlayers: Dispatch<SetStateAction<PlayerInfo[]>>,
     setMeme: Dispatch<SetStateAction<DMemeWithCaptionDetails | undefined>>,
-    setMemesForReview: Dispatch<SetStateAction<MemeForReview[]>>,
+    setMemeForReview: Dispatch<SetStateAction<MemeForReview | undefined>>,
     setUpvoted: Dispatch<SetStateAction<boolean | null>>,
     setMemesResults: Dispatch<SetStateAction<MemeResult[]>>,
     setCaptions: Dispatch<SetStateAction<string[]>>,
@@ -723,7 +773,7 @@ class RestartGameResponseHandler extends ResponseHandler {
       setThisPlayer,
       setPlayers,
       setMeme,
-      setMemesForReview,
+      setMemeForReview,
       setUpvoted,
       setMemesResults,
       setCaptions,
@@ -766,7 +816,7 @@ class LeaveResponseHandler extends ResponseHandler {
     setThisPlayer: Dispatch<SetStateAction<PlayerInfo | undefined>>,
     setPlayers: Dispatch<SetStateAction<PlayerInfo[]>>,
     setMeme: Dispatch<SetStateAction<DMemeWithCaptionDetails | undefined>>,
-    setMemesForReview: Dispatch<SetStateAction<MemeForReview[]>>,
+    setMemeForReview: Dispatch<SetStateAction<MemeForReview | undefined>>,
     setUpvoted: Dispatch<SetStateAction<boolean | null>>,
     setMemesResults: Dispatch<SetStateAction<MemeResult[]>>,
     setCaptions: Dispatch<SetStateAction<string[]>>,
@@ -778,7 +828,7 @@ class LeaveResponseHandler extends ResponseHandler {
       setThisPlayer,
       setPlayers,
       setMeme,
-      setMemesForReview,
+      setMemeForReview,
       setUpvoted,
       setMemesResults,
       setCaptions,
@@ -827,7 +877,7 @@ class TerminateResponseHandler extends ResponseHandler {
     setThisPlayer: Dispatch<SetStateAction<PlayerInfo | undefined>>,
     setPlayers: Dispatch<SetStateAction<PlayerInfo[]>>,
     setMeme: Dispatch<SetStateAction<DMemeWithCaptionDetails | undefined>>,
-    setMemesForReview: Dispatch<SetStateAction<MemeForReview[]>>,
+    setMemeForReview: Dispatch<SetStateAction<MemeForReview | undefined>>,
     setUpvoted: Dispatch<SetStateAction<boolean | null>>,
     setMemesResults: Dispatch<SetStateAction<MemeResult[]>>,
     setCaptions: Dispatch<SetStateAction<string[]>>,
@@ -839,7 +889,7 @@ class TerminateResponseHandler extends ResponseHandler {
       setThisPlayer,
       setPlayers,
       setMeme,
-      setMemesForReview,
+      setMemeForReview,
       setUpvoted,
       setMemesResults,
       setCaptions,
