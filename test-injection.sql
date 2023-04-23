@@ -39,4 +39,22 @@ INSERT INTO `CaptionDetails`
 VALUES
 (3, 360, 285, 0, 250, 30, 7);
 
+-- Say my name meme
+INSERT INTO `Memes` (`url`) VALUES ('/say-my-name.jpg');
+
+INSERT INTO `CaptionDetails`
+(`memeId`, `positionX`, `positionY`, `rotation`, `width`, `initialFontSize`, `maxNumberOfLines`)
+VALUES
+(4, 110, 50, 0, 200, 30, 4);
+
+INSERT INTO `CaptionDetails`
+(`memeId`, `positionX`, `positionY`, `rotation`, `width`, `initialFontSize`, `maxNumberOfLines`)
+VALUES
+(4, 380, 200, 0, 250, 30, 4);
+
+INSERT INTO `CaptionDetails`
+(`memeId`, `positionX`, `positionY`, `rotation`, `width`, `initialFontSize`, `maxNumberOfLines`)
+VALUES
+(4, 110, 360, 0, 200, 30, 3);
+
 COMMIT;
