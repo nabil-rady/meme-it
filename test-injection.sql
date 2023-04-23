@@ -26,4 +26,17 @@ INSERT INTO `CaptionDetails`
 VALUES 
 (2, 335, 224, 22, 175, 22, 2);
 
+-- Tux Winnie meme
+INSERT INTO `Memes` (`url`) VALUES ('/tux-winnie.png');
+
+INSERT INTO `CaptionDetails`
+(`memeId`, `positionX`, `positionY`, `rotation`, `width`, `initialFontSize`, `maxNumberOfLines`)
+VALUES
+(3, 360, 36, 0, 250, 30, 7);
+
+INSERT INTO `CaptionDetails`
+(`memeId`, `positionX`, `positionY`, `rotation`, `width`, `initialFontSize`, `maxNumberOfLines`)
+VALUES
+(3, 360, 285, 0, 250, 30, 7);
+
 COMMIT;
