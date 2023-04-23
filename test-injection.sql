@@ -57,4 +57,17 @@ INSERT INTO `CaptionDetails`
 VALUES
 (4, 110, 360, 0, 200, 30, 3);
 
+-- Mr Incredible uncanny meme
+INSERT INTO `Memes` (`url`) VALUES ('/mr-incredible-uncanny.jpg');
+
+INSERT INTO `CaptionDetails`
+(`memeId`, `positionX`, `positionY`, `rotation`, `width`, `initialFontSize`, `maxNumberOfLines`)
+VALUES
+(5, 125, 36, 0, 250, 30, 7);
+
+INSERT INTO `CaptionDetails`
+(`memeId`, `positionX`, `positionY`, `rotation`, `width`, `initialFontSize`, `maxNumberOfLines`)
+VALUES
+(5, 125, 285, 0, 250, 30, 7);
+
 COMMIT;
