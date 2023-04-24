@@ -125,6 +125,7 @@ export class Meme {
         let fontSize = captionDetails.initialFontSize;
         ctx.font = `${fontSize}px Poppins`;
         ctx.textAlign = "center";
+        ctx.fillStyle = "#FF0";
 
         let line = "";
         const lines: string[] = [];
