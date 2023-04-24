@@ -122,4 +122,17 @@ INSERT INTO `CaptionDetails`
 VALUES
 (9, 225, 450, 0, 450, 30, 2);
 
+-- Osra m3 b3deena meme
+INSERT INTO `Memes` (`url`) VALUES ('/osra-m3-b3deena.jpg');
+
+INSERT INTO `CaptionDetails`
+(`memeId`, `positionX`, `positionY`, `rotation`, `width`, `initialFontSize`, `maxNumberOfLines`)
+VALUES
+(10, 225, 210, 0, 450, 30, 2);
+
+INSERT INTO `CaptionDetails`
+(`memeId`, `positionX`, `positionY`, `rotation`, `width`, `initialFontSize`, `maxNumberOfLines`)
+VALUES
+(10, 225, 450, 0, 450, 30, 2);
+
 COMMIT;
