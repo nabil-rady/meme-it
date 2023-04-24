@@ -83,4 +83,17 @@ INSERT INTO `CaptionDetails`
 VALUES
 (6, 225, 450, 0, 450, 30, 2);
 
+-- Japanese Ramadan meme
+INSERT INTO `Memes` (`url`) VALUES ('/japanese-ramadan.png');
+
+INSERT INTO `CaptionDetails`
+(`memeId`, `positionX`, `positionY`, `rotation`, `width`, `initialFontSize`, `maxNumberOfLines`)
+VALUES
+(7, 360, 36, 0, 225, 30, 7);
+
+INSERT INTO `CaptionDetails`
+(`memeId`, `positionX`, `positionY`, `rotation`, `width`, `initialFontSize`, `maxNumberOfLines`)
+VALUES
+(7, 380, 330, 0, 215, 30, 5);
+
 COMMIT;
