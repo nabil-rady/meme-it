@@ -183,6 +183,7 @@ export interface TerminateResponseBody {
 }
 
 export interface ErrorResponseBody {
+  code: number;
   error: string;
 }
 

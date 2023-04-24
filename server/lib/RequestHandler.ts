@@ -33,6 +33,7 @@ import {
   RestartGameRequestBody,
   RestartGameResponseBody,
   TerminateGameRequestBody,
+  ErrorResponseBody,
 } from "../types";
 import { DMeme, DMemeWithCaptionDetails } from "../../dbtypes";
 
@@ -325,7 +326,11 @@ export abstract class RequestHandler {
         ["a", "e", "i", "o", "u"].includes(requestType[0]) ? "an" : "a"
       } ${requestType} request.`
     );
-    this.connection.send(JSON.stringify({ error: "unauthorized" }));
+    const errorResponse: ErrorResponseBody = {
+      code: 403,
+      error: "unauthorized",
+    };
+    this.connection.send(JSON.stringify(errorResponse));
   }
 
   send404Error(resourceType: "Game" | "Player", resourceID: string) {
@@ -335,9 +340,11 @@ export abstract class RequestHandler {
         ["a", "e", "i", "o", "u"].includes(requestType[0]) ? "an" : "a"
       } "${requestType}" request.`
     );
-    this.connection.send(
-      JSON.stringify({ error: `${resourceType} not found` })
-    );
+    const errorResponse: ErrorResponseBody = {
+      code: 404,
+      error: `${resourceType} not found`,
+    };
+    this.connection.send(JSON.stringify(errorResponse));
   }
 
   abstract handle(): void;
@@ -630,7 +637,11 @@ class SubmitCaptionsRequestHandler extends RequestHandler {
       this.requestBody.captions.length !==
       player.getCurrentMeme()?.captionsDetails.length
     ) {
-      this.connection.send(JSON.stringify({ error: "invalid request" }));
+      const errorResponse: ErrorResponseBody = {
+        code: 400,
+        error: "invalid request",
+      };
+      this.connection.send(JSON.stringify(errorResponse));
       return;
     }
 
