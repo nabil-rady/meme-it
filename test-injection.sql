@@ -109,4 +109,17 @@ INSERT INTO `CaptionDetails`
 VALUES
 (8, 225, 450, 0, 450, 25, 2);
 
+-- Daboor gas meme
+INSERT INTO `Memes` (`url`) VALUES ('/daboor-gas.jpg');
+
+INSERT INTO `CaptionDetails`
+(`memeId`, `positionX`, `positionY`, `rotation`, `width`, `initialFontSize`, `maxNumberOfLines`)
+VALUES
+(9, 225, 210, 0, 450, 30, 2);
+
+INSERT INTO `CaptionDetails`
+(`memeId`, `positionX`, `positionY`, `rotation`, `width`, `initialFontSize`, `maxNumberOfLines`)
+VALUES
+(9, 225, 450, 0, 450, 30, 2);
+
 COMMIT;
