@@ -34,7 +34,7 @@ import {
   RestartGameResponseBody,
   TerminateGameRequestBody,
 } from "../types";
-import { DMemeWithCaptionDetails } from "../../dbtypes";
+import { DMeme, DMemeWithCaptionDetails } from "../../dbtypes";
 
 export abstract class RequestHandler {
   protected readonly connection: GameConnection;
@@ -146,35 +146,40 @@ export abstract class RequestHandler {
     return game.getAdmin()?.getPlayerId() === this.connection.playerId;
   }
 
-  async getRandomMeme(): Promise<DMemeWithCaptionDetails> {
-    const numberOfMemes = await prisma.memes.count();
-    const skip = Math.floor(Math.random() * numberOfMemes);
-    const meme: DMemeWithCaptionDetails | undefined = (
-      await prisma.memes.findMany({
-        skip,
-        take: 1,
-        include: {
-          captionsDetails: true,
-        },
-      })
-    ).at(0);
+  async getRandomMemes(n: number): Promise<DMemeWithCaptionDetails[]> {
+    const totalNumber = await prisma.memes.count();
 
-    if (!meme) {
-      throw new Error("Database has no memes.");
+    if (totalNumber < n) {
+      throw new Error("Database doesn't have enough memes.");
     }
 
-    return meme;
+    const randomMemeIds = await prisma.$queryRaw<
+      Omit<DMeme, "url">[]
+    >`SELECT id FROM \`Memes\` ORDER BY RAND() LIMIT ${n}`;
+
+    return prisma.memes.findMany({
+      where: {
+        id: {
+          in: randomMemeIds.map((el) => el.id),
+        },
+      },
+      include: {
+        captionsDetails: true,
+      },
+    });
   }
 
-  // TODO: Different meme for every player
   async startCaptionPhase(game: Game) {
     game.setPhase("caption");
     this.gameStore.addGame(game);
 
     const currentRound = game.getGameInfo().currentRound;
 
-    const meme = await this.getRandomMeme();
-    for (const player of game.getPlayers()) {
+    const players = game.getPlayers();
+    const memes = await this.getRandomMemes(players.length);
+    for (let i = 0; i < players.length; i++) {
+      const player = players[i];
+      const meme = memes[i];
       player.setCurrentMeme(meme);
       this.playerStore.addPlayer(player);
 
