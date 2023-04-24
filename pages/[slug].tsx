@@ -16,6 +16,7 @@ import {
   PlayerInfo,
   GameResponseBody,
   JoinRequestBody,
+  ErrorResponseBody,
 } from "../server/types";
 
 export default function Home() {
@@ -38,6 +39,12 @@ export default function Home() {
   useEffect(() => {
     if (!notificationMessage) {
       return;
+    }
+    if (notificationMessage === "Game not found") {
+      console.log(notificationMessage);
+      setTimeout(() => {
+        window.location.href = "/";
+      }, 1000 * 1.5);
     }
     toast.dismiss();
     if (isNotificationError)
@@ -72,7 +79,14 @@ export default function Home() {
     const hostname = window.location.hostname;
     ws.current = new WebSocket(`ws://${hostname}:9090`);
     ws.current.addEventListener("message", (e: MessageEvent<string>) => {
-      const response = JSON.parse(e.data) as GameResponseBody;
+      const response = JSON.parse(e.data) as
+        | GameResponseBody
+        | ErrorResponseBody;
+      if ("error" in response) {
+        setNotificationMessage(response.error);
+        setIsNotificationError(true);
+        return;
+      }
       const responseHandler = ResponseHandler.createResponseHandler(
         response,
         setGame,
