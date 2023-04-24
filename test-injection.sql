@@ -70,4 +70,17 @@ INSERT INTO `CaptionDetails`
 VALUES
 (5, 125, 285, 0, 250, 30, 7);
 
+-- Saba7 el 5er meme
+INSERT INTO `Memes` (`url`) VALUES ('/saba7-el-5er.jpg');
+
+INSERT INTO `CaptionDetails`
+(`memeId`, `positionX`, `positionY`, `rotation`, `width`, `initialFontSize`, `maxNumberOfLines`)
+VALUES
+(6, 225, 200, 0, 450, 30, 2);
+
+INSERT INTO `CaptionDetails`
+(`memeId`, `positionX`, `positionY`, `rotation`, `width`, `initialFontSize`, `maxNumberOfLines`)
+VALUES
+(6, 225, 450, 0, 450, 30, 2);
+
 COMMIT;
