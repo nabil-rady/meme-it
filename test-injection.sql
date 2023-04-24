@@ -96,4 +96,17 @@ INSERT INTO `CaptionDetails`
 VALUES
 (7, 380, 330, 0, 215, 30, 5);
 
+-- Sleeping henedi meme
+INSERT INTO `Memes` (`url`) VALUES ('/sleeping-henedi.jpg');
+
+INSERT INTO `CaptionDetails`
+(`memeId`, `positionX`, `positionY`, `rotation`, `width`, `initialFontSize`, `maxNumberOfLines`)
+VALUES
+(8, 225, 210, 0, 450, 25, 2);
+
+INSERT INTO `CaptionDetails`
+(`memeId`, `positionX`, `positionY`, `rotation`, `width`, `initialFontSize`, `maxNumberOfLines`)
+VALUES
+(8, 225, 450, 0, 450, 25, 2);
+
 COMMIT;
