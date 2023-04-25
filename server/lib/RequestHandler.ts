@@ -419,6 +419,22 @@ class JoinRequestHandler extends RequestHandler {
       return;
     }
 
+    if (
+      desiredGame.getPlayers().length === desiredGame.getGameInfo().maxPlayers
+    ) {
+      const errorResponse: ErrorResponseBody = {
+        code: 403,
+        error: "Lobby is full",
+      };
+      this.connection.send(JSON.stringify(errorResponse));
+
+      this.logger.debug(
+        `Player attempted to join lobby of game ${desiredGame.getGameId()} but its full.`
+      );
+
+      return;
+    }
+
     const player = new Player(
       this.requestBody.player.nickname,
       this.requestBody.player.avatar,
