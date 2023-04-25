@@ -40,8 +40,7 @@ export default function Home() {
     if (!notificationMessage) {
       return;
     }
-    if (notificationMessage === "Game not found") {
-      console.log(notificationMessage);
+    if (isNotificationError && !game) {
       setTimeout(() => {
         window.location.href = "/";
       }, 1000 * 1.5);

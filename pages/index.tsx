@@ -108,12 +108,6 @@ export default function Home() {
     if (!notificationMessage) {
       return;
     }
-    if (notificationMessage === "Game not found") {
-      console.log(notificationMessage);
-      setTimeout(() => {
-        window.location.href = "/";
-      }, 1000 * 1.5);
-    }
     toast.dismiss();
     if (isNotificationError)
       toast.error(notificationMessage, {
