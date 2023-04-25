@@ -26,5 +26,6 @@ model CaptionDetails {
   width Int @db.SmallInt
   initialFontSize Int @db.SmallInt
   maxNumberOfLines Int @db.SmallInt 
+  color String @db.VarChar(7) @default("#FF0")
 }
 

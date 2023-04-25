@@ -35,6 +35,7 @@ export class CaptionDetails {
   readonly width: number;
   readonly initialFontSize: number;
   readonly maxNumberOfLines: number;
+  readonly color: string;
 
   constructor({
     positionX,
@@ -43,6 +44,7 @@ export class CaptionDetails {
     width,
     initialFontSize,
     maxNumberOfLines,
+    color,
   }: DCaptionDetails) {
     this.positionX = positionX;
     this.positionY = positionY;
@@ -50,6 +52,7 @@ export class CaptionDetails {
     this.width = width;
     this.initialFontSize = initialFontSize;
     this.maxNumberOfLines = maxNumberOfLines;
+    this.color = color;
   }
 }
 
@@ -123,9 +126,9 @@ export class Meme {
         const captionDetails = this.captionsDetails[i];
 
         let fontSize = captionDetails.initialFontSize;
+        ctx.fillStyle = captionDetails.color;
         ctx.font = `${fontSize}px Poppins`;
         ctx.textAlign = "center";
-        ctx.fillStyle = "#FF0";
 
         let line = "";
         const lines: string[] = [];
