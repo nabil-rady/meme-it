@@ -9,7 +9,6 @@ import { PlayerInfo } from "../server/types";
 interface PlayerProps {
   player: PlayerInfo;
   thisPlayer: boolean;
-  inLobby?: boolean;
   showScore?: boolean;
   ws?: MutableRefObject<WebSocket | undefined>;
 }
@@ -27,7 +26,7 @@ export default function Player(props: PlayerProps) {
 
   return (
     <div className="player">
-      {props.player.admin && props.inLobby ? (
+      {props.player.admin && props.ws ? (
         <FaCrown className="player-admin" size={30} />
       ) : null}
       <div className="player-image">
@@ -42,7 +41,7 @@ export default function Player(props: PlayerProps) {
         {props.showScore ? ` (Score:  ${props.player.totalScore})` : null}
       </div>
       {props.thisPlayer && props.ws && (
-        <button className="edit-name" tabIndex={-1} onClick={openPlayerUpdate}>
+        <button className="edit-name" onClick={openPlayerUpdate}>
           <HiPencilAlt size={20} />
         </button>
       )}

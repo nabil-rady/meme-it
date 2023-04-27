@@ -45,7 +45,6 @@ const renderGameLobby = (
                   key={player.id}
                   player={player}
                   thisPlayer={player.id === thisPlayer.id}
-                  inLobby={game.phase === "lobby"}
                   ws={ws}
                 />
               ))}
@@ -60,6 +59,7 @@ const renderGameLobby = (
                   thisPlayer.admin ? "" : "disabled"
                 }`}
                 onClick={startGame}
+                tabIndex={thisPlayer.admin ? 0 : -1}
               >
                 Start game
               </button>
