@@ -618,6 +618,7 @@ body {
 
       padding: 0.8em 1em;
       margin: 1rem 0;
+      margin-bottom: 0;
       border-radius: 10px;
       border: none;
       outline: none;
@@ -629,7 +630,7 @@ body {
 
     & > button {
       display: block;
-      margin: 0 auto;
+      margin: 1rem auto;
     }
 
     &.disabled {
