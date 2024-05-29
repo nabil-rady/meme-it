@@ -89,6 +89,11 @@ export default function FinalPhase(props: FinalPhaseProps) {
           </button>
         </div>
       )}
+      {!props.thisPlayer.admin && (
+        <div>
+          <p>Waiting for admin...</p>
+        </div>
+      )}
     </>
   );
 }

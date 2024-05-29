@@ -945,6 +945,12 @@ body {
     display: flex;
     gap: 0.7em;
   }
+
+  p {
+    margin: 2rem 0;
+    font-weight: bold;
+    text-align: center;
+  }
 }
 
 /* Animations */
