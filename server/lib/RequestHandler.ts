@@ -609,6 +609,14 @@ class StartGameRequestHandler extends RequestHandler {
       return;
     }
 
+    if (gameToStart.getPlayers().length == 1) {
+      const errorResponse: ErrorResponseBody = {
+        code: 403,
+        error: "Cannot start game with only one player",
+      };
+      this.connection.send(JSON.stringify(errorResponse));
+      return;
+    }
     this.startCaptionPhase(gameToStart);
   }
 }
