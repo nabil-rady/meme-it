@@ -32,12 +32,14 @@ export default function ReviewPhase(props: ReviewPhaseProps) {
 
   useEffect(() => {
     if (props.meme) {
-      setSecondsLeft(15);
-      intervalId.current = setInterval(() => {
-        setSecondsLeft((prevSeconds) =>
-          prevSeconds === 0 ? prevSeconds : prevSeconds - 1
-        );
-      }, 1000);
+      if (secondsLeft == 0) {
+        setSecondsLeft(15);
+        intervalId.current = setInterval(() => {
+          setSecondsLeft((prevSeconds) =>
+            prevSeconds === 0 ? prevSeconds : prevSeconds - 1
+          );
+        }, 1000);
+      }
     }
   }, [props.meme]);
 
