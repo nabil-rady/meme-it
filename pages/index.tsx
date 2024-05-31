@@ -37,7 +37,7 @@ export default function Home() {
   const [isNotificationError, setIsNotificationError] =
     useState<boolean>(false);
 
-  const [avatar, setAvatar] = useState<string>("/avatars/1.jpg");
+  const [avatar, setAvatar] = useState<string>("/avatars/0.jpg");
   const [nickname, setNickname] = useState<string>("");
   const [showAvatarSelect, setShowAvatarSelect] = useState<boolean>(false);
   const [nicknameError, setNicknameError] = useState<boolean>(false);

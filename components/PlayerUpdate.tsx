@@ -23,12 +23,12 @@ export default function PlayerUpdate({
   const nicknameNotEmpty = /^(?!\s*$).+/.test(newNickname);
 
   const avatars = Array.from(Array(12).keys()).map((n) => {
-    const link = `/avatars/${n + 1}.jpg`;
+    const link = `/avatars/${n}.jpg`;
     const size = "96";
 
     return (
       <Image
-        key={`avatar${n + 1}`}
+        key={`avatar${n}`}
         src={link}
         alt=""
         width={size}
