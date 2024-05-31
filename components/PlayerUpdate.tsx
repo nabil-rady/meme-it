@@ -6,6 +6,7 @@ import { UpdatePlayerRequestBody } from "../server/types";
 interface UpdateProps {
   avatar: string;
   nickname: string;
+  avatarsTaken: string[];
   closePlayerUpdate: () => void;
   ws: MutableRefObject<WebSocket | undefined>;
 }
@@ -13,6 +14,7 @@ interface UpdateProps {
 export default function PlayerUpdate({
   avatar,
   nickname,
+  avatarsTaken,
   closePlayerUpdate,
   ws,
 }: UpdateProps) {
@@ -26,6 +28,14 @@ export default function PlayerUpdate({
     const link = `/avatars/${n}.jpg`;
     const size = "96";
 
+    const className =
+      "avatar" +
+      (newAvatar === link
+        ? " selected"
+        : avatarsTaken.includes(link) && link !== avatar
+        ? " taken"
+        : "");
+
     return (
       <Image
         key={`avatar${n}`}
@@ -33,7 +43,7 @@ export default function PlayerUpdate({
         alt=""
         width={size}
         height={size}
-        className={`avatar ${newAvatar === link ? "selected" : ""}`}
+        className={className}
         onClick={() => setNewNAvatar(link)}
         draggable={false}
       />

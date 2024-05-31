@@ -58,7 +58,6 @@ export interface CreateRequestBody {
 
 export interface JoinRequestBody {
   method: "join";
-  player: Omit<PlayerInfo, "id" | "admin" | "joinedAt" | "totalScore">;
   gameId: string;
 }
 

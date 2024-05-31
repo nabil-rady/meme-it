@@ -45,6 +45,7 @@ const renderGameLobby = (
                   key={player.id}
                   player={player}
                   thisPlayer={player.id === thisPlayer.id}
+                  avatarsTaken={players.map((player) => player.avatar)}
                   ws={ws}
                 />
               ))}

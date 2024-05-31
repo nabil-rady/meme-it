@@ -106,10 +106,6 @@ export default function Home() {
       const request: JoinRequestBody = {
         method: "join",
         gameId: router.query.slug as string,
-        player: {
-          nickname: "guest",
-          avatar: `/avatars/${Math.floor(Math.random() * 11) + 1}.jpg`,
-        },
       };
       ws.current?.send(JSON.stringify(request));
     });

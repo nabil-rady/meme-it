@@ -10,6 +10,7 @@ interface PlayerProps {
   player: PlayerInfo;
   thisPlayer: boolean;
   showScore?: boolean;
+  avatarsTaken?: string[];
   ws?: MutableRefObject<WebSocket | undefined>;
 }
 
@@ -45,11 +46,12 @@ export default function Player(props: PlayerProps) {
           <HiPencilAlt size={20} />
         </button>
       )}
-      {showPlayerUpdate && props.ws && (
+      {showPlayerUpdate && props.ws && props.avatarsTaken && (
         <PlayerUpdate
           avatar={props.player.avatar}
           nickname={props.player.nickname}
           closePlayerUpdate={closePlayerUpdate}
+          avatarsTaken={props.avatarsTaken}
           ws={props.ws}
         />
       )}

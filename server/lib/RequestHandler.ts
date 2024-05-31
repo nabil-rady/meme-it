@@ -435,12 +435,20 @@ class JoinRequestHandler extends RequestHandler {
       return;
     }
 
-    const player = new Player(
-      this.requestBody.player.nickname,
-      this.requestBody.player.avatar,
-      false,
-      this.connection
+    const baseAvatarURL = `/avatars/`;
+    const candidateAvatars = new Set(
+      Array.from(Array(12).keys()).map((n) => baseAvatarURL + `${n}.jpg`)
     );
+    for (const player of desiredGame.getPlayers()) {
+      candidateAvatars.delete(player.getPlayerInfo().avatar);
+    }
+    const avatar =
+      Array.from(candidateAvatars)[
+        Math.floor(Math.random() * candidateAvatars.size)
+      ];
+
+    const nickname = `guest-${Math.floor(Math.random() * 1000) + 1}`;
+    const player = new Player(nickname, avatar, false, this.connection);
     this.playerStore.addPlayer(player);
 
     desiredGame.addPlayer(player);
