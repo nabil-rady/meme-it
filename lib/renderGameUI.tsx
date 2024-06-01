@@ -36,6 +36,7 @@ const renderGameLobby = (
     <>
       <main className="lobby">
         <h1 className="title">Meme It</h1>
+        <h2 className="game-id">Game Id: {game.id}</h2>
         <div className="lobby-container">
           <div className="players-container">
             <h2>Players ({players.length})</h2>

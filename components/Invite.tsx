@@ -25,7 +25,7 @@ export default function Invite(props: InviteProps) {
   return (
     <div>
       <button className="button" onClick={copyLink}>
-        Invite
+        Copy Invite Link
       </button>
     </div>
   );
