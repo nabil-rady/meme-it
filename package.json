@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "server-dev": "nodemon server/index.ts",
-    "server": "tsc -p server && node server/build",
+    "server": "tsc -p server && node server/build/server/",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
