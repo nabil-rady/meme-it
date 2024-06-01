@@ -38,6 +38,7 @@ export interface PlayerInfo {
   admin: boolean;
   nickname: string;
   avatar: string;
+  inGame: boolean;
   joinedAt: number;
   totalScore: number;
 }
@@ -52,7 +53,10 @@ export interface GameInfo {
 
 export interface CreateRequestBody {
   method: "create";
-  admin: Omit<PlayerInfo, "id" | "admin" | "joinedAt" | "totalScore">;
+  admin: Omit<
+    PlayerInfo,
+    "id" | "admin" | "inGame" | "joinedAt" | "totalScore"
+  >;
   game: Omit<GameInfo, "id" | "phase" | "currentRound">;
 }
 
@@ -63,7 +67,10 @@ export interface JoinRequestBody {
 
 export interface UpdatePlayerRequestBody {
   method: "updatePlayer";
-  updatedPlayer: Omit<PlayerInfo, "id" | "admin" | "joinedAt" | "totalScore">;
+  updatedPlayer: Omit<
+    PlayerInfo,
+    "id" | "admin" | "inGame" | "joinedAt" | "totalScore"
+  >;
 }
 
 export interface UpdateGameRequestBody {
@@ -169,11 +176,13 @@ export type EndResultPhaseResponseBody =
 
 export interface RestartGameResponseBody {
   method: "restart";
+  players: PlayerInfo[];
 }
 
 export interface LeaveResponseBody {
   method: "leave";
   player: PlayerInfo;
+  restOfPlayers: PlayerInfo[];
   newAdmin: PlayerInfo | null;
 }
 

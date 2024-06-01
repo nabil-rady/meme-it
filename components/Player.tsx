@@ -30,7 +30,7 @@ export default function Player(props: PlayerProps) {
       {props.player.admin && props.ws ? (
         <FaCrown className="player-admin" size={30} />
       ) : null}
-      <div className="player-image">
+      <div className={`player-image${!props.player.inGame ? " left" : ""}`}>
         <img
           src={props.player.avatar}
           alt={`${props.player.nickname} avatar`}

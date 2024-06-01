@@ -43,7 +43,7 @@ function handleClosingConnection(connection: GameConnection) {
     leftGame.removePlayer(player);
 
     let newAdmin: Player | undefined;
-    if (leftGame.getPlayersInfos().length === 0) {
+    if (leftGame.hasNoPlayers()) {
       leftGame.terminate();
       playerStore.removeGamePlayers(leftGame);
       gameStore.removeGame(leftGame);
@@ -63,15 +63,21 @@ function handleClosingConnection(connection: GameConnection) {
       }
     }
 
+    if (leftGame.getPhase() === "lobby") {
+      leftGame.removeInactivePlayers();
+      playerStore.removeInactivePlayers(leftGame);
+    }
+
     const playerInfo = player.getPlayerInfo();
     const response: LeaveResponseBody = {
       method: "leave",
       player: playerInfo,
+      restOfPlayers: leftGame.getPlayersInfos(),
       newAdmin: newAdmin ? newAdmin.getPlayerInfo() : null,
     };
-
-    playerStore.removePlayer(player);
     leftGame.broadcast(response);
+
+    console.log(leftGame.getPlayersInfos());
 
     logger.info(
       `Player ${player.getPlayerId()} left game ${leftGame.getGameId()}.`

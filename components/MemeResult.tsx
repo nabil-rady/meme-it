@@ -45,7 +45,7 @@ export default function MemeResultComponent(props: MemeResultProps) {
     <>
       <div className="meme">
         <canvas id={CANVAS_ID} width="500" height="500"></canvas>
-        <div className="player-image">
+        <div className={`player-image${!props.player?.inGame ? " left" : ""}`}>
           <img
             alt={`${props.player?.nickname} avatar`}
             src={props.player?.avatar}

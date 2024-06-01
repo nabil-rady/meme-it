@@ -175,12 +175,13 @@ export abstract class RequestHandler {
 
     const currentRound = game.getGameInfo().currentRound;
 
-    const players = game.getPlayers();
+    const players = game.getActivePlayers();
     const memes = await this.getRandomMemes(players.length);
     for (let i = 0; i < players.length; i++) {
       const player = players[i];
       const meme = memes[i];
       player.setCurrentMeme(meme);
+      player.setCurrentMemeRound(currentRound);
 
       if (currentRound === 1) {
         const startGameResponse: StartGameResponseBody = {
@@ -217,28 +218,32 @@ export abstract class RequestHandler {
     }
 
     const player = game.getPlayers()[memeIndex];
-    const memeForReview: MemeForReview = {
-      meme: player.getCurrentMeme()!,
-      captions: player.getCurrentCaptions(),
-      creatorPlayerId: player.getPlayerId(),
-    };
+    if (player.getCurrentMemeRound() === game.getGameInfo().currentRound) {
+      const memeForReview: MemeForReview = {
+        meme: player.getCurrentMeme()!,
+        captions: player.getCurrentCaptions(),
+        creatorPlayerId: player.getPlayerId(),
+      };
 
-    const memeReviewResponse: MemeForReviewResponseBody = {
-      method: "memeForReview",
-      meme: memeForReview,
-    };
-    game.broadcast(memeReviewResponse);
+      const memeReviewResponse: MemeForReviewResponseBody = {
+        method: "memeForReview",
+        meme: memeForReview,
+      };
+      game.broadcast(memeReviewResponse);
 
-    const timeoutId = setTimeout(() => {
+      const timeoutId = setTimeout(() => {
+        this.sendMemeForReview(game, memeIndex + 1);
+      }, 1000 * (15 + 2)); // Add extra 2 seconds for good UX.
+      game.setTimeoutId(timeoutId);
+
+      this.logger.info(
+        `Meme number ${
+          memeIndex + 1
+        } of game ${game.getGameId()} has been sent for review.`
+      );
+    } else {
       this.sendMemeForReview(game, memeIndex + 1);
-    }, 1000 * (15 + 2)); // Add extra 2 seconds for good UX.
-    game.setTimeoutId(timeoutId);
-
-    this.logger.info(
-      `Meme number ${
-        memeIndex + 1
-      } of game ${game.getGameId()} has been sent for review.`
-    );
+    }
   }
 
   endCaptionPhase(game: Game) {
@@ -260,13 +265,21 @@ export abstract class RequestHandler {
   endReviewPhase(game: Game) {
     game.setPhase("result");
 
-    const memes: MemeResult[] = game.getPlayers().map((player) => ({
-      meme: player.getCurrentMeme()!,
-      captions: player.getCurrentCaptions(),
-      creatorPlayerId: player.getPlayerId(),
-      upvotes: player.getRoundTotalUpvotes(game.getGameInfo().currentRound),
-      downvotes: player.getRoundTotalDownvotes(game.getGameInfo().currentRound),
-    }));
+    const memes: MemeResult[] = game
+      .getPlayers()
+      .filter(
+        (player) =>
+          player.getCurrentMemeRound() === game.getGameInfo().currentRound
+      )
+      .map((player) => ({
+        meme: player.getCurrentMeme()!,
+        captions: player.getCurrentCaptions(),
+        creatorPlayerId: player.getPlayerId(),
+        upvotes: player.getRoundTotalUpvotes(game.getGameInfo().currentRound),
+        downvotes: player.getRoundTotalDownvotes(
+          game.getGameInfo().currentRound
+        ),
+      }));
 
     for (const player of game.getPlayers()) {
       player.setCurrentCaptions(null);
@@ -689,7 +702,14 @@ class SubmitCaptionsRequestHandler extends RequestHandler {
       }.`
     );
 
-    if (game.getPlayers().every((player) => player.getCurrentCaptions())) {
+    if (
+      game
+        .getPlayers()
+        .every(
+          (player) =>
+            !player.getPlayerInfo().inGame || player.getCurrentCaptions()
+        )
+    ) {
       clearTimeout(game.getTimeoutId());
       this.endCaptionPhase(game);
 
@@ -822,9 +842,11 @@ class RestartGameRequestHandler extends RequestHandler {
     }
 
     gameToBeRestarted.restart();
+    this.playerStore.removeInactivePlayers(gameToBeRestarted);
 
     const restartGameResponse: RestartGameResponseBody = {
       method: "restart",
+      players: gameToBeRestarted.getPlayersInfos(),
     };
     gameToBeRestarted.broadcast(restartGameResponse);
 

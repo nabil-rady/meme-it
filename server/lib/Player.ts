@@ -7,9 +7,11 @@ export class Player {
   private nickname: string;
   private avatar: string;
   private admin: boolean;
+  private inGame: boolean;
   private readonly joinedAt: number;
   private readonly connection: GameConnection;
   private currentMeme: DMemeWithCaptionDetails | null;
+  private currentMemeRound: number | null;
   private currentCaptions: string[] | null;
   private votes: Votes;
 
@@ -23,9 +25,11 @@ export class Player {
     this.nickname = nickname;
     this.avatar = avatar;
     this.admin = admin;
+    this.inGame = true;
     this.joinedAt = Date.now().valueOf();
     this.connection = connection;
     this.currentMeme = null;
+    this.currentMemeRound = null;
     this.currentCaptions = null;
     this.votes = {};
   }
@@ -39,6 +43,7 @@ export class Player {
       id: this.id,
       nickname: this.nickname,
       avatar: this.avatar,
+      inGame: this.inGame,
       admin: this.admin,
       joinedAt: this.joinedAt,
       totalScore: this.totalScore,
@@ -68,6 +73,14 @@ export class Player {
 
   setCurrentMeme(meme: DMemeWithCaptionDetails | null) {
     this.currentMeme = meme;
+  }
+
+  getCurrentMemeRound(): number | null {
+    return this.currentMemeRound;
+  }
+
+  setCurrentMemeRound(currentMemeRound: number) {
+    this.currentMemeRound = currentMemeRound;
   }
 
   getCurrentCaptions(): string[] | null {
@@ -137,6 +150,10 @@ export class Player {
     this.votes = {};
     this.currentCaptions = [];
     this.currentMeme = null;
+  }
+
+  leaveGame() {
+    this.inGame = false;
   }
 
   send(message: GameResponseBody) {

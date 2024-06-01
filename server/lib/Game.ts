@@ -54,9 +54,13 @@ export class Game {
     return this.players;
   }
 
+  getActivePlayers(): Player[] {
+    return this.players.filter((player) => player.getPlayerInfo().inGame);
+  }
+
   getEarliestPlayer(): Player | undefined {
-    if (this.players.length === 0) return undefined;
-    return this.players.reduce(
+    if (this.getActivePlayers().length === 0) return undefined;
+    return this.getActivePlayers().reduce(
       (earliestPlayer: Player, currentPlayer: Player) =>
         earliestPlayer.getPlayerInfo().joinedAt <
         currentPlayer.getPlayerInfo().joinedAt
@@ -75,8 +79,17 @@ export class Game {
   }
 
   removePlayer(playerToBeRemoved: Player) {
+    for (const player of this.players) {
+      if (player.getPlayerId() === playerToBeRemoved.getPlayerId()) {
+        player.leaveGame();
+        break;
+      }
+    }
+  }
+
+  removeInactivePlayers() {
     this.players = this.players.filter(
-      (player) => player.getPlayerId() !== playerToBeRemoved.getPlayerId()
+      (player) => player.getPlayerInfo().inGame
     );
   }
 
@@ -85,6 +98,10 @@ export class Game {
       const j = Math.floor(Math.random() * (i + 1));
       [this.players[i], this.players[j]] = [this.players[j], this.players[i]];
     }
+  }
+
+  hasNoPlayers() {
+    return this.players.every((player) => !player.getPlayerInfo().inGame);
   }
 
   incrementRound() {
@@ -111,6 +128,7 @@ export class Game {
     this.phase = "lobby";
     this.currentRound = 1;
 
+    this.removeInactivePlayers();
     for (const player of this.players) {
       player.reset();
     }

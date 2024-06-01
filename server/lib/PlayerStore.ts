@@ -31,4 +31,12 @@ export class PlayerStore {
       this.removePlayer(player);
     }
   }
+
+  removeInactivePlayers(game: Game) {
+    for (const player of game.getPlayers()) {
+      if (!player.getPlayerInfo().inGame) {
+        this.removePlayer(player);
+      }
+    }
+  }
 }

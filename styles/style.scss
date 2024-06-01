@@ -226,6 +226,10 @@ body {
   }
 }
 
+.player-image.left {
+  filter: brightness(70%);
+}
+
 .player-update-overlay {
   @include overlay();
 

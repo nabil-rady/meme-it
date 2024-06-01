@@ -791,12 +791,7 @@ class RestartGameResponseHandler extends ResponseHandler {
         currentRound: 1,
       };
     });
-    this.setPlayers((prevPlayers) =>
-      prevPlayers.map((player) => ({
-        ...player,
-        totalScore: 0,
-      }))
-    );
+    this.setPlayers(this.responseBody.players);
     this.setThisPlayer((prevThisPlayer) => {
       if (!prevThisPlayer) return prevThisPlayer;
       return {
@@ -849,22 +844,7 @@ class LeaveResponseHandler extends ResponseHandler {
       }
       return prevThisPlayer;
     });
-    this.setPlayers((prevPlayers) => {
-      if (this.responseBody.newAdmin) {
-        const newAdminIndex = prevPlayers.findIndex(
-          (player) => player.id === this.responseBody.newAdmin!.id
-        );
-        if (newAdminIndex !== -1) {
-          prevPlayers[newAdminIndex].admin = true;
-          return prevPlayers.filter(
-            (player) => player.id !== this.responseBody.player.id
-          );
-        }
-      }
-      return prevPlayers.filter(
-        (player) => player.id !== this.responseBody.player.id
-      );
-    });
+    this.setPlayers(this.responseBody.restOfPlayers);
   }
 }
 
