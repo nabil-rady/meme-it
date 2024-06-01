@@ -36,6 +36,7 @@ export default function Home() {
   const [notificationMessage, setNotificationMessage] = useState<string>("");
   const [isNotificationError, setIsNotificationError] =
     useState<boolean>(false);
+  const [requestSent, setRequestSent] = useState<boolean>(false);
 
   const [avatar, setAvatar] = useState<string>("/avatars/0.jpg");
   const [nickname, setNickname] = useState<string>("");
@@ -101,6 +102,7 @@ export default function Home() {
         },
       };
       ws.current?.send(JSON.stringify(request));
+      setRequestSent(true);
     });
   };
 
@@ -214,7 +216,7 @@ export default function Home() {
   );
 
   const render = () =>
-    game && thisPlayer && players.length !== 0
+    requestSent
       ? renderGameUI(
           game,
           thisPlayer,

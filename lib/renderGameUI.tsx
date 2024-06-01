@@ -1,4 +1,5 @@
 import { Dispatch, MutableRefObject, SetStateAction } from "react";
+import { Oval } from "react-loader-spinner";
 
 import GameSettings from "../components/GameSettings";
 import Invite from "../components/Invite";
@@ -168,7 +169,19 @@ export default function renderGameUI(
   ws: MutableRefObject<WebSocket | undefined>
 ) {
   // TODO: Error handling
-  if (!game || !thisPlayer) return <h1 className="loading">Loading...</h1>;
+  if (!game || !thisPlayer)
+    return (
+      <div className="loading">
+        <Oval
+          wrapperStyle={{
+            justifyContent: "center",
+          }}
+          secondaryColor="#f5f2f2"
+          color="#133ea9"
+        />
+        <h2>Loading...</h2>
+      </div>
+    );
   if (game.phase === "lobby") {
     return renderGameLobby(game, thisPlayer, players, ws);
   } else if (game.phase === "caption") {
