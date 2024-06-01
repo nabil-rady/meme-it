@@ -56,7 +56,6 @@ function handleClosingConnection(connection: GameConnection) {
       newAdmin = leftGame.getEarliestPlayer();
       if (newAdmin) {
         newAdmin.makeAdmin();
-        playerStore.addPlayer(newAdmin);
 
         logger.info(
           `Player ${newAdmin.getPlayerId()} has become the admin of game ${leftGame.getGameId()}.`

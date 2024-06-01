@@ -172,7 +172,6 @@ export abstract class RequestHandler {
 
   async startCaptionPhase(game: Game) {
     game.setPhase("caption");
-    this.gameStore.addGame(game);
 
     const currentRound = game.getGameInfo().currentRound;
 
@@ -182,7 +181,6 @@ export abstract class RequestHandler {
       const player = players[i];
       const meme = memes[i];
       player.setCurrentMeme(meme);
-      this.playerStore.addPlayer(player);
 
       if (currentRound === 1) {
         const startGameResponse: StartGameResponseBody = {
@@ -205,7 +203,6 @@ export abstract class RequestHandler {
     }, 1000 * (60 + 5)); // Add extra 5 seconds for good UX.
 
     game.setTimeoutId(timeoutId);
-    this.gameStore.addGame(game);
 
     this.logger.info(
       `Game ${game.getGameId()} caption phase has started and is in now in round ${currentRound}.`
@@ -236,7 +233,6 @@ export abstract class RequestHandler {
       this.sendMemeForReview(game, memeIndex + 1);
     }, 1000 * (15 + 2)); // Add extra 2 seconds for good UX.
     game.setTimeoutId(timeoutId);
-    this.gameStore.addGame(game);
 
     this.logger.info(
       `Meme number ${
@@ -248,7 +244,6 @@ export abstract class RequestHandler {
   endCaptionPhase(game: Game) {
     game.setPhase("review");
     game.shufflePlayers();
-    this.gameStore.addGame(game);
 
     const endCaptionPhaseResponse: EndCaptionPhaseResponseBody = {
       method: "endCaptionPhase",
@@ -264,7 +259,6 @@ export abstract class RequestHandler {
 
   endReviewPhase(game: Game) {
     game.setPhase("result");
-    this.gameStore.addGame(game);
 
     const memes: MemeResult[] = game.getPlayers().map((player) => ({
       meme: player.getCurrentMeme()!,
@@ -276,7 +270,6 @@ export abstract class RequestHandler {
 
     for (const player of game.getPlayers()) {
       player.setCurrentCaptions(null);
-      this.playerStore.addPlayer(player);
     }
 
     const endReviewPhaseResponse: EndReviewPhaseResponseBody = {
@@ -289,7 +282,6 @@ export abstract class RequestHandler {
       this.endResultPhase(game);
     }, 1000 * (40 + 3)); // Add extra 3 seconds for good UX.
     game.setTimeoutId(timeoutId);
-    this.gameStore.addGame(game);
 
     this.logger.info(
       `Game ${game.getGameId()} review phase has ended and is now in its result phase.`
@@ -302,7 +294,6 @@ export abstract class RequestHandler {
       this.startCaptionPhase(game);
     } else {
       game.setPhase("final");
-      this.gameStore.addGame(game);
 
       const endResultPhaseResponse: EndResultPhaseResponseBody = {
         method: "endResultPhase",
@@ -513,7 +504,6 @@ class UpdateGameRequestHandler extends RequestHandler {
       ...gameToBeUpdated.getGameInfo(),
       ...updatedGameInfo,
     });
-    this.gameStore.addGame(gameToBeUpdated);
 
     const updateGameResponse: UpdateGameResponseBody = {
       method: "updateGame",
@@ -563,7 +553,6 @@ class UpdatePlayerRequestHandler extends RequestHandler {
       ...playerToBeUpdated.getPlayerInfo(),
       ...updatedPlayerInfo,
     });
-    this.playerStore.addPlayer(playerToBeUpdated);
 
     const gameOfUpdatePlayer =
       this.gameStore.getGamePlayedByPlayer(playerToBeUpdated);
@@ -687,7 +676,6 @@ class SubmitCaptionsRequestHandler extends RequestHandler {
     }
 
     player.setCurrentCaptions(this.requestBody.captions);
-    this.playerStore.addPlayer(player);
 
     const captionResponse: SubmitCaptionsResponseBody = {
       method: "submitCaption",
@@ -784,7 +772,6 @@ class SubmitReviewRequestHandler extends RequestHandler {
     if (this.requestBody.like)
       playerToBeReviewed.upvote(playerId, currentRound);
     else playerToBeReviewed.downvote(playerId, currentRound);
-    this.playerStore.addPlayer(playerToBeReviewed);
 
     const submitReviewResponse: SubmitReviewResponseBody = {
       method: "submitReview",
@@ -835,11 +822,6 @@ class RestartGameRequestHandler extends RequestHandler {
     }
 
     gameToBeRestarted.restart();
-
-    this.gameStore.addGame(gameToBeRestarted);
-    for (const player of gameToBeRestarted.getPlayers()) {
-      this.playerStore.addPlayer(player);
-    }
 
     const restartGameResponse: RestartGameResponseBody = {
       method: "restart",
