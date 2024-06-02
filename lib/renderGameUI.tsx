@@ -39,34 +39,36 @@ const renderGameLobby = (
         <h1 className="title">Meme It</h1>
         <h2 className="game-id">Game Id: {game.id}</h2>
         <div className="lobby-container">
-          <div className="players-container">
-            <h2>Players ({players.length})</h2>
-            <div className="players">
-              {players.map((player) => (
-                <Player
-                  key={player.id}
-                  player={player}
-                  thisPlayer={player.id === thisPlayer.id}
-                  avatarsTaken={players.map((player) => player.avatar)}
-                  ws={ws}
-                />
-              ))}
+          <div className="game-container">
+            <div className="players-container">
+              <h2>Players ({players.length})</h2>
+              <div className="players">
+                {players.map((player) => (
+                  <Player
+                    key={player.id}
+                    player={player}
+                    thisPlayer={player.id === thisPlayer.id}
+                    avatarsTaken={players.map((player) => player.avatar)}
+                    ws={ws}
+                  />
+                ))}
+              </div>
+            </div>
+            <div className="options">
+              <GameSettings game={game} admin={thisPlayer.admin} ws={ws} />
             </div>
           </div>
-          <div className="options">
-            <GameSettings game={game} admin={thisPlayer.admin} ws={ws} />
-            <div className="buttons">
-              <Invite id={(game as GameInfo).id} />
-              <button
-                className={`button start-button ${
-                  thisPlayer.admin ? "" : "disabled"
-                }`}
-                onClick={startGame}
-                tabIndex={thisPlayer.admin ? 0 : -1}
-              >
-                Start game
-              </button>
-            </div>
+          <div className="buttons">
+            <Invite id={(game as GameInfo).id} />
+            <button
+              className={`button start-button ${
+                thisPlayer.admin ? "" : "disabled"
+              }`}
+              onClick={startGame}
+              tabIndex={thisPlayer.admin ? 0 : -1}
+            >
+              Start game
+            </button>
           </div>
         </div>
       </main>
