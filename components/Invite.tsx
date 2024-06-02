@@ -14,6 +14,7 @@ export default function Invite(props: InviteProps) {
       position: "bottom-center",
       toastId: "pop-up",
       theme: "dark",
+      className: "toast",
       hideProgressBar: true,
       closeButton: false,
       closeOnClick: false,
