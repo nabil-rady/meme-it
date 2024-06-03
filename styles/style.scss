@@ -190,6 +190,11 @@ body {
   @include button();
 }
 
+.buttons {
+  margin-top: 1rem !important;
+  margin-bottom: 1rem !important;
+}
+
 .loading {
   position: absolute;
   top: 50%;
