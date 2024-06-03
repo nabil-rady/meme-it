@@ -7,6 +7,8 @@ import {
 } from "react";
 import { AiFillLike, AiFillDislike } from "react-icons/ai";
 
+import { useMediaQuery } from "@react-hook/media-query";
+
 import { Meme } from "../lib/Meme";
 
 import {
@@ -42,6 +44,8 @@ const submitReview = (
 export default function MemeForReviewComponent(props: MemeForReviewProps) {
   const meme = useRef<Meme>();
 
+  const mediaQuery = useMediaQuery("(max-width: 700px)");
+
   const creator = props.memeForReview.creatorPlayerId === props.thisPlayer.id;
 
   useEffect(() => {
@@ -64,6 +68,19 @@ export default function MemeForReviewComponent(props: MemeForReviewProps) {
       new Array(props.memeForReview.meme.captionsDetails.length).fill("");
     meme.current.render();
   }, [props.memeForReview.captions]);
+
+  useEffect(() => {
+    if (meme.current) {
+      if (!mediaQuery) {
+        meme.current.canvas.width = 500;
+        meme.current.canvas.height = 500;
+      } else {
+        meme.current.canvas.width = 0.7 * document.body.clientWidth;
+        meme.current.canvas.height = 0.7 * document.body.clientWidth;
+      }
+      meme.current.render();
+    }
+  }, [mediaQuery, meme.current]);
 
   return (
     <>
