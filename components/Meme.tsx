@@ -1,4 +1,6 @@
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
+import { useMediaQuery } from "@react-hook/media-query";
+
 import { DMemeWithCaptionDetails } from "../dbtypes";
 import { Meme } from "../lib/Meme";
 
@@ -18,6 +20,8 @@ export default function MemeComponent(props: MemeProps) {
   const [secondsLeft, setSecondsLeft] = useState<number>(60);
   const [submitted, setSubmitted] = useState<boolean>(false);
 
+  const mediaQuery = useMediaQuery("(max-width: 700px)");
+
   useEffect(() => {
     if (!meme.current) {
       meme.current = new Meme(CANVAS_ID, {
@@ -35,6 +39,19 @@ export default function MemeComponent(props: MemeProps) {
       clearInterval(intervalId.current);
     }
   }, [secondsLeft]);
+
+  useEffect(() => {
+    if (meme.current) {
+      if (!mediaQuery) {
+        meme.current.canvas.width = 500;
+        meme.current.canvas.height = 500;
+      } else {
+        meme.current.canvas.width = 0.7 * document.body.clientWidth;
+        meme.current.canvas.height = 0.7 * document.body.clientWidth;
+      }
+      meme.current.render();
+    }
+  }, [mediaQuery, meme.current]);
 
   useEffect(() => {
     intervalId.current = setInterval(() => {
@@ -78,7 +95,9 @@ export default function MemeComponent(props: MemeProps) {
             >
               {submitted ? "Edit" : "Submit"}
             </button>
-            {submitted && <div className="waiting">Waiting For Other Players...</div>}
+            {submitted && (
+              <div className="waiting">Waiting For Other Players...</div>
+            )}
           </div>
         </div>
       </div>

@@ -1035,6 +1035,15 @@ body {
       }
     }
 
+    .meme {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      &-captions {
+        margin-top: auto;
+      }
+    }
+
     .final {
       > .leaderboard {
         > .players {

@@ -1,7 +1,4 @@
-import { DCaptionDetails, DMemeWithCaptionDetails } from "../dbtypes";
-
-const CANVAS_WIDTH = 500;
-const CANVAS_HEIGHT = 500;
+import { DMemeWithCaptionDetails } from "../dbtypes";
 
 function fillTextAndRotate(
   ctx: CanvasRenderingContext2D,
@@ -19,13 +16,38 @@ function fillTextAndRotate(
 
 function drawImage(
   ctx: CanvasRenderingContext2D,
+  width: number,
+  height: number,
   imageData: ImageBitmap | ImageData
 ) {
   if (imageData instanceof ImageBitmap) {
-    ctx.drawImage(imageData, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+    ctx.drawImage(imageData, 0, 0, width, height);
   } else {
     ctx.putImageData(imageData, 0, 0);
   }
+}
+
+function accomodateCaptionDetailsForScaling(
+  captionDetails: {
+    positionX: number;
+    positionY: number;
+    rotation: number;
+    width: number;
+    initialFontSize: number;
+    maxNumberOfLines: number;
+    color: string;
+  },
+  scalingFactor: number
+): CaptionDetails {
+  return new CaptionDetails({
+    positionX: captionDetails.positionX * scalingFactor,
+    positionY: captionDetails.positionY * scalingFactor,
+    rotation: captionDetails.rotation,
+    width: captionDetails.width * scalingFactor,
+    initialFontSize: captionDetails.initialFontSize * scalingFactor,
+    maxNumberOfLines: captionDetails.maxNumberOfLines,
+    color: captionDetails.color,
+  });
 }
 
 export class CaptionDetails {
@@ -45,7 +67,15 @@ export class CaptionDetails {
     initialFontSize,
     maxNumberOfLines,
     color,
-  }: DCaptionDetails) {
+  }: {
+    positionX: number;
+    positionY: number;
+    rotation: number;
+    width: number;
+    initialFontSize: number;
+    maxNumberOfLines: number;
+    color: string;
+  }) {
     this.positionX = positionX;
     this.positionY = positionY;
     this.rotation = rotation;
@@ -78,6 +108,10 @@ export class Meme {
     );
     this._imageData = null;
     this._captions = [];
+  }
+
+  getScalingFactor(): number {
+    return this.canvas.width / 500;
   }
 
   set captions(captions: string[]) {
@@ -118,12 +152,21 @@ export class Meme {
     let currentImageData = this._imageData as ImageBitmap | ImageData;
 
     if (ctx) {
-      drawImage(ctx, currentImageData);
+      drawImage(ctx, this.canvas.width, this.canvas.height, currentImageData);
 
       for (let i = 0; i < this.captions.length; i++) {
-        currentImageData = ctx.getImageData(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+        currentImageData = ctx.getImageData(
+          0,
+          0,
+          this.canvas.width,
+          this.canvas.height
+        );
 
-        const captionDetails = this.captionsDetails[i];
+        const defaultCaptionDetails = this.captionsDetails[i];
+        const captionDetails = accomodateCaptionDetailsForScaling(
+          defaultCaptionDetails,
+          this.getScalingFactor()
+        );
 
         let fontSize = captionDetails.initialFontSize;
         ctx.fillStyle = captionDetails.color;
@@ -149,7 +192,12 @@ export class Meme {
               fontSize /= 1.2;
               ctx.font = `${fontSize}px Poppins`;
 
-              drawImage(ctx, currentImageData);
+              drawImage(
+                ctx,
+                this.canvas.width,
+                this.canvas.height,
+                currentImageData
+              );
 
               if (fontSize >= 15) {
                 y = captionDetails.positionY;
