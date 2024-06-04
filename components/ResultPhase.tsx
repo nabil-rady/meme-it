@@ -40,6 +40,7 @@ export default function ResultPhase(props: ResultPhaseProps) {
 
   return (
     <>
+      <h2 className="instructions">These are the results of this round</h2>
       <div className="meme-timer">{secondsLeft} Seconds Left</div>
       <div className="meme-container">
         <Leaderboard

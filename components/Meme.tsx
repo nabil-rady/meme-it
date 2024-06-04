@@ -62,6 +62,7 @@ export default function MemeComponent(props: MemeProps) {
 
   return (
     <>
+      <h2 className="instructions">Submit your captions now!</h2>
       <div className="meme-timer">{secondsLeft} Seconds Left</div>
       <div className="meme-container">
         <div className="meme">

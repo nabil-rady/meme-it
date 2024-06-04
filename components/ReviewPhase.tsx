@@ -54,13 +54,16 @@ export default function ReviewPhase(props: ReviewPhaseProps) {
   }, []);
 
   return (
-    <MemeForReviewComponent
-      secondsLeft={secondsLeft}
-      memeForReview={props.meme}
-      thisPlayer={props.thisPlayer}
-      upvoted={props.upvoted}
-      setUpvoted={props.setUpvoted}
-      ws={props.ws}
-    />
+    <>
+      <h2 className="instructions">Rate this meme!</h2>
+      <MemeForReviewComponent
+        secondsLeft={secondsLeft}
+        memeForReview={props.meme}
+        thisPlayer={props.thisPlayer}
+        upvoted={props.upvoted}
+        setUpvoted={props.setUpvoted}
+        ws={props.ws}
+      />
+    </>
   );
 }
