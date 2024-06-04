@@ -760,6 +760,8 @@ body {
           position: relative;
           > .player-image {
             position: absolute;
+            top: 0;
+            left: 0;
             width: 4em;
             height: 4em;
             transform: translate(-50%, -50%);
@@ -1052,6 +1054,21 @@ body {
     .review {
       > .meme-container {
         width: auto;
+      }
+    }
+
+    .result {
+      > .meme-container {
+        width: 100%;
+        flex-direction: column;
+        > .memes {
+          margin: 1rem 0;
+        }
+        > .leaderboard {
+          order: 0;
+          width: 100%;
+          margin: 1rem 0;
+        }
       }
     }
 
