@@ -5,6 +5,7 @@ import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 
+import Chat from "../components/Chat";
 import renderGameUI from "../lib/renderGameUI";
 import { ResponseHandler } from "../lib/ResponseHandler";
 
@@ -17,6 +18,7 @@ import {
   GameResponseBody,
   JoinRequestBody,
   ErrorResponseBody,
+  ChatMessage,
 } from "../server/types";
 
 export default function Home() {
@@ -35,6 +37,103 @@ export default function Home() {
   const [notificationMessage, setNotificationMessage] = useState<string>("");
   const [isNotificationError, setIsNotificationError] =
     useState<boolean>(false);
+
+  const [chatLogs, setChatLogs] = useState<ChatMessage[]>([
+    {
+      timestamp: 0,
+      isSystemMessage: false,
+      content:
+        "Hey folks Hey folks Hey folks Hey folks Hey folks Hey folks Hey folks Hey folks Hey folks Hey folks Hey folks Hey folks Hey folks Hey folks Hey folks Hey folks Hey folks Hey folks Hey folks Hey folks Hey folks Hey folks ",
+      sentBy: {
+        id: "1",
+        admin: false,
+        avatar: "/avatars/1.jpg",
+        inGame: true,
+        joinedAt: 0,
+        nickname: "7mada",
+        totalScore: 10,
+      },
+    },
+    {
+      timestamp: 0,
+      isSystemMessage: true,
+      content: "7amada left the game",
+      sentBy: null,
+    },
+    {
+      timestamp: 0,
+      isSystemMessage: false,
+      content: "Hey folks",
+      sentBy: {
+        id: "1",
+        admin: false,
+        avatar: "/avatars/1.jpg",
+        inGame: true,
+        joinedAt: 0,
+        nickname: "7mada",
+        totalScore: 10,
+      },
+    },
+    {
+      timestamp: 0,
+      isSystemMessage: false,
+      content: "Hey folks",
+      sentBy: {
+        id: "1",
+        admin: false,
+        avatar: "/avatars/1.jpg",
+        inGame: true,
+        joinedAt: 0,
+        nickname: "7mada",
+        totalScore: 10,
+      },
+    },
+    {
+      timestamp: 0,
+      isSystemMessage: false,
+      content: "Hey folks",
+      sentBy: {
+        id: "1",
+        admin: false,
+        avatar: "/avatars/1.jpg",
+        inGame: true,
+        joinedAt: 0,
+        nickname: "7mada",
+        totalScore: 10,
+      },
+    },
+  ]);
+  const [chatOpen, setChatOpen] = useState<boolean>(false);
+
+  const openChat = () => {
+    setChatOpen(true);
+    setChatLogs((prevLogs) =>
+      prevLogs.map((message) => ({
+        ...message,
+        read: true,
+      }))
+    );
+  };
+
+  const closeChat = () => {
+    setChatOpen(false);
+  };
+
+  const sendMessage = (message: string) => {
+    if (!thisPlayer) return;
+    if (message !== "") {
+      setChatLogs((prevLogs) => [
+        ...prevLogs,
+        {
+          timestamp: Date.now(),
+          content: message,
+          isSystemMessage: false,
+          read: true,
+          sentBy: thisPlayer,
+        },
+      ]);
+    }
+  };
 
   useEffect(() => {
     if (!notificationMessage) {
@@ -74,6 +173,15 @@ export default function Home() {
       });
     setNotificationMessage("");
   }, [notificationMessage, isNotificationError]);
+
+  useEffect(() => {
+    const chat = document.querySelector(".chat-messages");
+    if (chat) {
+      chat.scroll({
+        top: chat.scrollHeight,
+      });
+    }
+  }, [chatLogs]);
 
   useEffect(() => {
     if (!router.query.slug) return;
@@ -120,6 +228,15 @@ export default function Home() {
       <Head>
         <title>Meme It</title>
       </Head>
+      {thisPlayer && (
+        <Chat
+          chatLogs={chatLogs}
+          chatOpen={chatOpen}
+          openChat={openChat}
+          closeChat={closeChat}
+          sendMessage={sendMessage}
+        />
+      )}
       {renderGameUI(
         game,
         thisPlayer,

@@ -996,6 +996,148 @@ body {
   }
 }
 
+/* Chat */
+.chat {
+  display: flex;
+  flex-direction: column;
+
+  position: fixed;
+  z-index: 5;
+  bottom: 1rem;
+  right: 1rem;
+
+  border-radius: 20px;
+
+  box-sizing: border-box;
+
+  height: 0;
+  width: 280px;
+
+  background-color: $button-clr;
+
+  overflow-y: scroll;
+
+  transition: height 300ms ease-in-out;
+  &.open {
+    height: 350px;
+    padding: 1.2rem;
+    .chat-close {
+      visibility: visible;
+      opacity: 1;
+    }
+  }
+
+  &-open {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    cursor: pointer;
+
+    position: fixed;
+    bottom: 1rem;
+    right: 1rem;
+
+    width: 40px;
+    height: 40px;
+
+    border-radius: 50%;
+    background-color: $text-clr;
+  }
+
+  &-unread-num {
+    background-color: red;
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform: translate(-50%, -50%);
+
+    width: 22px;
+    height: 22px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    border-radius: 50%;
+    color: $text-clr;
+  }
+
+  &-close {
+    position: fixed;
+
+    bottom: 330px;
+    right: 30px;
+
+    cursor: pointer;
+    visibility: hidden;
+    opacity: 0;
+
+    transition: opacity 300ms ease-in-out;
+  }
+  &-messages {
+    overflow-y: scroll;
+  }
+  &-message {
+    &.system {
+      padding-bottom: 0.6rem;
+      background-color: transparent;
+      color: $text-clr;
+      text-align: center;
+    }
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+
+    width: 90%;
+
+    margin: 1rem auto;
+    padding: 0.6rem;
+    padding-bottom: 0.2rem;
+
+    border-radius: 20px;
+
+    color: $button-clr;
+    background-color: $text-clr;
+
+    > p {
+      min-width: 0;
+      word-wrap: break-word;
+    }
+
+    &-avatar {
+      border-radius: 50%;
+      display: inline-block;
+    }
+    &-nickname {
+      font-weight: bold;
+    }
+    &-time {
+      font-size: 0.6rem;
+    }
+  }
+
+  &-textbox {
+    position: relative;
+    margin-top: auto;
+    > input {
+      width: 100%;
+      padding: 0.5rem;
+      padding-right: 30px;
+      outline: none;
+      border: none;
+      border-radius: 10px;
+    }
+    > .send {
+      position: absolute;
+      top: 2.5px;
+      right: 0.2rem;
+
+      cursor: pointer;
+    }
+  }
+}
+
 /* Animations */
 @keyframes Grow-In {
   0% {

@@ -210,3 +210,11 @@ export type GameResponseBody =
   | RestartGameResponseBody
   | LeaveResponseBody
   | TerminateResponseBody;
+
+export interface ChatMessage {
+  timestamp: number;
+  isSystemMessage: boolean;
+  content: string;
+  sentBy: PlayerInfo | null;
+  read?: boolean;
+}

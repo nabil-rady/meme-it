@@ -7,6 +7,7 @@ import { ToastContainer, toast } from "react-toastify";
 import { BiRefresh } from "react-icons/bi";
 
 import AvatarSelect from "../components/AvatarSelect";
+import Chat from "../components/Chat";
 import { DMemeWithCaptionDetails } from "../dbtypes";
 
 import renderGameUI from "../lib/renderGameUI";
@@ -20,6 +21,7 @@ import {
   GameResponseBody,
   CreateRequestBody,
   ErrorResponseBody,
+  ChatMessage,
 } from "../server/types";
 
 export default function Home() {
@@ -37,6 +39,73 @@ export default function Home() {
   const [isNotificationError, setIsNotificationError] =
     useState<boolean>(false);
   const [requestSent, setRequestSent] = useState<boolean>(false);
+
+  const [chatLogs, setChatLogs] = useState<ChatMessage[]>([
+    {
+      timestamp: 0,
+      isSystemMessage: false,
+      content:
+        "Hey folks Hey folks Hey folks Hey folks Hey folks Hey folks Hey folks Hey folks Hey folks Hey folks Hey folks Hey folks Hey folks Hey folks Hey folks Hey folks Hey folks Hey folks Hey folks Hey folks Hey folks Hey folks ",
+      sentBy: {
+        id: "1",
+        admin: false,
+        avatar: "/avatars/1.jpg",
+        inGame: true,
+        joinedAt: 0,
+        nickname: "7mada",
+        totalScore: 10,
+      },
+    },
+    {
+      timestamp: 0,
+      isSystemMessage: true,
+      content: "7amada left the game",
+      sentBy: null,
+    },
+    {
+      timestamp: 0,
+      isSystemMessage: false,
+      content: "Hey folks",
+      sentBy: {
+        id: "1",
+        admin: false,
+        avatar: "/avatars/1.jpg",
+        inGame: true,
+        joinedAt: 0,
+        nickname: "7mada",
+        totalScore: 10,
+      },
+    },
+    {
+      timestamp: 0,
+      isSystemMessage: false,
+      content: "Hey folks",
+      sentBy: {
+        id: "1",
+        admin: false,
+        avatar: "/avatars/1.jpg",
+        inGame: true,
+        joinedAt: 0,
+        nickname: "7mada",
+        totalScore: 10,
+      },
+    },
+    {
+      timestamp: 0,
+      isSystemMessage: false,
+      content: "Hey folks",
+      sentBy: {
+        id: "1",
+        admin: false,
+        avatar: "/avatars/1.jpg",
+        inGame: true,
+        joinedAt: 0,
+        nickname: "7mada",
+        totalScore: 10,
+      },
+    },
+  ]);
+  const [chatOpen, setChatOpen] = useState<boolean>(false);
 
   const [avatar, setAvatar] = useState<string>("/avatars/0.jpg");
   const [nickname, setNickname] = useState<string>("");
@@ -59,6 +128,36 @@ export default function Home() {
 
   const showNicknameError = () => {
     setNicknameError(true);
+  };
+
+  const openChat = () => {
+    setChatOpen(true);
+    setChatLogs((prevLogs) =>
+      prevLogs.map((message) => ({
+        ...message,
+        read: true,
+      }))
+    );
+  };
+
+  const closeChat = () => {
+    setChatOpen(false);
+  };
+
+  const sendMessage = (message: string) => {
+    if (!thisPlayer) return;
+    if (message !== "") {
+      setChatLogs((prevLogs) => [
+        ...prevLogs,
+        {
+          timestamp: Date.now(),
+          content: message,
+          isSystemMessage: false,
+          read: true,
+          sentBy: thisPlayer,
+        },
+      ]);
+    }
   };
 
   const createGame = (nickname: string, avatar: string) => {
@@ -141,6 +240,15 @@ export default function Home() {
   }, [notificationMessage, isNotificationError]);
 
   useEffect(() => {
+    const chat = document.querySelector(".chat-messages");
+    if (chat) {
+      chat.scroll({
+        top: chat.scrollHeight,
+      });
+    }
+  }, [chatLogs]);
+
+  useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     console.log(urlParams.get("terminate"));
     if (urlParams.get("terminated") === "true")
@@ -219,8 +327,16 @@ export default function Home() {
   );
 
   const render = () =>
-    requestSent
-      ? renderGameUI(
+    requestSent ? (
+      <>
+        <Chat
+          chatLogs={chatLogs}
+          chatOpen={chatOpen}
+          openChat={openChat}
+          closeChat={closeChat}
+          sendMessage={sendMessage}
+        />
+        {renderGameUI(
           game,
           thisPlayer,
           players,
@@ -232,8 +348,11 @@ export default function Home() {
           setCaptions,
           setUpvoted,
           ws
-        )
-      : renderHome();
+        )}
+      </>
+    ) : (
+      renderHome()
+    );
 
   return (
     <div className="app">
