@@ -27,6 +27,8 @@ import {
   MemeForReviewResponseBody,
   SubmitReviewRequestBody,
   SubmitReviewResponseBody,
+  SendMessageRequestBody,
+  SendMessageResponseBody,
   MemeResult,
   EndReviewPhaseResponseBody,
   EndResultPhaseResponseBody,
@@ -112,6 +114,14 @@ export abstract class RequestHandler {
       );
     } else if (requestBody.method === "submitReview") {
       return new SubmitReviewRequestHandler(
+        requestBody,
+        connection,
+        logger,
+        gameStore,
+        playerStore
+      );
+    } else if (requestBody.method === "sendMessage") {
+      return new SendMessageRequestHandler(
         requestBody,
         connection,
         logger,
@@ -803,6 +813,64 @@ class SubmitReviewRequestHandler extends RequestHandler {
       `Player ${playerId} submitted a review to the meme created by player ${playerToBeReviewed.getPlayerId()} in  round ${currentRound}, the meme now has ${playerToBeReviewed.getRoundTotalVotes(
         currentRound
       )}.`
+    );
+  }
+}
+
+class SendMessageRequestHandler extends RequestHandler {
+  private requestBody: SendMessageRequestBody;
+
+  constructor(
+    requestBody: SendMessageRequestBody,
+    connection: GameConnection,
+    logger: Logger,
+    gameStore: GameStore,
+    playerStore: PlayerStore
+  ) {
+    super(connection, logger, gameStore, playerStore);
+    this.requestBody = requestBody;
+  }
+
+  handle() {
+    if (!this.isValidConnection()) {
+      this.logger.debug(
+        "Attempted to submit a review from an invalid connection."
+      );
+      return;
+    }
+
+    const gameId = this.connection.gameId!;
+    const game = this.gameStore.getGame(gameId);
+
+    if (!game) {
+      this.send404Error("Game", gameId);
+      return;
+    }
+
+    if (this.requestBody.content === "") {
+      const errorResponse: ErrorResponseBody = {
+        code: 400,
+        error: "Cannot send and empty message in chat",
+      };
+
+      this.connection.send(errorResponse);
+      return;
+    }
+
+    const sendMessageResponse: SendMessageResponseBody = {
+      method: "sendMessage",
+      message: {
+        sentBy: this.requestBody.sender,
+        content: this.requestBody.content,
+        isSystemMessage: false,
+        timestamp: Date.now(),
+      },
+    };
+
+    game.broadcast(sendMessageResponse);
+
+    this.logger.debug(
+      `Player ${this.requestBody.sender.id} sent a message in the chat of game ${gameId}.`
     );
   }
 }

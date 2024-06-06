@@ -73,9 +73,11 @@ export default function Chat({
                 <span className="chat-message-content">
                   {chatMessage.content}&nbsp;
                 </span>
-                <span className="chat-message-time">
-                  ({moment(chatMessage.timestamp).fromNow()})
-                </span>
+                {chatMessage.sentBy && (
+                  <span className="chat-message-time">
+                    ({moment(chatMessage.timestamp).fromNow()})
+                  </span>
+                )}
               </p>
             </div>
           ))}

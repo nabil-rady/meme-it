@@ -22,6 +22,7 @@ import {
   CreateRequestBody,
   ErrorResponseBody,
   ChatMessage,
+  SendMessageRequestBody,
 } from "../server/types";
 
 export default function Home() {
@@ -42,67 +43,11 @@ export default function Home() {
 
   const [chatLogs, setChatLogs] = useState<ChatMessage[]>([
     {
-      timestamp: 0,
-      isSystemMessage: false,
-      content:
-        "Hey folks Hey folks Hey folks Hey folks Hey folks Hey folks Hey folks Hey folks Hey folks Hey folks Hey folks Hey folks Hey folks Hey folks Hey folks Hey folks Hey folks Hey folks Hey folks Hey folks Hey folks Hey folks ",
-      sentBy: {
-        id: "1",
-        admin: false,
-        avatar: "/avatars/1.jpg",
-        inGame: true,
-        joinedAt: 0,
-        nickname: "7mada",
-        totalScore: 10,
-      },
-    },
-    {
-      timestamp: 0,
       isSystemMessage: true,
-      content: "7amada left the game",
+      content: "Welcome to chat.",
       sentBy: null,
-    },
-    {
       timestamp: 0,
-      isSystemMessage: false,
-      content: "Hey folks",
-      sentBy: {
-        id: "1",
-        admin: false,
-        avatar: "/avatars/1.jpg",
-        inGame: true,
-        joinedAt: 0,
-        nickname: "7mada",
-        totalScore: 10,
-      },
-    },
-    {
-      timestamp: 0,
-      isSystemMessage: false,
-      content: "Hey folks",
-      sentBy: {
-        id: "1",
-        admin: false,
-        avatar: "/avatars/1.jpg",
-        inGame: true,
-        joinedAt: 0,
-        nickname: "7mada",
-        totalScore: 10,
-      },
-    },
-    {
-      timestamp: 0,
-      isSystemMessage: false,
-      content: "Hey folks",
-      sentBy: {
-        id: "1",
-        admin: false,
-        avatar: "/avatars/1.jpg",
-        inGame: true,
-        joinedAt: 0,
-        nickname: "7mada",
-        totalScore: 10,
-      },
+      read: true,
     },
   ]);
   const [chatOpen, setChatOpen] = useState<boolean>(false);
@@ -147,16 +92,12 @@ export default function Home() {
   const sendMessage = (message: string) => {
     if (!thisPlayer) return;
     if (message !== "") {
-      setChatLogs((prevLogs) => [
-        ...prevLogs,
-        {
-          timestamp: Date.now(),
-          content: message,
-          isSystemMessage: false,
-          read: true,
-          sentBy: thisPlayer,
-        },
-      ]);
+      const sendMessageRequest: SendMessageRequestBody = {
+        method: "sendMessage",
+        content: message,
+        sender: thisPlayer,
+      };
+      ws.current?.send(JSON.stringify(sendMessageRequest));
     }
   };
 
@@ -183,7 +124,8 @@ export default function Home() {
         setMemesResults,
         setCaptions,
         setNotificationMessage,
-        setIsNotificationError
+        setIsNotificationError,
+        setChatLogs
       );
 
       responseHandler.handle();
@@ -245,6 +187,14 @@ export default function Home() {
       chat.scroll({
         top: chat.scrollHeight,
       });
+    }
+    if (chatOpen && chatLogs.at(-1)?.read !== true) {
+      setChatLogs((prevLogs) =>
+        prevLogs.map((message) => ({
+          ...message,
+          read: true,
+        }))
+      );
     }
   }, [chatLogs]);
 

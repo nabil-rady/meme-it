@@ -1101,6 +1101,7 @@ body {
     background-color: $text-clr;
 
     > p {
+      width: 100%;
       min-width: 0;
       word-wrap: break-word;
     }

@@ -93,6 +93,12 @@ export interface SubmitReviewRequestBody {
   playerToBeReviewedId: string;
 }
 
+export interface SendMessageRequestBody {
+  method: "sendMessage";
+  sender: PlayerInfo;
+  content: string;
+}
+
 export interface RestartGameRequestBody {
   method: "restart";
 }
@@ -109,6 +115,7 @@ export type GameRequestBody =
   | StartGameRequestBody
   | SubmitCaptionsRequestBody
   | SubmitReviewRequestBody
+  | SendMessageRequestBody
   | RestartGameRequestBody
   | TerminateGameRequestBody;
 
@@ -174,6 +181,11 @@ export type EndResultPhaseResponseBody =
       meme: DMemeWithCaptionDetails;
     };
 
+export interface SendMessageResponseBody {
+  method: "sendMessage";
+  message: ChatMessage;
+}
+
 export interface RestartGameResponseBody {
   method: "restart";
   players: PlayerInfo[];
@@ -207,6 +219,7 @@ export type GameResponseBody =
   | SubmitReviewResponseBody
   | EndReviewPhaseResponseBody
   | EndResultPhaseResponseBody
+  | SendMessageResponseBody
   | RestartGameResponseBody
   | LeaveResponseBody
   | TerminateResponseBody;
