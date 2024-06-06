@@ -7,7 +7,12 @@ import {
   server as WebSocketServer,
 } from "websocket";
 
-import { GameConnection, GameRequestBody, LeaveResponseBody } from "./types";
+import {
+  ChatMessage,
+  GameConnection,
+  GameRequestBody,
+  LeaveResponseBody,
+} from "./types";
 
 import { GameStore } from "./lib/GameStore";
 import { Player } from "./lib/Player";
@@ -40,6 +45,7 @@ function handleClosingConnection(connection: GameConnection) {
       return;
     }
 
+    const leftPlayerNickname = player.getPlayerInfo().nickname;
     leftGame.removePlayer(player);
 
     let newAdmin: Player | undefined;
@@ -69,11 +75,28 @@ function handleClosingConnection(connection: GameConnection) {
     }
 
     const playerInfo = player.getPlayerInfo();
+    const messages: ChatMessage[] = [
+      {
+        isSystemMessage: true,
+        content: `${leftPlayerNickname} left the game`,
+        sentBy: null,
+        timestamp: Date.now(),
+      },
+    ];
+    if (newAdmin) {
+      messages.push({
+        isSystemMessage: true,
+        content: `${newAdmin.getPlayerInfo().nickname} is now the admin`,
+        sentBy: null,
+        timestamp: Date.now(),
+      });
+    }
     const response: LeaveResponseBody = {
       method: "leave",
       player: playerInfo,
       restOfPlayers: leftGame.getPlayersInfos(),
       newAdmin: newAdmin ? newAdmin.getPlayerInfo() : null,
+      messages,
     };
     leftGame.broadcast(response);
 

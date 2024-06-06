@@ -395,6 +395,7 @@ class JoinResponseHandler extends ResponseHandler {
       thisPlayer ? thisPlayer : this.responseBody.players.at(-1)
     );
     this.setPlayers(this.responseBody.players);
+    this.setChatLogs((prevLogs) => [...prevLogs, this.responseBody.message]);
   }
 }
 
@@ -943,6 +944,11 @@ class LeaveResponseHandler extends ResponseHandler {
       return prevThisPlayer;
     });
     this.setPlayers(this.responseBody.restOfPlayers);
+    console.log(this.responseBody);
+    this.setChatLogs((prevLogs) => [
+      ...prevLogs,
+      ...this.responseBody.messages,
+    ]);
   }
 }
 

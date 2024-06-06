@@ -129,6 +129,7 @@ export interface JoinResponseBody {
   method: "join";
   game: GameInfo;
   players: PlayerInfo[];
+  message: ChatMessage;
 }
 
 export interface UpdatePlayerResponseBody {
@@ -196,6 +197,7 @@ export interface LeaveResponseBody {
   player: PlayerInfo;
   restOfPlayers: PlayerInfo[];
   newAdmin: PlayerInfo | null;
+  messages: ChatMessage[];
 }
 
 export interface TerminateResponseBody {

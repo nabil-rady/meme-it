@@ -48,7 +48,7 @@ export default function Home() {
       read: true,
     },
   ]);
-  const [chatOpen, setChatOpen] = useState<boolean>(false);
+  const [chatOpen, setChatOpen] = useState<boolean>(true);
 
   const openChat = () => {
     setChatOpen(true);

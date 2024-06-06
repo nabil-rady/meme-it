@@ -478,6 +478,12 @@ class JoinRequestHandler extends RequestHandler {
       method: "join",
       players: playersInfos,
       game: desiredGameInfo,
+      message: {
+        isSystemMessage: true,
+        content: `${nickname} joined the game`,
+        sentBy: null,
+        timestamp: Date.now(),
+      },
     };
 
     desiredGame.broadcast(response);
