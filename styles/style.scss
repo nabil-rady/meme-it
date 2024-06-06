@@ -256,6 +256,9 @@ body {
 
     > label {
       display: flex;
+
+      width: 100%;
+
       align-items: center;
       gap: 1em;
 
@@ -268,6 +271,7 @@ body {
         background-color: $button-bg;
         color: inherit;
 
+        min-width: 0;
         padding: 0.4em 1em;
         border: none;
         border-radius: 6px;
@@ -1165,6 +1169,22 @@ body {
 @media (max-width: 700px) {
   body {
     font-size: 12px;
+
+    .avatars {
+      > .avatar {
+        width: 4em !important;
+        height: 4em !important;
+      }
+    }
+
+    .player-update-overlay {
+      > .body {
+        width: 80%;
+        > .close-button {
+          top: 3px;
+        }
+      }
+    }
 
     .change-avatar {
       font-size: 10px;
