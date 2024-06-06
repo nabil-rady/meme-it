@@ -12,7 +12,7 @@ export default function ChatCloseButton({ closeChat }: CloseChatButtonProps) {
         closeChat();
       }}
     >
-      <IoMdClose size="20" color="red" />
+      <IoMdClose size="24" color="#f5f2f2" />
     </div>
   );
 }
