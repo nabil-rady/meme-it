@@ -296,6 +296,56 @@ body {
   }
 }
 
+.join-game-overlay {
+  @include overlay();
+  flex-direction: column;
+
+  > .body {
+    display: flex;
+    flex-direction: column;
+    padding: 1em 3em;
+
+    > .close-button {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+
+      background-color: transparent;
+    }
+
+    > .title {
+      margin-top: 0;
+      margin-bottom: 1rem;
+      font-size: 3em;
+    }
+
+    > div {
+      input {
+        min-width: 0;
+        margin-left: 1rem;
+
+        outline: $button-clr 1px solid;
+        border: none;
+        padding: 0.4em;
+        border-radius: 10px;
+      }
+    }
+
+    > .button {
+      background-color: $button-clr;
+      color: $text-clr;
+
+      margin: 0 auto;
+      margin-top: 1rem;
+
+      &:hover,
+      &:focus {
+        scale: 1.1;
+      }
+    }
+  }
+}
+
 .pop-up-container {
   display: flex;
   justify-content: center;
@@ -1183,6 +1233,13 @@ body {
         > .close-button {
           top: 3px;
         }
+      }
+    }
+
+    .join-game-overlay {
+      > .body {
+        padding-left: 0.75em;
+        padding-right: 0.75em;
       }
     }
 

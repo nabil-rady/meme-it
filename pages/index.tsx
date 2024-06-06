@@ -8,6 +8,8 @@ import { BiRefresh } from "react-icons/bi";
 
 import AvatarSelect from "../components/AvatarSelect";
 import Chat from "../components/Chat";
+import JoinGameOverlay from "../components/JoinGameOverlay";
+
 import { DMemeWithCaptionDetails } from "../dbtypes";
 
 import renderGameUI from "../lib/renderGameUI";
@@ -55,6 +57,7 @@ export default function Home() {
   const [avatar, setAvatar] = useState<string>("/avatars/0.jpg");
   const [nickname, setNickname] = useState<string>("");
   const [showAvatarSelect, setShowAvatarSelect] = useState<boolean>(false);
+  const [showJoinGameOverlay, setShowJoinGameOverlay] = useState(false);
   const [nicknameError, setNicknameError] = useState<boolean>(false);
 
   const nicknameNotEmpty = /^(?!\s*$).+/.test(nickname);
@@ -220,6 +223,13 @@ export default function Home() {
   const renderHome = () => (
     <main className="home">
       <h1 className="title">Meme It</h1>
+      {showJoinGameOverlay && (
+        <JoinGameOverlay
+          closeOverlay={() => {
+            setShowJoinGameOverlay(false);
+          }}
+        />
+      )}
       <div className="avatar-container">
         <Image
           src={avatar}
@@ -261,7 +271,14 @@ export default function Home() {
       )}
 
       <div className="buttons">
-        <button className="button">Join Lobby</button>
+        <button
+          className="button"
+          onClick={() => {
+            setShowJoinGameOverlay(true);
+          }}
+        >
+          Join Lobby
+        </button>
         <button
           className="button"
           onClick={
