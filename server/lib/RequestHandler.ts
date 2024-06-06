@@ -456,12 +456,45 @@ class JoinRequestHandler extends RequestHandler {
     for (const player of desiredGame.getPlayers()) {
       candidateAvatars.delete(player.getPlayerInfo().avatar);
     }
-    const avatar =
-      Array.from(candidateAvatars)[
-        Math.floor(Math.random() * candidateAvatars.size)
-      ];
+    const avatar = this.requestBody.avatar;
+    const nickname = this.requestBody.nickname;
 
-    const nickname = `guest-${Math.floor(Math.random() * 1000) + 1}`;
+    if (
+      desiredGame
+        .getPlayers()
+        .some((player) => player.getPlayerInfo().avatar === avatar)
+    ) {
+      const errorResponse: ErrorResponseBody = {
+        code: 400,
+        error: "This avatar is used",
+      };
+      this.connection.send(JSON.stringify(errorResponse));
+
+      this.logger.debug(
+        `Player attempted to join lobby of game ${desiredGame.getGameId()} but his desired avatar is taken.`
+      );
+
+      return;
+    }
+
+    if (
+      desiredGame
+        .getPlayers()
+        .some((player) => player.getPlayerInfo().nickname === nickname)
+    ) {
+      const errorResponse: ErrorResponseBody = {
+        code: 400,
+        error: "This nickname is used",
+      };
+      this.connection.send(JSON.stringify(errorResponse));
+
+      this.logger.debug(
+        `Player attempted to join lobby of game ${desiredGame.getGameId()} but his desired nickname is taken.`
+      );
+
+      return;
+    }
+
     const player = new Player(nickname, avatar, false, this.connection);
     this.playerStore.addPlayer(player);
 

@@ -1,21 +1,25 @@
 import Image from "next/image";
 import { MutableRefObject, useState } from "react";
 import { IoMdClose } from "react-icons/io";
-import { UpdatePlayerRequestBody } from "../server/types";
+import { JoinRequestBody, UpdatePlayerRequestBody } from "../server/types";
 
 interface UpdateProps {
+  joined: boolean;
   avatar: string;
   nickname: string;
   avatarsTaken: string[];
   closePlayerUpdate: () => void;
+  submitInfo: () => void;
   ws: MutableRefObject<WebSocket | undefined>;
 }
 
 export default function PlayerUpdate({
+  joined,
   avatar,
   nickname,
   avatarsTaken,
   closePlayerUpdate,
+  submitInfo,
   ws,
 }: UpdateProps) {
   const [newAvatar, setNewNAvatar] = useState<string>(avatar);
@@ -58,9 +62,39 @@ export default function PlayerUpdate({
     ws.current?.send(JSON.stringify(updatePlayerRequest));
   };
 
+  const joinPlayer = () => {
+    const joinRequest: JoinRequestBody = {
+      gameId: location.pathname.slice(1),
+      method: "join",
+      avatar: newAvatar,
+      nickname: newNickname,
+    };
+
+    ws.current?.send(JSON.stringify(joinRequest));
+    submitInfo();
+  };
+
+  const onClick = () => {
+    if (joined) {
+      if (nicknameNotEmpty) {
+        updatePlayer();
+        closePlayerUpdate();
+      } else {
+        setShowNicknameError(true);
+      }
+    } else {
+      if (nicknameNotEmpty) {
+        joinPlayer();
+      } else {
+        setShowNicknameError(true);
+      }
+    }
+  };
+
   return (
     <div className="player-update-overlay" onClick={closePlayerUpdate}>
       <div className="body" onClick={(e) => e.stopPropagation()}>
+        {!joined && <h2>Select your avatar and nickname</h2>}
         <button className="close-button" onClick={closePlayerUpdate}>
           &nbsp;
           <IoMdClose size={26} className="icon" />
@@ -81,16 +115,11 @@ export default function PlayerUpdate({
         </label>
         <button
           className="button"
-          onClick={
-            nicknameNotEmpty
-              ? () => {
-                  updatePlayer();
-                  closePlayerUpdate();
-                }
-              : () => setShowNicknameError(true)
-          }
+          onClick={() => {
+            onClick();
+          }}
         >
-          Update
+          {joined ? "Update" : "Join"}
         </button>
       </div>
     </div>

@@ -63,6 +63,8 @@ export interface CreateRequestBody {
 export interface JoinRequestBody {
   method: "join";
   gameId: string;
+  avatar: string;
+  nickname: string;
 }
 
 export interface UpdatePlayerRequestBody {

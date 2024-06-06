@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 
 import Chat from "../components/Chat";
+import PlayerUpdate from "../components/PlayerUpdate";
 import renderGameUI from "../lib/renderGameUI";
 import { ResponseHandler } from "../lib/ResponseHandler";
 
@@ -16,7 +17,6 @@ import {
   GameInfo,
   PlayerInfo,
   GameResponseBody,
-  JoinRequestBody,
   ErrorResponseBody,
   ChatMessage,
   SendMessageRequestBody,
@@ -38,6 +38,7 @@ export default function Home() {
   const [notificationMessage, setNotificationMessage] = useState<string>("");
   const [isNotificationError, setIsNotificationError] =
     useState<boolean>(false);
+  const [submittedInfo, setSubmittedInfo] = useState<boolean>(false);
 
   const [chatLogs, setChatLogs] = useState<ChatMessage[]>([
     {
@@ -64,6 +65,10 @@ export default function Home() {
     setChatOpen(false);
   };
 
+  const submitInfo = () => {
+    setSubmittedInfo(true);
+  };
+
   const sendMessage = (message: string) => {
     if (!thisPlayer) return;
     if (message !== "") {
@@ -80,11 +85,17 @@ export default function Home() {
     if (!notificationMessage) {
       return;
     }
-    if (isNotificationError && !game) {
+
+    if (notificationMessage === "Game not found") {
       setTimeout(() => {
         window.location.href = "/";
       }, 1000 * 1.5);
     }
+
+    if (isNotificationError && submittedInfo) {
+      setSubmittedInfo(false);
+    }
+
     toast.dismiss();
     if (isNotificationError)
       toast.error(notificationMessage, {
@@ -116,7 +127,6 @@ export default function Home() {
   }, [notificationMessage, isNotificationError]);
 
   useEffect(() => {
-    debugger;
     const chat = document.querySelector(".chat-messages");
     if (chat) {
       chat.scroll({
@@ -163,44 +173,69 @@ export default function Home() {
 
       responseHandler.handle();
     });
-    ws.current.addEventListener("open", () => {
-      const request: JoinRequestBody = {
-        method: "join",
-        gameId: router.query.slug as string,
-      };
-      ws.current?.send(JSON.stringify(request));
-    });
 
     return () => ws.current?.close();
   }, [router.query.slug]);
+
+  const render = () => {
+    if (!submittedInfo)
+      return (
+        <PlayerUpdate
+          joined={false}
+          avatar="/avatars/0.jpg"
+          nickname={`guest-${Math.floor(Math.random() * 1000) + 1}`}
+          closePlayerUpdate={() => {}}
+          avatarsTaken={[]}
+          submitInfo={submitInfo}
+          ws={ws}
+        />
+      );
+    if (thisPlayer)
+      return (
+        <>
+          <Chat
+            chatLogs={chatLogs}
+            chatOpen={chatOpen}
+            openChat={openChat}
+            closeChat={closeChat}
+            sendMessage={sendMessage}
+          />
+          {renderGameUI(
+            game,
+            thisPlayer,
+            players,
+            meme,
+            memeForReview,
+            upvoted,
+            memesResults,
+            captions,
+            setCaptions,
+            setUpvoted,
+            ws
+          )}
+        </>
+      );
+    return renderGameUI(
+      game,
+      thisPlayer,
+      players,
+      meme,
+      memeForReview,
+      upvoted,
+      memesResults,
+      captions,
+      setCaptions,
+      setUpvoted,
+      ws
+    );
+  };
 
   return (
     <div className="app">
       <Head>
         <title>Meme It</title>
       </Head>
-      {thisPlayer && (
-        <Chat
-          chatLogs={chatLogs}
-          chatOpen={chatOpen}
-          openChat={openChat}
-          closeChat={closeChat}
-          sendMessage={sendMessage}
-        />
-      )}
-      {renderGameUI(
-        game,
-        thisPlayer,
-        players,
-        meme,
-        memeForReview,
-        upvoted,
-        memesResults,
-        captions,
-        setCaptions,
-        setUpvoted,
-        ws
-      )}
+      {render()}
       <ToastContainer className="pop-up-container" pauseOnFocusLoss={false} />
     </div>
   );

@@ -48,9 +48,11 @@ export default function Player(props: PlayerProps) {
       )}
       {showPlayerUpdate && props.ws && props.avatarsTaken && (
         <PlayerUpdate
+          joined
           avatar={props.player.avatar}
           nickname={props.player.nickname}
           closePlayerUpdate={closePlayerUpdate}
+          submitInfo={() => {}}
           avatarsTaken={props.avatarsTaken}
           ws={props.ws}
         />
