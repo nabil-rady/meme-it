@@ -105,10 +105,7 @@ export default function Home() {
   };
 
   const createGame = (nickname: string, avatar: string) => {
-    const hostname = window.location.hostname;
-    const secure = window.location.protocol === "https:";
-    const protocol = secure ? "wss" : "ws";
-    ws.current = new WebSocket(`${protocol}://${hostname}:9090`);
+    ws.current = new WebSocket(process.env.NEXT_PUBLIC_WS_URL as string);
     ws.current.addEventListener("message", (e: MessageEvent<string>) => {
       const response = JSON.parse(e.data) as
         | GameResponseBody
